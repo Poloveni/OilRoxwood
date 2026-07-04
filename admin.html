@@ -193,7 +193,8 @@ function defaults(){
     passHash:null,
     runners:[],
     weeks:[],
-    settings:{prix:10, primeBase:5000, top:[15000,10000,5000], limite:24000, semaine:1}
+    settings:{prix:10, primeBase:5000, top:[15000,10000,5000], limite:24000, semaine:1,
+      webhook:'https://discord.com/api/webhooks/1247564402782371985/X8pynlKA1sn26In6aONz4IO7XZl7pwtnW19yvmLKX2DiMq_LXEBZRHGW1rBgyes0h9kg'}
   };
 }
 function load(){
@@ -235,6 +236,17 @@ const fmt = n => (n||0).toLocaleString('fr-FR');
 const money = n => fmt(Math.round(n)) + ' $';
 const esc = t => String(t??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2600); }
+/* ---- Logs Discord (webhook compte entreprise) ---- */
+function sendLog(title, desc, color){
+  const url=(S.settings.webhook||'').trim();
+  if(!url.startsWith('https://discord.com/api/webhooks/')) return;
+  fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    username:'Oil Roxwood — Logs',
+    embeds:[{title, description:desc, color:color||0xe8a020,
+      footer:{text:`Semaine ${S.settings.semaine} · Dashboard admin`},
+      timestamp:new Date().toISOString()}]
+  })}).catch(()=>{});
+}
 function grade(r){ return GRADES[r.grade]; }
 function quotaOK(r){ return r.barils >= grade(r).quota; }
 function primeProj(r){ return quotaOK(r) ? S.settings.primeBase * grade(r).mult : 0; }
@@ -371,16 +383,17 @@ function saveRunner(id){
     Object.assign(r,{nom,discord:dc,grade:+$('#m_gr').value,zone:$('#m_zn').value});
   } else {
     S.runners.push({id:Date.now(),nom,discord:dc,grade:+$('#m_gr').value,zone:$('#m_zn').value,barils:0,total:0,runs:[]});
+    sendLog('👥 Nouvelle recrue', `**${nom}** (@${dc}) rejoint l'entreprise — ${GRADES[+$('#m_gr').value].nom}, zone ${$('#m_zn').value}`, 0x3ddc84);
   }
   save(); closeModal(); rerender(); toast('✅ Runner enregistré');
 }
 function promote(id){
   const r=S.runners.find(x=>x.id===id);
-  if(r.grade<3){ r.grade++; save(); rerender(); toast(`🎉 ${r.nom} passe ${GRADES[r.grade].nom} !`); }
+  if(r.grade<3){ r.grade++; save(); rerender(); sendLog('🎉 Montée de grade', `**${r.nom}** passe **${GRADES[r.grade].nom}** !`, 0xe8a020); toast(`🎉 ${r.nom} passe ${GRADES[r.grade].nom} !`); }
 }
 function delRunner(id){
   const r=S.runners.find(x=>x.id===id);
-  if(confirm(`Supprimer ${r.nom} de l'effectif ?`)){ S.runners=S.runners.filter(x=>x.id!==id); save(); rerender(); toast('Runner supprimé'); }
+  if(confirm(`Supprimer ${r.nom} de l'effectif ?`)){ S.runners=S.runners.filter(x=>x.id!==id); save(); rerender(); sendLog('🚪 Départ', `**${r.nom}** quitte l'effectif`, 0xff5c5c); toast('Runner supprimé'); }
 }
 
 /* ================== RUNS ================== */
@@ -414,11 +427,12 @@ function addRun(){
   if(!b||b<1) return toast('⚠️ Nombre de barils invalide');
   r.runs.push({t:Date.now(),b}); r.barils+=b; r.total+=b;
   save(); rerender();
+  sendLog('🚛 Run enregistré', `**${r.nom}** a livré **${fmt(b)} barils** (CA ${money(b*S.settings.prix)})\nSemaine : ${fmt(r.barils)}/${fmt(grade(r).quota)}${quotaOK(r)?' — 🎯 quota atteint !':''}`, 0x5aa0ff);
   toast(quotaOK(r)?`✅ ${r.nom} : +${fmt(b)} barils — quota atteint ! 🎯`:`✅ ${r.nom} : +${fmt(b)} barils`);
 }
 function delRun(rid,t){
   const r=S.runners.find(x=>x.id===rid), i=r.runs.findIndex(x=>x.t===t);
-  if(i>-1){ r.barils-=r.runs[i].b; r.total-=r.runs[i].b; r.runs.splice(i,1); save(); rerender(); toast('Run annulé'); }
+  if(i>-1){ const b=r.runs[i].b; r.barils-=b; r.total-=b; r.runs.splice(i,1); save(); rerender(); sendLog('↩️ Run annulé', `**${r.nom}** : -${fmt(b)} barils`, 0xff5c5c); toast('Run annulé'); }
 }
 
 /* ================== SEMAINE & PRIMES ================== */
@@ -464,6 +478,10 @@ function closeWeek(){
   });
   S.runners.forEach(r=>{ if(eligible(r)){ r.grade++; promus.push(r.nom); } });
   S.weeks.push({num:S.settings.semaine, date:new Date().toLocaleDateString('fr-FR'), total:sorted.reduce((a,r)=>a+r.barils,0), primes, winner:sorted[0]?.barils>0?sorted[0].nom:null});
+  const w=S.weeks[S.weeks.length-1];
+  const podium=sorted.slice(0,3).filter(r=>r.barils>0).map((r,i)=>`${['🥇','🥈','🥉'][i]} **${r.nom}** — ${fmt(r.barils)} barils (+${money(S.settings.top[i])})`).join('\n');
+  sendLog(`🗓️ Clôture de la semaine ${w.num}`,
+    `**Production totale : ${fmt(w.total)} barils** (CA ${money(w.total*S.settings.prix)})\n**Primes versées : ${money(primes)}**\n\n${podium||'_Aucun run cette semaine_'}${promus.length?`\n\n📈 Promotions : ${promus.map(n=>'**'+n+'**').join(', ')}`:''}`, 0xe8a020);
   S.runners.forEach(r=>{ r.barils=0; r.runs=[]; });
   S.settings.semaine++;
   save(); rerender();
@@ -519,6 +537,15 @@ function params(){
         <div class="f-row"><input class="field" id="p_pw2" type="password" placeholder="Confirmer"></div>
         <button class="btn btn-ghost" style="width:100%" onclick="changePw()">Changer le mot de passe</button>
       </div>
+      <div class="panel" style="margin-bottom:18px">
+        <h3>📡 Logs Discord (compte entreprise)</h3>
+        <div class="f-row"><input class="field" id="p_wh" type="text" value="${esc(S.settings.webhook||'')}" placeholder="https://discord.com/api/webhooks/…"></div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-gold" onclick="saveWebhook()">Enregistrer</button>
+          <button class="btn btn-ghost" onclick="testWebhook()">Envoyer un test</button>
+        </div>
+        <p style="color:var(--muted);font-size:.78rem;margin-top:12px">Chaque run, recrutement, promotion, départ et clôture de semaine est envoyé automatiquement sur ce salon Discord.</p>
+      </div>
       <div class="panel">
         <h3>💾 Données</h3>
         <p style="color:var(--muted);font-size:.82rem;margin-bottom:14px">Les données vivent dans ce navigateur. Exporte régulièrement un fichier JSON pour sauvegarder ou partager avec un autre admin.</p>
@@ -545,6 +572,15 @@ function saveParams(){
   S.settings.semaine=+$('#p_sem').value||1;
   S.settings.top=[+$('#p_t1').value||15000,+$('#p_t2').value||10000,+$('#p_t3').value||5000];
   save(); toast('✅ Paramètres enregistrés');
+}
+function saveWebhook(){
+  S.settings.webhook=$('#p_wh').value.trim();
+  save(); toast('✅ Webhook enregistré');
+}
+function testWebhook(){
+  S.settings.webhook=$('#p_wh').value.trim(); save();
+  sendLog('🧪 Test de connexion', 'Le dashboard Oil Roxwood est bien relié aux logs du compte entreprise ✅', 0x3ddc84);
+  toast('📡 Message de test envoyé — vérifie le salon Discord');
 }
 async function changePw(){
   const a=$('#p_pw1').value, b=$('#p_pw2').value;
@@ -579,7 +615,7 @@ function resetAll(){
 /* ================== MODAL ================== */
 function openModal(html){ $('#modalBox').innerHTML=html; $('#modalBg').classList.add('open'); }
 function closeModal(){ $('#modalBg').classList.remove('open'); }
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); }); // Oil Roxwood admin
 </script>
 </body>
 </html>
