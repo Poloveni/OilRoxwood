@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oil Roxwood — Dashboard Admin</title>
+<meta name="robots" content="noindex">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0b111b; --panel:#121a28; --panel-2:#182337; --line:rgba(255,255,255,.07);
+    --ink:#e8edf4; --muted:#8494a9; --accent:#e8a020; --accent-2:#f5b23a;
+    --green:#3ddc84; --red:#ff5c5c; --blue:#5aa0ff; --violet:#a78bfa;
+    --radius:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+  button{font-family:inherit;cursor:pointer}
+  input,select{font-family:inherit}
+
+  /* ========== LOGIN ========== */
+  #login{
+    position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;
+    background:
+      radial-gradient(ellipse at 70% 20%, rgba(232,160,32,.12), transparent 55%),
+      linear-gradient(160deg,#0b111b,#16202e);
+  }
+  .login-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:44px 40px;width:min(400px,90vw);text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  .login-card .drop{font-size:2.6rem}
+  .login-card h1{font-size:1.3rem;margin:10px 0 4px;letter-spacing:1px}
+  .login-card h1 b{color:var(--accent)}
+  .login-card p{color:var(--muted);font-size:.85rem;margin-bottom:24px}
+  .login-card input{width:100%;padding:13px 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);font-size:1rem;text-align:center;letter-spacing:2px}
+  .login-card input:focus{outline:none;border-color:var(--accent)}
+  .login-card button{width:100%;margin-top:14px;padding:13px;border:none;border-radius:10px;background:var(--accent);color:#0b111b;font-weight:800;font-size:.95rem;transition:transform .15s}
+  .login-card button:hover{transform:translateY(-2px)}
+  #loginErr{color:var(--red);font-size:.83rem;margin-top:12px;display:none}
+
+  /* ========== LAYOUT ========== */
+  #app{display:none;min-height:100vh}
+  aside{
+    position:fixed;top:0;left:0;bottom:0;width:230px;background:var(--panel);
+    border-right:1px solid var(--line);padding:26px 16px;display:flex;flex-direction:column;z-index:50
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:0 10px 24px;font-weight:800;letter-spacing:.5px}
+  .brand small{display:block;color:var(--muted);font-weight:500;font-size:.7rem;letter-spacing:1.5px}
+  .brand b{color:var(--accent)}
+  .nav-item{
+    display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;border:none;background:none;
+    color:var(--muted);font-size:.92rem;font-weight:600;width:100%;text-align:left;margin-bottom:4px;transition:all .15s
+  }
+  .nav-item:hover{background:var(--panel-2);color:var(--ink)}
+  .nav-item.active{background:linear-gradient(135deg,rgba(232,160,32,.18),rgba(232,160,32,.06));color:var(--accent)}
+  aside .spacer{flex:1}
+  #logout{color:var(--red)}
+  main{margin-left:230px;padding:34px 38px;max-width:1250px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:14px}
+  .topbar h2{font-size:1.5rem;letter-spacing:-.3px}
+  .topbar .sub{color:var(--muted);font-size:.85rem;margin-top:2px}
+
+  /* ========== COMPONENTS ========== */
+  .grid{display:grid;gap:18px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .panel h3{font-size:.95rem;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+  .kpi{position:relative;overflow:hidden}
+  .kpi .lbl{color:var(--muted);font-size:.78rem;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+  .kpi .val{font-size:1.9rem;font-weight:800;margin-top:6px}
+  .kpi .delta{font-size:.78rem;color:var(--muted);margin-top:4px}
+  .kpi::after{content:"";position:absolute;top:-30px;right:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(232,160,32,.15),transparent 70%)}
+  .btn{padding:10px 18px;border-radius:9px;border:none;font-weight:700;font-size:.86rem;transition:transform .12s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn-gold{background:var(--accent);color:#0b111b}
+  .btn-ghost{background:var(--panel-2);color:var(--ink);border:1px solid var(--line)}
+  .btn-red{background:rgba(255,92,92,.12);color:var(--red);border:1px solid rgba(255,92,92,.3)}
+  .btn-sm{padding:6px 12px;font-size:.78rem;border-radius:7px}
+
+  table{width:100%;border-collapse:collapse;font-size:.88rem}
+  th{text-align:left;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:1.2px;padding:10px 12px;border-bottom:1px solid var(--line)}
+  td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tbody tr{transition:background .15s}
+  tbody tr:hover{background:rgba(255,255,255,.02)}
+
+  .badge{display:inline-block;padding:3px 11px;border-radius:99px;font-size:.72rem;font-weight:700;white-space:nowrap}
+  .bg0{background:rgba(255,255,255,.08);color:#c2cad4}
+  .bg1{background:rgba(90,160,255,.14);color:var(--blue)}
+  .bg2{background:rgba(167,139,250,.14);color:var(--violet)}
+  .bg3{background:rgba(232,160,32,.16);color:var(--accent)}
+  .zone-tag{display:inline-block;width:26px;height:26px;border-radius:8px;text-align:center;line-height:26px;font-weight:800;font-size:.8rem}
+  .zA{background:rgba(232,160,32,.16);color:var(--accent)}
+  .zB{background:rgba(90,160,255,.14);color:var(--blue)}
+  .zC{background:rgba(61,220,132,.13);color:var(--green)}
+  .zD{background:rgba(167,139,250,.14);color:var(--violet)}
+
+  .prog{height:7px;background:var(--panel-2);border-radius:99px;overflow:hidden;min-width:90px}
+  .prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s}
+  .prog i.full{background:linear-gradient(90deg,#2eb872,var(--green))}
+  .pct{font-size:.72rem;color:var(--muted);margin-top:4px}
+
+  .chip{display:inline-flex;align-items:center;gap:6px;background:var(--panel-2);border:1px solid var(--line);border-radius:99px;padding:5px 13px;font-size:.78rem;color:var(--muted)}
+  .chip b{color:var(--ink)}
+  .up{color:var(--green)} .down{color:var(--red)} .gold{color:var(--accent)}
+
+  input.field,select.field{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:10px 13px;font-size:.88rem;width:100%}
+  input.field:focus,select.field:focus{outline:none;border-color:var(--accent)}
+  label.f-lbl{display:block;font-size:.75rem;color:var(--muted);font-weight:700;margin:0 0 6px;text-transform:uppercase;letter-spacing:1px}
+  .f-row{margin-bottom:14px}
+
+  /* modal */
+  #modalBg{position:fixed;inset:0;background:rgba(5,8,14,.75);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center}
+  #modalBg.open{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:30px;width:min(460px,92vw);max-height:88vh;overflow:auto}
+  .modal h3{margin-bottom:20px;font-size:1.05rem}
+
+  /* toast */
+  #toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--panel-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:13px 22px;font-size:.88rem;z-index:500;transition:transform .3s;box-shadow:0 15px 40px rgba(0,0,0,.4)}
+  #toast.show{transform:translateX(-50%) translateY(0)}
+
+  .empty{text-align:center;color:var(--muted);padding:40px 0;font-size:.9rem}
+  .podium{display:flex;gap:14px;align-items:flex-end;justify-content:center;padding:10px 0}
+  .pod{flex:1;text-align:center;border-radius:12px 12px 0 0;padding:14px 8px;display:flex;flex-direction:column;justify-content:flex-end}
+  .pod .name{font-weight:800;font-size:.85rem}
+  .pod .amt{font-size:.75rem;color:var(--muted);margin-top:3px}
+  .pod1{background:linear-gradient(180deg,rgba(232,160,32,.25),rgba(232,160,32,.05));min-height:130px;border-top:3px solid var(--accent)}
+  .pod2{background:linear-gradient(180deg,rgba(160,175,195,.2),rgba(160,175,195,.04));min-height:100px;border-top:3px solid #a8b6c8}
+  .pod3{background:linear-gradient(180deg,rgba(190,120,60,.2),rgba(190,120,60,.04));min-height:80px;border-top:3px solid #c07840}
+  .warn{background:rgba(255,92,92,.08);border:1px solid rgba(255,92,92,.25);border-radius:10px;padding:11px 15px;font-size:.83rem;color:#ffb0b0;margin-bottom:16px}
+  .promo-flag{font-size:.7rem;color:var(--green);font-weight:700;display:block;margin-top:3px}
+
+  @media(max-width:1000px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
+  @media(max-width:760px){
+    aside{width:100%;height:auto;position:sticky;flex-direction:row;overflow-x:auto;padding:12px;align-items:center}
+    .brand{padding:0 10px}.brand small{display:none}
+    .nav-item{width:auto;white-space:nowrap;margin:0 2px}
+    .nav-item .txt{display:none}
+    main{margin-left:0;padding:20px}
+    .g4{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="login">
+  <form class="login-card" onsubmit="return doLogin(event)">
+    <div class="drop">🛢️</div>
+    <h1>OIL <b>ROXWOOD</b></h1>
+    <p>Espace administrateur — accès restreint</p>
+    <input type="password" id="pw" placeholder="Mot de passe" autofocus autocomplete="current-password">
+    <button type="submit">Se connecter</button>
+    <div id="loginErr">Mot de passe incorrect.</div>
+  </form>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+  <aside>
+    <div class="brand">🛢️ <span>OIL <b>ROXWOOD</b><small>DASHBOARD ADMIN</small></span></div>
+    <button class="nav-item active" data-view="overview">📊 <span class="txt">Vue d'ensemble</span></button>
+    <button class="nav-item" data-view="effectif">👥 <span class="txt">Effectif</span></button>
+    <button class="nav-item" data-view="runs">🚛 <span class="txt">Runs</span></button>
+    <button class="nav-item" data-view="semaine">💰 <span class="txt">Semaine &amp; Primes</span></button>
+    <button class="nav-item" data-view="zones">🗺️ <span class="txt">Zones</span></button>
+    <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
+    <div class="spacer"></div>
+    <button class="nav-item" id="logout" onclick="logout()">⏻ <span class="txt">Déconnexion</span></button>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<div id="modalBg" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalBox"></div></div>
+<div id="toast"></div>
+
+<script>
+/* ================== CONSTANTES ================== */
+const GRADES = [
+  {nom:'Intérimaire',        quota:3000, mult:1,   montee:3000,  cls:'bg0'},
+  {nom:'Raffineur',          quota:3000, mult:1.5, montee:5000,  cls:'bg1'},
+  {nom:'Raffineur Confirmé', quota:5000, mult:2,   montee:8000,  cls:'bg2'},
+  {nom:'Raffineur Expert',   quota:6500, mult:2.5, montee:10000, cls:'bg3'},
+];
+const ZONES = ['A','B','C','D'];
+const LS_KEY = 'oilroxwood_admin_v1';
+const DEFAULT_HASH = null; // défini au premier login avec le mdp par défaut
+
+/* ================== ÉTAT ================== */
+let S = load();
+function defaults(){
+  return {
+    passHash:null,
+    runners:[],
+    weeks:[],
+    settings:{prix:10, primeBase:5000, top:[15000,10000,5000], limite:24000, semaine:1}
+  };
+}
+function load(){
+  try{ const d = JSON.parse(localStorage.getItem(LS_KEY)); return d ? Object.assign(defaults(), d) : defaults(); }
+  catch(e){ return defaults(); }
+}
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(S)); }
+
+/* ================== AUTH ================== */
+async function sha(t){
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+async function doLogin(e){
+  e.preventDefault();
+  const h = await sha(document.getElementById('pw').value);
+  const ok = S.passHash ? (h === S.passHash) : (document.getElementById('pw').value === 'roxwood');
+  if(ok){
+    if(!S.passHash){ S.passHash = await sha('roxwood'); save(); }
+    sessionStorage.setItem('orx_auth','1');
+    enter();
+  } else {
+    document.getElementById('loginErr').style.display='block';
+    document.getElementById('pw').value='';
+  }
+  return false;
+}
+function enter(){
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='block';
+  show('overview');
+}
+function logout(){ sessionStorage.removeItem('orx_auth'); location.reload(); }
+if(sessionStorage.getItem('orx_auth')==='1') enter();
+
+/* ================== HELPERS ================== */
+const $ = s => document.querySelector(s);
+const fmt = n => (n||0).toLocaleString('fr-FR');
+const money = n => fmt(Math.round(n)) + ' $';
+const esc = t => String(t??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2600); }
+function grade(r){ return GRADES[r.grade]; }
+function quotaOK(r){ return r.barils >= grade(r).quota; }
+function primeProj(r){ return quotaOK(r) ? S.settings.primeBase * grade(r).mult : 0; }
+function eligible(r){ return r.grade < 3 && r.total >= grade(r).montee; }
+let charts = [];
+function destroyCharts(){ charts.forEach(c=>c.destroy()); charts=[]; }
+function mkChart(id, cfg){
+  const el = document.getElementById(id); if(!el || typeof Chart==='undefined') return;
+  Chart.defaults.color = '#8494a9'; Chart.defaults.borderColor = 'rgba(255,255,255,.06)';
+  Chart.defaults.font.family = "'Segoe UI',system-ui,sans-serif";
+  charts.push(new Chart(el, cfg));
+}
+
+/* ================== NAVIGATION ================== */
+document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));
+let VIEW='overview';
+function show(v){
+  VIEW=v;
+  document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
+  destroyCharts();
+  ({overview,effectif,runs,semaine,zones,params})[v]();
+}
+function rerender(){ show(VIEW); }
+
+/* ================== VUE D'ENSEMBLE ================== */
+function overview(){
+  const R=S.runners, tot=R.reduce((a,r)=>a+r.barils,0), ok=R.filter(quotaOK).length;
+  const sorted=[...R].sort((a,b)=>b.barils-a.barils);
+  const lastW = S.weeks[S.weeks.length-1];
+  $('#main').innerHTML = `
+  <div class="topbar">
+    <div><h2>Vue d'ensemble</h2><div class="sub">Semaine ${S.settings.semaine} · ${new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}</div></div>
+    <div style="display:flex;gap:10px">
+      <span class="chip">🛢️ Prix : <b>${S.settings.prix} $/u</b></span>
+      <span class="chip">🎯 Limite : <b>${fmt(S.settings.limite)}</b></span>
+    </div>
+  </div>
+  <div class="grid g4" style="margin-bottom:18px">
+    <div class="panel kpi"><div class="lbl">Effectif</div><div class="val">${R.length}</div><div class="delta">${R.filter(r=>r.grade===3).length} expert(s)</div></div>
+    <div class="panel kpi"><div class="lbl">Barils · semaine</div><div class="val">${fmt(tot)}</div><div class="delta">${lastW?`sem. préc. : ${fmt(lastW.total)}`:'première semaine'}</div></div>
+    <div class="panel kpi"><div class="lbl">Chiffre d'affaires</div><div class="val gold">${money(tot*S.settings.prix)}</div><div class="delta">à ${S.settings.prix} $/unité</div></div>
+    <div class="panel kpi"><div class="lbl">Quotas atteints</div><div class="val ${ok===R.length&&R.length?'up':''}">${ok}<span style="font-size:1rem;color:var(--muted)">/${R.length}</span></div><div class="delta">primes projetées : ${money(R.reduce((a,r)=>a+primeProj(r),0))}</div></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:18px">
+    <div class="panel"><h3>Barils par runner (semaine)</h3>${R.length?'<canvas id="cRunners" height="230"></canvas>':'<div class="empty">Aucun runner — ajoute ton effectif 👥</div>'}</div>
+    <div class="panel"><h3>Production par zone</h3>${R.length?'<canvas id="cZones" height="230"></canvas>':'<div class="empty">—</div>'}</div>
+  </div>
+  <div class="grid g2">
+    <div class="panel"><h3>Historique des semaines</h3>${S.weeks.length?'<canvas id="cWeeks" height="220"></canvas>':'<div class="empty">Aucune semaine clôturée pour le moment</div>'}</div>
+    <div class="panel"><h3>🏆 TOP 3 en direct</h3>${top3html(sorted)}</div>
+  </div>`;
+  if(R.length){
+    mkChart('cRunners',{type:'bar',data:{labels:sorted.map(r=>r.nom),datasets:[{data:sorted.map(r=>r.barils),backgroundColor:sorted.map((r,i)=>i===0?'#e8a020':i===1?'#a8b6c8':i===2?'#c07840':'rgba(90,160,255,.55)'),borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+    const zd=ZONES.map(z=>R.filter(r=>r.zone===z).reduce((a,r)=>a+r.barils,0));
+    mkChart('cZones',{type:'doughnut',data:{labels:ZONES.map(z=>'Zone '+z),datasets:[{data:zd,backgroundColor:['#e8a020','#5aa0ff','#3ddc84','#a78bfa'],borderWidth:0}]},options:{cutout:'62%',plugins:{legend:{position:'bottom'}}}});
+  }
+  if(S.weeks.length){
+    mkChart('cWeeks',{type:'line',data:{labels:S.weeks.map(w=>'S'+w.num),datasets:[{label:'Barils',data:S.weeks.map(w=>w.total),borderColor:'#e8a020',backgroundColor:'rgba(232,160,32,.12)',fill:true,tension:.35,pointBackgroundColor:'#e8a020'}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+  }
+}
+function top3html(sorted){
+  const t=sorted.slice(0,3);
+  if(!t.length) return '<div class="empty">Aucune donnée</div>';
+  const p=(r,i)=>r?`<div class="pod pod${i}"><div style="font-size:1.3rem">${['🥇','🥈','🥉'][i-1]}</div><div class="name">${esc(r.nom)}</div><div class="amt">${fmt(r.barils)} barils · prime ${money(S.settings.top[i-1])}</div></div>`:'<div class="pod" style="min-height:60px"></div>';
+  return `<div class="podium">${p(t[1],2)}${p(t[0],1)}${p(t[2],3)}</div>`;
+}
+
+/* ================== EFFECTIF ================== */
+let filterG=-1, filterZ='', search='';
+function effectif(){
+  let R=[...S.runners].sort((a,b)=>b.grade-a.grade||b.barils-a.barils);
+  if(filterG>-1) R=R.filter(r=>r.grade===filterG);
+  if(filterZ) R=R.filter(r=>r.zone===filterZ);
+  if(search) R=R.filter(r=>(r.nom+' '+r.discord).toLowerCase().includes(search.toLowerCase()));
+  $('#main').innerHTML = `
+  <div class="topbar">
+    <div><h2>Effectif</h2><div class="sub">${S.runners.length} runner(s) · ${S.runners.filter(eligible).length} montée(s) de grade en attente</div></div>
+    <button class="btn btn-gold" onclick="openRunnerModal()">＋ Ajouter un runner</button>
+  </div>
+  <div class="panel" style="margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+    <input class="field" style="max-width:220px" placeholder="🔍 Rechercher…" value="${esc(search)}" oninput="search=this.value;effectif()">
+    <select class="field" style="max-width:200px" onchange="filterG=+this.value;effectif()">
+      <option value="-1">Tous les grades</option>
+      ${GRADES.map((g,i)=>`<option value="${i}" ${filterG===i?'selected':''}>${g.nom}</option>`).join('')}
+    </select>
+    <select class="field" style="max-width:160px" onchange="filterZ=this.value;effectif()">
+      <option value="">Toutes zones</option>
+      ${ZONES.map(z=>`<option ${filterZ===z?'selected':''}>${z}</option>`).join('')}
+    </select>
+  </div>
+  <div class="panel" style="padding:8px 16px">
+    ${R.length?`<table>
+      <thead><tr><th>Runner</th><th>Grade</th><th>Zone</th><th>Quota semaine</th><th>Total barils</th><th style="text-align:right">Actions</th></tr></thead>
+      <tbody>${R.map(rowRunner).join('')}</tbody>
+    </table>`:'<div class="empty">Aucun runner trouvé</div>'}
+  </div>`;
+}
+function rowRunner(r){
+  const g=grade(r), pc=Math.min(100,Math.round(r.barils/g.quota*100));
+  return `<tr>
+    <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
+    <td><span class="badge ${g.cls}">${g.nom}</span>${eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(grade(r).montee)} barils)</span>`:''}</td>
+    <td><span class="zone-tag z${r.zone}">${r.zone}</span></td>
+    <td><div class="prog"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></div><div class="pct">${fmt(r.barils)} / ${fmt(g.quota)} (${pc}%)</div></td>
+    <td>${fmt(r.total)}</td>
+    <td style="text-align:right;white-space:nowrap">
+      ${eligible(r)?`<button class="btn btn-sm btn-gold" onclick="promote(${r.id})" title="Monter de grade">▲</button>`:''}
+      <button class="btn btn-sm btn-ghost" onclick="openRunnerModal(${r.id})">✎</button>
+      <button class="btn btn-sm btn-red" onclick="delRunner(${r.id})">✕</button>
+    </td>
+  </tr>`;
+}
+function openRunnerModal(id){
+  const r = S.runners.find(x=>x.id===id) || {nom:'',discord:'',grade:0,zone:suggestZone()};
+  openModal(`
+    <h3>${id?'Modifier':'Nouveau'} runner</h3>
+    <div class="f-row"><label class="f-lbl">Nom RP</label><input class="field" id="m_nom" value="${esc(r.nom)}" placeholder="John Baker"></div>
+    <div class="f-row"><label class="f-lbl">Discord</label><input class="field" id="m_dc" value="${esc(r.discord)}" placeholder="john_baker"></div>
+    <div class="grid g2">
+      <div class="f-row"><label class="f-lbl">Grade</label><select class="field" id="m_gr">${GRADES.map((g,i)=>`<option value="${i}" ${r.grade===i?'selected':''}>${g.nom}</option>`).join('')}</select></div>
+      <div class="f-row"><label class="f-lbl">Zone</label><select class="field" id="m_zn">${ZONES.map(z=>`<option ${r.zone===z?'selected':''}>${z}</option>`).join('')}</select></div>
+    </div>
+    <button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="saveRunner(${id||0})">Enregistrer</button>`);
+}
+function suggestZone(){
+  const c=ZONES.map(z=>S.runners.filter(r=>r.zone===z).length);
+  return ZONES[c.indexOf(Math.min(...c))];
+}
+function saveRunner(id){
+  const nom=$('#m_nom').value.trim(), dc=$('#m_dc').value.trim();
+  if(!nom) return toast('⚠️ Le nom est requis');
+  if(id){
+    const r=S.runners.find(x=>x.id===id);
+    Object.assign(r,{nom,discord:dc,grade:+$('#m_gr').value,zone:$('#m_zn').value});
+  } else {
+    S.runners.push({id:Date.now(),nom,discord:dc,grade:+$('#m_gr').value,zone:$('#m_zn').value,barils:0,total:0,runs:[]});
+  }
+  save(); closeModal(); rerender(); toast('✅ Runner enregistré');
+}
+function promote(id){
+  const r=S.runners.find(x=>x.id===id);
+  if(r.grade<3){ r.grade++; save(); rerender(); toast(`🎉 ${r.nom} passe ${GRADES[r.grade].nom} !`); }
+}
+function delRunner(id){
+  const r=S.runners.find(x=>x.id===id);
+  if(confirm(`Supprimer ${r.nom} de l'effectif ?`)){ S.runners=S.runners.filter(x=>x.id!==id); save(); rerender(); toast('Runner supprimé'); }
+}
+
+/* ================== RUNS ================== */
+function runs(){
+  const all=S.runners.flatMap(r=>r.runs.map(x=>({...x,nom:r.nom,rid:r.id}))).sort((a,b)=>b.t-a.t).slice(0,25);
+  const over=S.runners.filter(r=>r.barils>=S.settings.limite);
+  $('#main').innerHTML = `
+  <div class="topbar"><div><h2>Runs</h2><div class="sub">Saisie des barils livrés</div></div></div>
+  ${over.length?`<div class="warn">⚠️ Limite de ${fmt(S.settings.limite)} pétroles atteinte pour : ${over.map(r=>esc(r.nom)).join(', ')}</div>`:''}
+  <div class="grid g2">
+    <div class="panel">
+      <h3>➕ Enregistrer un run</h3>
+      ${S.runners.length?`
+      <div class="f-row"><label class="f-lbl">Runner</label><select class="field" id="run_r">${[...S.runners].sort((a,b)=>a.nom.localeCompare(b.nom)).map(r=>`<option value="${r.id}">${esc(r.nom)} — ${grade(r).nom}</option>`).join('')}</select></div>
+      <div class="f-row"><label class="f-lbl">Barils livrés</label><input class="field" id="run_b" type="number" min="1" placeholder="Ex : 500"></div>
+      <button class="btn btn-gold" style="width:100%" onclick="addRun()">Valider le run 🚛</button>
+      <p style="color:var(--muted);font-size:.78rem;margin-top:12px">💡 CA généré = barils × ${S.settings.prix} $ · le quota et le total du runner sont mis à jour automatiquement.</p>
+      `:'<div class="empty">Ajoute d\'abord des runners dans l\'effectif</div>'}
+    </div>
+    <div class="panel">
+      <h3>📜 Derniers runs</h3>
+      ${all.length?`<table><thead><tr><th>Runner</th><th>Barils</th><th>CA</th><th>Date</th><th></th></tr></thead><tbody>
+        ${all.map(x=>`<tr><td><b>${esc(x.nom)}</b></td><td>${fmt(x.b)}</td><td class="gold">${money(x.b*S.settings.prix)}</td><td style="color:var(--muted);font-size:.78rem">${new Date(x.t).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+        <td><button class="btn btn-sm btn-red" onclick="delRun(${x.rid},${x.t})" title="Annuler">✕</button></td></tr>`).join('')}
+      </tbody></table>`:'<div class="empty">Aucun run enregistré cette semaine</div>'}
+    </div>
+  </div>`;
+}
+function addRun(){
+  const r=S.runners.find(x=>x.id===+$('#run_r').value), b=+$('#run_b').value;
+  if(!b||b<1) return toast('⚠️ Nombre de barils invalide');
+  r.runs.push({t:Date.now(),b}); r.barils+=b; r.total+=b;
+  save(); rerender();
+  toast(quotaOK(r)?`✅ ${r.nom} : +${fmt(b)} barils — quota atteint ! 🎯`:`✅ ${r.nom} : +${fmt(b)} barils`);
+}
+function delRun(rid,t){
+  const r=S.runners.find(x=>x.id===rid), i=r.runs.findIndex(x=>x.t===t);
+  if(i>-1){ r.barils-=r.runs[i].b; r.total-=r.runs[i].b; r.runs.splice(i,1); save(); rerender(); toast('Run annulé'); }
+}
+
+/* ================== SEMAINE & PRIMES ================== */
+function semaine(){
+  const R=[...S.runners].sort((a,b)=>b.barils-a.barils);
+  const totalPrimes = R.reduce((a,r)=>a+primeProj(r),0) + S.settings.top.slice(0,Math.min(3,R.length)).reduce((a,b)=>a+b,0);
+  $('#main').innerHTML = `
+  <div class="topbar">
+    <div><h2>Semaine ${S.settings.semaine} — Primes</h2><div class="sub">Prime de base : ${money(S.settings.primeBase)} (montant minimum, versée le lundi si quota effectué)</div></div>
+    <button class="btn btn-gold" onclick="closeWeek()">🗓️ Clôturer la semaine (lundi)</button>
+  </div>
+  <div class="panel" style="margin-bottom:18px;padding:8px 16px">
+    ${R.length?`<table><thead><tr><th>#</th><th>Runner</th><th>Grade</th><th>Barils</th><th>Quota</th><th>Multiplicateur</th><th>Prime projetée</th></tr></thead><tbody>
+    ${R.map((r,i)=>{const g=grade(r),okk=quotaOK(r);return `<tr>
+      <td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td>
+      <td><b>${esc(r.nom)}</b></td>
+      <td><span class="badge ${g.cls}">${g.nom}</span></td>
+      <td>${fmt(r.barils)}</td>
+      <td>${okk?'<span class="up">✔ atteint</span>':`<span class="down">${fmt(g.quota-r.barils)} restants</span>`}</td>
+      <td>×${g.mult}</td>
+      <td class="${okk?'gold':''}" style="font-weight:700">${okk?money(primeProj(r)+(i<3?S.settings.top[i]:0)):'—'}${okk&&i<3?`<div style="font-size:.7rem;color:var(--muted)">dont TOP ${i+1} : ${money(S.settings.top[i])}</div>`:''}</td>
+    </tr>`}).join('')}
+    </tbody></table>`:'<div class="empty">Aucun runner</div>'}
+  </div>
+  <div class="grid g2">
+    <div class="panel kpi"><div class="lbl">Total primes projetées</div><div class="val gold">${money(totalPrimes)}</div><div class="delta">si tous les quotas restent en l'état</div></div>
+    <div class="panel">
+      <h3>🗃️ Semaines clôturées</h3>
+      ${S.weeks.length?`<table><thead><tr><th>Semaine</th><th>Barils</th><th>Primes versées</th><th>🥇 Vainqueur</th></tr></thead><tbody>
+      ${[...S.weeks].reverse().map(w=>`<tr><td><b>S${w.num}</b> <span style="color:var(--muted);font-size:.75rem">${w.date}</span></td><td>${fmt(w.total)}</td><td class="gold">${money(w.primes)}</td><td>${esc(w.winner||'—')}</td></tr>`).join('')}
+      </tbody></table>`:'<div class="empty">Aucune clôture pour le moment</div>'}
+    </div>
+  </div>`;
+}
+function closeWeek(){
+  if(!S.runners.length) return toast('Aucun runner à clôturer');
+  if(!confirm(`Clôturer la semaine ${S.settings.semaine} ?\n\n• Les primes sont figées (quota + TOP 3)\n• Les compteurs hebdo repartent à zéro\n• Les montées de grade éligibles sont appliquées`)) return;
+  const sorted=[...S.runners].sort((a,b)=>b.barils-a.barils);
+  let primes=0, promus=[];
+  sorted.forEach((r,i)=>{
+    if(quotaOK(r)) primes+=primeProj(r);
+    if(i<3 && r.barils>0) primes+=S.settings.top[i];
+  });
+  S.runners.forEach(r=>{ if(eligible(r)){ r.grade++; promus.push(r.nom); } });
+  S.weeks.push({num:S.settings.semaine, date:new Date().toLocaleDateString('fr-FR'), total:sorted.reduce((a,r)=>a+r.barils,0), primes, winner:sorted[0]?.barils>0?sorted[0].nom:null});
+  S.runners.forEach(r=>{ r.barils=0; r.runs=[]; });
+  S.settings.semaine++;
+  save(); rerender();
+  toast(`🗓️ Semaine clôturée — ${money(primes)} de primes${promus.length?` · promus : ${promus.join(', ')}`:''}`);
+}
+
+/* ================== ZONES ================== */
+function zones(){
+  const data=ZONES.map(z=>{
+    const rs=S.runners.filter(r=>r.zone===z);
+    return {z, rs, tot:rs.reduce((a,r)=>a+r.barils,0)};
+  });
+  const best=Math.max(...data.map(d=>d.tot));
+  $('#main').innerHTML = `
+  <div class="topbar"><div><h2>Zones de travail</h2><div class="sub">4 zones équivalentes — la compétition fait grimper la production 📈</div></div></div>
+  <div class="grid g4" style="margin-bottom:18px">
+    ${data.map(d=>`<div class="panel" style="${d.tot===best&&best>0?'border-color:rgba(232,160,32,.5)':''}">
+      <h3><span><span class="zone-tag z${d.z}">${d.z}</span> Zone ${d.z}</span>${d.tot===best&&best>0?'<span class="gold">👑</span>':''}</h3>
+      <div class="val" style="font-size:1.6rem;font-weight:800">${fmt(d.tot)} <span style="font-size:.8rem;color:var(--muted)">barils</span></div>
+      <div style="color:var(--muted);font-size:.8rem;margin:8px 0 12px">${d.rs.length} runner(s) · CA ${money(d.tot*S.settings.prix)}</div>
+      ${d.rs.sort((a,b)=>b.barils-a.barils).slice(0,4).map(r=>`<div style="display:flex;justify-content:space-between;font-size:.82rem;padding:5px 0;border-top:1px solid var(--line)"><span>${esc(r.nom)}</span><b>${fmt(r.barils)}</b></div>`).join('')||'<div class="empty" style="padding:10px 0">Zone vide</div>'}
+    </div>`).join('')}
+  </div>
+  <div class="panel"><h3>Comparatif des zones</h3><canvas id="cZcomp" height="110"></canvas></div>`;
+  mkChart('cZcomp',{type:'bar',data:{labels:ZONES.map(z=>'Zone '+z),datasets:[{data:data.map(d=>d.tot),backgroundColor:['#e8a020','#5aa0ff','#3ddc84','#a78bfa'],borderRadius:8,barThickness:46}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
+}
+
+/* ================== PARAMÈTRES ================== */
+function params(){
+  $('#main').innerHTML = `
+  <div class="topbar"><div><h2>Paramètres</h2><div class="sub">Configuration de l'entreprise et des données</div></div></div>
+  <div class="grid g2">
+    <div class="panel">
+      <h3>💼 Économie</h3>
+      <div class="grid g2">
+        <div class="f-row"><label class="f-lbl">Prix du pétrole ($/u)</label><input class="field" id="p_prix" type="number" value="${S.settings.prix}"></div>
+        <div class="f-row"><label class="f-lbl">Prime de base ($)</label><input class="field" id="p_base" type="number" value="${S.settings.primeBase}"></div>
+        <div class="f-row"><label class="f-lbl">Limite pétroles</label><input class="field" id="p_lim" type="number" value="${S.settings.limite}"></div>
+        <div class="f-row"><label class="f-lbl">N° de semaine</label><input class="field" id="p_sem" type="number" value="${S.settings.semaine}"></div>
+      </div>
+      <label class="f-lbl">Primes TOP 3 ($)</label>
+      <div class="grid g3" style="gap:10px">
+        <input class="field" id="p_t1" type="number" value="${S.settings.top[0]}">
+        <input class="field" id="p_t2" type="number" value="${S.settings.top[1]}">
+        <input class="field" id="p_t3" type="number" value="${S.settings.top[2]}">
+      </div>
+      <button class="btn btn-gold" style="width:100%;margin-top:16px" onclick="saveParams()">Enregistrer</button>
+    </div>
+    <div>
+      <div class="panel" style="margin-bottom:18px">
+        <h3>🔐 Mot de passe</h3>
+        <div class="f-row"><input class="field" id="p_pw1" type="password" placeholder="Nouveau mot de passe"></div>
+        <div class="f-row"><input class="field" id="p_pw2" type="password" placeholder="Confirmer"></div>
+        <button class="btn btn-ghost" style="width:100%" onclick="changePw()">Changer le mot de passe</button>
+      </div>
+      <div class="panel">
+        <h3>💾 Données</h3>
+        <p style="color:var(--muted);font-size:.82rem;margin-bottom:14px">Les données vivent dans ce navigateur. Exporte régulièrement un fichier JSON pour sauvegarder ou partager avec un autre admin.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-gold" onclick="exportData()">⬇️ Exporter (JSON)</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('impFile').click()">⬆️ Importer</button>
+          <button class="btn btn-red" onclick="resetAll()">🗑️ Tout réinitialiser</button>
+        </div>
+        <input type="file" id="impFile" accept=".json" style="display:none" onchange="importData(this)">
+      </div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:18px">
+    <h3>📐 Règles de grades (rappel)</h3>
+    <table><thead><tr><th>Grade</th><th>Quota hebdo</th><th>Multiplicateur prime</th><th>Montée de grade</th></tr></thead><tbody>
+    ${GRADES.map(g=>`<tr><td><span class="badge ${g.cls}">${g.nom}</span></td><td>${fmt(g.quota)} barils</td><td>×${g.mult}</td><td>${g.montee?fmt(g.montee)+' barils réalisés':'grade max'}</td></tr>`).join('')}
+    </tbody></table>
+  </div>`;
+}
+function saveParams(){
+  S.settings.prix=+$('#p_prix').value||10;
+  S.settings.primeBase=+$('#p_base').value||5000;
+  S.settings.limite=+$('#p_lim').value||24000;
+  S.settings.semaine=+$('#p_sem').value||1;
+  S.settings.top=[+$('#p_t1').value||15000,+$('#p_t2').value||10000,+$('#p_t3').value||5000];
+  save(); toast('✅ Paramètres enregistrés');
+}
+async function changePw(){
+  const a=$('#p_pw1').value, b=$('#p_pw2').value;
+  if(a.length<4) return toast('⚠️ 4 caractères minimum');
+  if(a!==b) return toast('⚠️ Les mots de passe ne correspondent pas');
+  S.passHash=await sha(a); save(); toast('🔐 Mot de passe modifié');
+  $('#p_pw1').value=$('#p_pw2').value='';
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`oilroxwood_S${S.settings.semaine}_${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); toast('⬇️ Export téléchargé');
+}
+function importData(inp){
+  const f=inp.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{ try{
+    const d=JSON.parse(rd.result);
+    if(!d.runners||!d.settings) throw 0;
+    S=Object.assign(defaults(),d); save(); rerender(); toast('⬆️ Données importées');
+  }catch(e){ toast('⚠️ Fichier invalide'); } };
+  rd.readAsText(f); inp.value='';
+}
+function resetAll(){
+  if(confirm('Tout effacer ? (runners, semaines, paramètres)') && confirm('Vraiment sûr ? Cette action est définitive.')){
+    const h=S.passHash; S=defaults(); S.passHash=h; save(); rerender(); toast('Données réinitialisées');
+  }
+}
+
+/* ================== MODAL ================== */
+function openModal(html){ $('#modalBox').innerHTML=html; $('#modalBg').classList.add('open'); }
+function closeModal(){ $('#modalBg').classList.remove('open'); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+</script>
+</body>
+</html>
