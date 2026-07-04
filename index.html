@@ -89,6 +89,22 @@
   .step h4{font-size:.98rem;margin-bottom:6px;margin-top:4px}
   .step p{font-size:.86rem;color:var(--muted)}
 
+  /* ---------- ORGANIGRAMME ---------- */
+  #organigramme{background:var(--white)}
+  .org{display:flex;flex-direction:column;align-items:center;gap:0}
+  .org-level{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;width:100%}
+  .org-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px 22px;text-align:center;min-width:170px;flex:1;max-width:240px;transition:transform .2s,box-shadow .2s}
+  .org-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(14,21,32,.09)}
+  .org-card h4{font-size:.98rem;margin-bottom:4px}
+  .org-card p{font-size:.8rem;color:var(--muted);line-height:1.45}
+  .org-card.dir{background:var(--ink);border-color:var(--ink)}
+  .org-card.dir h4{color:var(--accent)}
+  .org-card.dir p{color:#9aa6b4}
+  .org-link{width:2px;height:34px;background:var(--line)}
+  .org-quote{margin-top:56px;background:linear-gradient(135deg,rgba(232,160,32,.1),rgba(232,160,32,.03));border-left:4px solid var(--accent);border-radius:0 var(--radius) var(--radius) 0;padding:28px 32px}
+  .org-quote p{color:var(--ink);font-size:.97rem;margin-bottom:12px}
+  .org-quote p:last-child{margin-bottom:0;font-weight:800;color:var(--accent-dark);font-size:1.05rem}
+
   /* ---------- GRADES ---------- */
   #grades{background:var(--ink);color:#fff}
   #grades .sec-kicker{color:var(--accent)}
@@ -165,6 +181,7 @@
   <button class="burger" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
   <div class="nav-links">
     <a href="#presentation">L'entreprise</a>
+    <a href="#organigramme">Organigramme</a>
     <a href="#grades">Grades &amp; Salaires</a>
     <a href="#recrutement">Recrutement</a>
     <a href="#contact">Contact</a>
@@ -228,9 +245,22 @@
     <span class="sec-kicker">L'entreprise</span>
     <h2>Qui sommes-nous ?</h2>
     <p class="sec-intro">
-      Implantée au cœur du comté de Roxwood, Oil Roxwood s'est bâtie une réputation
-      solide dans le transport de pétrole brut. Notre métier : le run pétrole,
-      de l'extraction jusqu'à la revente, avec rigueur et esprit d'équipe.
+      Ces pages vous entraînent au cœur de notre entreprise, celle qui façonne les bidons
+      d'essence qui font tourner Los Santos jour et nuit.
+    </p>
+    <p class="sec-intro">
+      <strong>Ici, rien n'est laissé au hasard :</strong> du premier pétrole brut au dernier
+      pétrole raffiné, jusqu'aux bureaux où se prennent les décisions qui orientent toute
+      l'entreprise. Au fil de ce site, vous croiserez nos équipes, découvrirez comment nous
+      organisons nos effectifs, comment chacun trouve sa place dans cette grande mécanique,
+      et comment nos hauts gradés veillent à maintenir l'ordre, la qualité et l'ambition qui
+      nous animent — et comment les employés façonnent leur énergie et leur volonté de faire
+      pousser l'entreprise vers le haut.
+    </p>
+    <p class="sec-intro">
+      <strong>Ce n'est pas seulement une présentation :</strong> c'est une plongée dans une
+      famille de travailleurs, de meneurs et de passionnés qui, ensemble, garantissent que
+      le carburant continue de couler, quoi qu'il arrive.
     </p>
     <div class="cards">
       <div class="card">
@@ -259,31 +289,66 @@
   </div>
 </section>
 
+<!-- ================= ORGANIGRAMME ================= -->
+<section id="organigramme">
+  <div class="wrap">
+    <span class="sec-kicker">Organisation</span>
+    <h2>Organigramme</h2>
+    <p class="sec-intro">
+      Une structure claire où chacun a un rôle précis, de la direction aux équipes de terrain.
+    </p>
+    <div class="org">
+      <div class="org-level">
+        <div class="org-card dir"><h4>Patron</h4><p>Assure le bon fonctionnement de l'entreprise</p></div>
+        <div class="org-card dir"><h4>Co-Patron</h4><p>Assure le bon fonctionnement de l'entreprise</p></div>
+      </div>
+      <div class="org-link"></div>
+      <div class="org-level">
+        <div class="org-card"><h4>Comptable</h4><p>Gère la comptabilité</p></div>
+        <div class="org-card"><h4>Ressources Humaines</h4><p>Recrute, guide, conseille et suit le personnel</p></div>
+        <div class="org-card"><h4>Graphiste</h4><p>Gère tout ce qui est visuel</p></div>
+        <div class="org-card"><h4>Chargé évènementiel</h4><p>Organise les événements, diffuse la communication</p></div>
+      </div>
+      <div class="org-link"></div>
+      <div class="org-level">
+        <div class="org-card"><h4>Responsable commercial</h4><p>Encadre l'équipe commerciale</p></div>
+        <div class="org-card"><h4>Commerciaux</h4><p>Assurent la création et la vente de bidons d'essence</p></div>
+      </div>
+    </div>
+    <div class="org-quote">
+      <p>La direction est présente pour assurer le bien-être de tout le monde. Nous sommes également présents pour vous motiver, vous guider et vous intégrer dans l'équipe.</p>
+      <p>Nous avons pour objectif de vous satisfaire dans votre travail. Vos conditions de vie et de travail sont pour nous un critère important pour la réussite et la pérennité de l'entreprise. L'investissement financier que nous portons ici est en partie pour augmenter votre productivité au déclin de votre temps passé en service.</p>
+      <p>Nous voulons vous faire un maximum de cadeaux, récompenses… afin que vous ne manquiez de rien.</p>
+      <p>Votre bien-être est notre fierté.</p>
+    </div>
+  </div>
+</section>
+
 <!-- ================= GRADES ================= -->
 <section id="grades">
   <div class="wrap">
     <span class="sec-kicker">Hiérarchie</span>
     <h2>Grades &amp; rémunération</h2>
     <p class="sec-intro">
-      Chaque runner évolue au mérite : assiduité, volumes livrés et comportement RP.
-      La part sur les runs augmente avec le grade.
+      À l'embauche, les runners sont séparés en 4 zones de travail équivalentes afin de
+      développer une compétition saine dans l'entreprise. Chaque runner évolue ensuite
+      au mérite : assiduité, quotas remplis et comportement RP.
     </p>
     <div class="table-card">
       <table>
         <thead>
-          <tr><th>Grade</th><th>Rôle</th><th>Part sur les runs</th></tr>
+          <tr><th>Grade</th><th>Montée de grade</th><th>Quota hebdomadaire</th><th>Prime fin de semaine<br><small style="text-transform:none;letter-spacing:0">(si quota effectué)</small></th></tr>
         </thead>
         <tbody>
-          <tr><td><span class="badge b-gold">PDG</span></td><td>Direction générale, partenariats, gestion des finances</td><td>—</td></tr>
-          <tr><td><span class="badge b-gold">Co-PDG</span></td><td>Seconde la direction, supervise les opérations</td><td>—</td></tr>
-          <tr><td><span class="badge b-blue">Responsable</span></td><td>Encadre les runs, forme les nouveaux, gère le planning</td><td>Part majorée</td></tr>
-          <tr><td><span class="badge b-blue">Runner confirmé</span></td><td>Runs en autonomie, escorte des convois sensibles</td><td>Part complète</td></tr>
-          <tr><td><span class="badge b-grey">Runner</span></td><td>Collecte et transport sous supervision légère</td><td>Part standard</td></tr>
-          <tr><td><span class="badge b-grey">Recrue</span></td><td>Période d'essai, formation aux procédures</td><td>Part d'essai</td></tr>
+          <tr><td><span class="badge b-grey">Intérimaire</span></td><td>3 000</td><td>3 000</td><td>×1</td></tr>
+          <tr><td><span class="badge b-blue">Raffineur</span></td><td>5 000</td><td>3 000</td><td>×1,5</td></tr>
+          <tr><td><span class="badge b-blue">Raffineur Confirmé</span></td><td>8 000</td><td>5 000</td><td>×2</td></tr>
+          <tr><td><span class="badge b-gold">Raffineur Expert</span></td><td>10 000</td><td>6 500</td><td>×2,5</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="note">💡 Les montants exacts sont communiqués en interne et peuvent évoluer selon l'économie du serveur.</p>
+    <p class="note">💡 Les primes ne sont pas fixes — le montant indiqué est un minimum. Elles sont versées tous les lundis.</p>
+    <p class="note" style="color:#e05c5c">⚠️ Une limite de 24 000 pétroles est indiquée.</p>
   </div>
 </section>
 
@@ -293,9 +358,48 @@
     <span class="sec-kicker">Recrutement</span>
     <h2>Rejoins Oil Roxwood</h2>
     <p class="sec-intro">
-      Nous recrutons régulièrement des runners motivés. Vérifie que tu remplis
-      les conditions, puis envoie ta candidature — réponse sous 48h en général.
+      Oil Roxwood recrute ! Un job de runner efficace, un salaire attractif et une
+      vraie évolution. Vérifie que tu remplis les conditions, puis envoie ta candidature.
     </p>
+
+    <div class="cards" style="grid-template-columns:repeat(3,1fr);margin-bottom:26px">
+      <div class="card">
+        <div class="ico">🛣️</div>
+        <h3>Des trajets courts</h3>
+        <p>Seulement <strong>1,30 km</strong> de la récolte à la transformation et <strong>1,77 km</strong> de la transformation à la vente. Un quota de base facile à atteindre : <strong>3 000 barils</strong>.</p>
+      </div>
+      <div class="card">
+        <div class="ico">💰</div>
+        <h3>Salaire attractif</h3>
+        <p>Le pétrole se vend <strong>10 $ l'unité</strong>. Plus tu run, plus ton compte en banque grimpe en flèche !</p>
+      </div>
+      <div class="card">
+        <div class="ico">📈</div>
+        <h3>Évolution rapide</h3>
+        <p><strong>Raffineur</strong> : 5 000 barils réalisés (maintien 3 000) · <strong>Confirmé</strong> : 8 000 (maintien 5 000) · <strong>Expert</strong> : 10 000 (maintien 6 500).</p>
+      </div>
+      <div class="card">
+        <div class="ico">🎁</div>
+        <h3>Récompenses</h3>
+        <p>Nourriture &amp; carburant : <strong>10/10 + 10 bidons</strong> d'essence jusqu'à Raffineur Confirmé, <strong>15/15 + 15 bidons</strong> pour les Raffineurs Experts.</p>
+      </div>
+      <div class="card">
+        <div class="ico">🧰</div>
+        <h3>Matériel fourni</h3>
+        <p>Container de stockage : <strong>2 000</strong> (Raffineurs), <strong>3 000</strong> (Confirmés), <strong>3 500</strong> (Experts). Véhicules de transport <strong>250 kg</strong> pour faciliter tes runs.</p>
+      </div>
+      <div class="card">
+        <div class="ico">🏆</div>
+        <h3>On joue aussi pour gagner</h3>
+        <p>Mini-jeux, défis à thème, événements réguliers. Primes du TOP 3 : <strong>🥇 15 000 $</strong> · <strong>🥈 10 000 $</strong> · <strong>🥉 5 000 $</strong>.</p>
+      </div>
+    </div>
+
+    <div class="org-quote" style="margin:0 0 48px;text-align:center;border-left:none;border-radius:var(--radius);padding:30px">
+      <p style="font-weight:700;font-size:1.1rem">Tu bosses. Tu gagnes. Tu montes en grade. Tu t'amuses.</p>
+      <p>Prêt à devenir une légende du pétrole ? Rejoins-nous maintenant !</p>
+    </div>
+
     <div class="recruit-grid">
       <div>
         <ul class="conditions">
@@ -307,35 +411,12 @@
           <li>Micro fonctionnel et Discord obligatoire</li>
         </ul>
       </div>
-      <form id="candidature" onsubmit="return sendForm(event)">
-        <h3>Formulaire de candidature</h3>
-        <div class="field">
-          <label for="nom">Nom &amp; prénom RP *</label>
-          <input id="nom" name="nom" required placeholder="Ex : John Baker">
-        </div>
-        <div class="field">
-          <label for="discord">Pseudo Discord *</label>
-          <input id="discord" name="discord" required placeholder="Ex : john_baker">
-        </div>
-        <div class="field">
-          <label for="age">Âge RP</label>
-          <input id="age" name="age" type="number" min="18" max="99" placeholder="Ex : 27">
-        </div>
-        <div class="field">
-          <label for="exp">Expérience en tant que runner</label>
-          <select id="exp" name="exp">
-            <option>Débutant</option>
-            <option>Quelques runs à mon actif</option>
-            <option>Runner expérimenté</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="motivation">Motivation *</label>
-          <textarea id="motivation" name="motivation" required placeholder="Parle-nous de ton personnage et de tes motivations…"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary" style="width:100%">Envoyer ma candidature</button>
-        <div class="form-msg" id="formMsg">✅ Candidature enregistrée ! Recopie-la sur notre Discord pour qu'elle soit traitée.</div>
-      </form>
+      <div style="background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:40px 34px;box-shadow:0 10px 40px rgba(14,21,32,.06);text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="#5865F2"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
+        <h3 style="font-size:1.2rem">Candidature sur Discord</h3>
+        <p style="color:var(--muted);font-size:.95rem">Tout le recrutement se passe sur notre serveur Discord : rejoins-nous et dépose ta candidature directement là-bas.</p>
+        <a href="https://discord.com/invite/99AuEX3Kpz" target="_blank" rel="noopener" class="btn btn-primary" style="width:100%">Rejoindre le Discord Oil Roxwood</a>
+      </div>
     </div>
   </div>
 </section>
@@ -347,11 +428,11 @@
     <h2>Nous joindre</h2>
     <p>Pour toute question, partenariat ou candidature spontanée, retrouve-nous en jeu ou sur notre Discord.</p>
     <div class="contact-links">
-      <a class="contact-chip" href="#" title="Remplace # par ton lien Discord">
+      <a class="contact-chip" href="https://discord.com/invite/99AuEX3Kpz" target="_blank" rel="noopener">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
         Discord Oil Roxwood
       </a>
-      <a class="contact-chip" href="#recrutement">📋 Formulaire de recrutement</a>
+      <a class="contact-chip" href="#recrutement">📋 Recrutement</a>
       <a class="contact-chip" href="#" title="Numéro RP à personnaliser">📞 Standard RP : 555-OIL-RXW</a>
     </div>
   </div>
@@ -362,12 +443,6 @@
 </footer>
 
 <script>
-  function sendForm(e){
-    e.preventDefault();
-    document.getElementById('formMsg').style.display = 'block';
-    e.target.querySelector('button[type=submit]').textContent = 'Candidature envoyée ✓';
-    return false;
-  }
   // ferme le menu mobile après clic
   document.querySelectorAll('.nav-links a').forEach(a =>
     a.addEventListener('click', () => document.querySelector('.nav-links').classList.remove('open'))
