@@ -164,6 +164,7 @@
     <button class="nav-item" data-view="runs">🚛 <span class="txt">Runs</span></button>
     <button class="nav-item" data-view="semaine">💰 <span class="txt">Semaine &amp; Primes</span></button>
     <button class="nav-item" data-view="zones">🗺️ <span class="txt">Zones</span></button>
+    <button class="nav-item" data-view="dlogs">📡 <span class="txt">Logs Discord</span></button>
     <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
     <div class="spacer"></div>
     <button class="nav-item" id="logout" onclick="logout()">⏻ <span class="txt">Déconnexion</span></button>
@@ -193,6 +194,7 @@ function defaults(){
     passHash:null,
     runners:[],
     weeks:[],
+    imported:[],
     settings:{prix:10, primeBase:5000, top:[15000,10000,5000], limite:24000, semaine:1,
       webhook:'https://discord.com/api/webhooks/1247564402782371985/X8pynlKA1sn26In6aONz4IO7XZl7pwtnW19yvmLKX2DiMq_LXEBZRHGW1rBgyes0h9kg'}
   };
@@ -267,7 +269,7 @@ function show(v){
   VIEW=v;
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
-  ({overview,effectif,runs,semaine,zones,params})[v]();
+  ({overview,effectif,runs,semaine,zones,dlogs,params})[v]();
 }
 function rerender(){ show(VIEW); }
 
@@ -507,6 +509,80 @@ function zones(){
   </div>
   <div class="panel"><h3>Comparatif des zones</h3><canvas id="cZcomp" height="110"></canvas></div>`;
   mkChart('cZcomp',{type:'bar',data:{labels:ZONES.map(z=>'Zone '+z),datasets:[{data:data.map(d=>d.tot),backgroundColor:['#e8a020','#5aa0ff','#3ddc84','#a78bfa'],borderRadius:8,barThickness:46}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
+}
+
+/* ================== LOGS DISCORD ================== */
+const TYPE_ICON={vente:'💵',recolte:'⛏️',raffinage:'🏭',depot:'📦',retrait:'📤',autre:'📄'};
+async function dlogs(){
+  $('#main').innerHTML = `<div class="topbar"><div><h2>Logs Discord</h2><div class="sub">Salon du compte entreprise — synchronisé toutes les 15 min par GitHub Actions</div></div>
+  <button class="btn btn-ghost" onclick="dlogs()">↻ Rafraîchir</button></div><div class="panel"><div class="empty">Chargement…</div></div>`;
+  let d;
+  try{
+    const r = await fetch('data/discord-logs.json?ts='+Date.now(),{cache:'no-store'});
+    d = await r.json();
+  }catch(e){ d = null; }
+  if(!d || !d.maj || !d.messages.length){
+    $('#main').lastElementChild.innerHTML = `<h3>📡 Pas encore de données</h3>
+      <p style="color:var(--muted);font-size:.88rem;line-height:1.7">Le bot n'a pas encore tourné (ou n'est pas configuré).<br>
+      Suis le guide <b>SETUP-BOT.md</b> du dépôt : créer le bot Discord, ajouter les secrets
+      <b>DISCORD_BOT_TOKEN</b> et <b>DISCORD_CHANNEL_ID</b> sur GitHub, puis lancer le workflow
+      <b>Sync logs Discord</b> dans l'onglet Actions.</p>`;
+    return;
+  }
+  const match = n => n ? S.runners.find(r => r.nom.toLowerCase()===n.toLowerCase() || r.discord.toLowerCase()===n.toLowerCase() || n.toLowerCase().includes(r.nom.toLowerCase())) : null;
+  const importables = d.messages.filter(m => m.quantite && !S.imported.includes(m.id));
+  const rows = d.messages.slice(0,80).map(m=>{
+    const done = S.imported.includes(m.id);
+    const r = match(m.nom);
+    const canImp = m.quantite && !done;
+    return `<tr style="${done?'opacity:.45':''}">
+      <td style="white-space:nowrap;color:var(--muted);font-size:.76rem">${new Date(m.t).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+      <td>${TYPE_ICON[m.type]||'📄'} <span style="font-size:.72rem;color:var(--muted)">${m.type}</span></td>
+      <td><b>${esc(m.nom||m.auteur)}</b>${r?` <span class="badge ${grade(r).cls}" style="font-size:.65rem">${grade(r).nom}</span>`:(m.nom?' <span class="down" style="font-size:.7rem">inconnu</span>':'')}</td>
+      <td style="max-width:340px;font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(m.texte)}">${esc(m.texte.split('\n')[0])}</td>
+      <td>${m.quantite?`<b>${fmt(m.quantite)}</b>`:'—'}${m.montant?`<div class="gold" style="font-size:.72rem">${money(m.montant)}</div>`:''}</td>
+      <td style="text-align:right">${done?'<span class="up" style="font-size:.75rem">✔ importé</span>':canImp?`
+        <select class="field" style="width:130px;display:inline-block;padding:5px 8px;font-size:.75rem" id="sel_${m.id}">
+          ${S.runners.map(x=>`<option value="${x.id}" ${r&&x.id===r.id?'selected':''}>${esc(x.nom)}</option>`).join('')}
+        </select>
+        <button class="btn btn-sm btn-gold" onclick="importLog('${m.id}',${m.quantite})">⬇</button>`:''}</td>
+    </tr>`;
+  }).join('');
+  const auto = importables.filter(m=>match(m.nom));
+  $('#main').innerHTML = `
+  <div class="topbar">
+    <div><h2>Logs Discord</h2><div class="sub">Dernière synchro : ${new Date(d.maj).toLocaleString('fr-FR')} · ${d.messages.length} messages</div></div>
+    <div style="display:flex;gap:10px">
+      ${auto.length?`<button class="btn btn-gold" onclick="importAll()">⬇ Importer les ${auto.length} runs reconnus</button>`:''}
+      <button class="btn btn-ghost" onclick="dlogs()">↻ Rafraîchir</button>
+    </div>
+  </div>
+  ${importables.length?`<div class="warn" style="border-color:rgba(232,160,32,.35);background:rgba(232,160,32,.07);color:var(--accent)">📥 ${importables.length} entrée(s) avec quantité détectée en attente d'import${auto.length?` — dont ${auto.length} avec runner reconnu automatiquement`:''}</div>`:''}
+  <div class="panel" style="padding:8px 16px;overflow-x:auto">
+    <table><thead><tr><th>Date</th><th>Type</th><th>Qui</th><th>Message</th><th>Quantité</th><th style="text-align:right">Import</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+  </div>`;
+  window._dlogsData = d;
+}
+function importLog(id, qte){
+  const rid = +document.getElementById('sel_'+id).value;
+  const r = S.runners.find(x=>x.id===rid);
+  if(!r) return;
+  r.runs.push({t:Date.now(),b:qte}); r.barils+=qte; r.total+=qte;
+  S.imported.push(id); save(); dlogs();
+  toast(`⬇ ${r.nom} : +${fmt(qte)} barils importés depuis Discord`);
+}
+function importAll(){
+  const d = window._dlogsData; if(!d) return;
+  const match = n => n ? S.runners.find(r => r.nom.toLowerCase()===n.toLowerCase() || r.discord.toLowerCase()===n.toLowerCase() || n.toLowerCase().includes(r.nom.toLowerCase())) : null;
+  let n=0;
+  d.messages.forEach(m=>{
+    if(!m.quantite || S.imported.includes(m.id)) return;
+    const r = match(m.nom); if(!r) return;
+    r.runs.push({t:Date.now(),b:m.quantite}); r.barils+=m.quantite; r.total+=m.quantite;
+    S.imported.push(m.id); n++;
+  });
+  save(); dlogs(); toast(`⬇ ${n} run(s) importé(s) depuis les logs Discord`);
 }
 
 /* ================== PARAMÈTRES ================== */
