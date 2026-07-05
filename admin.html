@@ -220,7 +220,6 @@
   input.field:focus,select.field:focus,.login-card input:focus,.sheet input:focus{box-shadow:0 0 0 3px rgba(232,160,32,.15)}
 
   /* entrées en cascade */
-  @media (prefers-reduced-motion: no-preference){
     @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
     @keyframes rise{from{opacity:0;transform:translateY(34px)}to{opacity:1;transform:none}}
     @keyframes growX{from{transform:scaleX(0)}}
@@ -247,7 +246,6 @@
     .login-card img{animation:float 4.5s ease-in-out infinite}
     .zone-tag{transition:transform .25s}
     tr:hover .zone-tag{transform:rotate(-8deg) scale(1.15)}
-  }
   #toast{transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
   #login{background:
     radial-gradient(ellipse at 70% 20%, rgba(232,160,32,.14), transparent 55%),
@@ -1118,7 +1116,7 @@ function closeModal(){ $('#modalBg').classList.remove('open'); }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 
 /* ================== UI PREMIUM : canvas, ripple, compteurs ================== */
-const MOTION_OK = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MOTION_OK = true; // animations toujours actives (demande du patron 😄)
 
 /* ---- fond animé : particules d'or noir reliées ---- */
 (function(){
@@ -1127,16 +1125,19 @@ const MOTION_OK = !matchMedia('(prefers-reduced-motion: reduce)').matches;
   const cx=cv.getContext('2d'); let W,H,PS=[];
   function rs(){
     W=cv.width=innerWidth; H=cv.height=innerHeight;
-    const N=Math.min(75, Math.floor(innerWidth/20));
+    const N=Math.min(95, Math.floor(innerWidth/16));
     if(PS.length!==N) PS=Array.from({length:N},()=>({
       x:Math.random()*W, y:Math.random()*H,
-      vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.4,
-      r:Math.random()*1.9+.6, o:Math.random()*.5+.25,
+      vx:(Math.random()-.5)*.45, vy:(Math.random()-.5)*.45,
+      r:Math.random()*2.2+.8, o:Math.random()*.5+.4,
       tw:Math.random()*6.28, ts:.008+Math.random()*.02
     }));
   }
   addEventListener('resize',rs); rs();
-  const LINK=135;
+  const LINK=145, MOUSE=190;
+  const M={x:-9999,y:-9999};
+  addEventListener('pointermove',e=>{M.x=e.clientX;M.y=e.clientY});
+  addEventListener('pointerleave',()=>{M.x=M.y=-9999});
   (function tick(){
     requestAnimationFrame(tick);
     if(document.hidden) return;
@@ -1147,15 +1148,27 @@ const MOTION_OK = !matchMedia('(prefers-reduced-motion: reduce)').matches;
       if(p.y<-10)p.y=H+10; if(p.y>H+10)p.y=-10;
       const glow=(Math.sin(p.tw)+1)/2;
       cx.beginPath(); cx.arc(p.x,p.y,p.r,0,6.2832);
-      cx.fillStyle=`rgba(232,160,32,${(p.o*(.35+.45*glow)).toFixed(3)})`;
+      cx.fillStyle=`rgba(232,160,32,${(p.o*(.45+.55*glow)).toFixed(3)})`;
       cx.fill();
     }
     for(let i=0;i<PS.length;i++)for(let j=i+1;j<PS.length;j++){
       const a=PS[i],b=PS[j],dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy;
       if(d2<LINK*LINK){
-        cx.strokeStyle=`rgba(232,160,32,${((1-Math.sqrt(d2)/LINK)*.09).toFixed(3)})`;
+        cx.strokeStyle=`rgba(232,160,32,${((1-Math.sqrt(d2)/LINK)*.14).toFixed(3)})`;
         cx.lineWidth=1; cx.beginPath(); cx.moveTo(a.x,a.y); cx.lineTo(b.x,b.y); cx.stroke();
       }
+    }
+    /* halo interactif : les particules proches du curseur se relient à lui */
+    for(const p of PS){
+      const dx=p.x-M.x, dy=p.y-M.y, d2=dx*dx+dy*dy;
+      if(d2<MOUSE*MOUSE){
+        const t=1-Math.sqrt(d2)/MOUSE;
+        cx.strokeStyle=`rgba(245,178,58,${(t*.30).toFixed(3)})`;
+        cx.lineWidth=1.2; cx.beginPath(); cx.moveTo(p.x,p.y); cx.lineTo(M.x,M.y); cx.stroke();
+        p.vx+=dx/18000; p.vy+=dy/18000;
+      }
+      const sp=Math.hypot(p.vx,p.vy);
+      if(sp>.9){p.vx*=.9/sp;p.vy*=.9/sp}
     }
   })();
 })();
