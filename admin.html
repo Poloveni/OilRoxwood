@@ -784,7 +784,9 @@ function ligneCalc(l){
   const ht = nn(l.qte)*pu;
   return {pu, ht, ttc: ht*(1+nn(l.tva)), desc: l.desc!==undefined?l.desc:(art(l.ref)?art(l.ref).desc:'')};
 }
-function offertQte(){ return FD.lignes.filter(l=>l.ref==='CMD').reduce((a,l)=>a+Math.floor(nn(l.qte)/100)*10,0); }
+/* Offre fidélité supprimée (juillet 2026) — plus de bidons offerts automatiques.
+   Les anciennes factures conservent leur ligne OFFERT à l'impression. */
+function offertQte(){ return 0; }
 function factTotaux(f){
   const ls=(f||FD).lignes.map(ligneCalc);
   const off=f?f.offert:offertQte();

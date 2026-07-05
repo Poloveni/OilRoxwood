@@ -30,7 +30,6 @@
   }
   html.dark{
     --ink:#e6ebf2;
-    --ink-2:#d4dce8;
     --paper:#0e1622;
     --white:#141e2e;
     --accent-dark:#e8a020;
@@ -133,7 +132,7 @@
 
   /* ---------- DEVENIR CLIENT ---------- */
   #devenir-client{background:var(--white)}
-  .offre{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:40px}
+  .offre{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-bottom:40px;max-width:760px;margin-left:auto;margin-right:auto}
   .offre .card b.prix{display:block;font-size:2rem;color:var(--accent-dark);font-weight:800;margin:6px 0}
   .marquee{overflow:hidden;position:relative;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
     -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
@@ -326,8 +325,6 @@
       <div class="org-level">
         <div class="org-card"><h4>Comptable</h4><p>Gère la comptabilité</p></div>
         <div class="org-card"><h4>Ressources Humaines</h4><p>Recrute, guide, conseille et suit le personnel</p></div>
-        <div class="org-card"><h4>Graphiste</h4><p>Gère tout ce qui est visuel</p></div>
-        <div class="org-card"><h4>Chargé évènementiel</h4><p>Organise les événements, diffuse la communication</p></div>
       </div>
       <div class="org-link"></div>
       <div class="org-level">
@@ -370,12 +367,6 @@
         <h3>Bidon d'essence</h3>
         <b class="prix">180 $ <span style="font-size:.9rem;font-weight:600;color:var(--muted)">HT / unité</span></b>
         <p>TVA de 0 à 5 % selon contrat. Tarifs dégressifs sur les gros volumes — demande un devis.</p>
-      </div>
-      <div class="card">
-        <div class="ico">🎁</div>
-        <h3>Offre fidélité</h3>
-        <b class="prix">+10 <span style="font-size:.9rem;font-weight:600;color:var(--muted)">offerts / 100 achetés</span></b>
-        <p>Sur chaque commande : 100 bidons achetés = 10 bidons offerts, automatiquement sur ta facture.</p>
       </div>
       <div class="card">
         <div class="ico">🚚</div>
