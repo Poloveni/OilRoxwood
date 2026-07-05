@@ -130,6 +130,20 @@
   .pod2{background:linear-gradient(180deg,rgba(160,175,195,.2),rgba(160,175,195,.04));min-height:100px;border-top:3px solid #a8b6c8}
   .pod3{background:linear-gradient(180deg,rgba(190,120,60,.2),rgba(190,120,60,.04));min-height:80px;border-top:3px solid #c07840}
   .warn{background:rgba(255,92,92,.08);border:1px solid rgba(255,92,92,.25);border-radius:10px;padding:11px 15px;font-size:.83rem;color:#ffb0b0;margin-bottom:16px}
+  /* feuilles */
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .tab{padding:8px 16px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--muted);font-size:.82rem;font-weight:700;transition:all .15s}
+  .tab:hover{color:var(--ink)}
+  .tab.on{background:linear-gradient(135deg,rgba(232,160,32,.2),rgba(232,160,32,.07));color:var(--accent);border-color:rgba(232,160,32,.4)}
+  .sheet td{padding:4px 6px}
+  .sheet input[type=text],.sheet input[type=number],.sheet input[type=date]{background:transparent;border:1px solid transparent;color:var(--ink);border-radius:6px;padding:6px 8px;font-size:.84rem;width:100%;min-width:70px}
+  .sheet input:hover{border-color:var(--line)}
+  .sheet input:focus{outline:none;border-color:var(--accent);background:var(--panel-2)}
+  .sheet input[type=number]{text-align:right}
+  .sheet input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+  .sheet .calc{font-weight:700;text-align:right;padding:6px 8px;white-space:nowrap}
+  .sheet tfoot td{font-weight:800;color:var(--accent);border-top:2px solid var(--line);padding:10px 8px;text-align:right}
+  .sheet tfoot td:first-child{text-align:left}
   .promo-flag{font-size:.7rem;color:var(--green);font-weight:700;display:block;margin-top:3px}
 
   @media(max-width:1000px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
@@ -166,6 +180,7 @@
     <button class="nav-item" data-view="runs">🚛 <span class="txt">Runs</span></button>
     <button class="nav-item" data-view="semaine">💰 <span class="txt">Semaine &amp; Primes</span></button>
     <button class="nav-item" data-view="zones">🗺️ <span class="txt">Zones</span></button>
+    <button class="nav-item" data-view="feuilles">📋 <span class="txt">Feuilles</span></button>
     <button class="nav-item" data-view="dlogs">📡 <span class="txt">Logs Discord</span></button>
     <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
     <div class="spacer"></div>
@@ -197,6 +212,7 @@ function defaults(){
     runners:[],
     weeks:[],
     imported:[],
+    sheets:null,
     settings:{prix:10, primeBase:5000, top:[15000,10000,5000], limite:24000, semaine:1,
       webhook:'https://discord.com/api/webhooks/1247564402782371985/X8pynlKA1sn26In6aONz4IO7XZl7pwtnW19yvmLKX2DiMq_LXEBZRHGW1rBgyes0h9kg'}
   };
@@ -271,7 +287,7 @@ function show(v){
   VIEW=v;
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
-  ({overview,effectif,runs,semaine,zones,dlogs,params})[v]();
+  ({overview,effectif,runs,semaine,zones,feuilles,dlogs,params})[v]();
 }
 function rerender(){ show(VIEW); }
 
@@ -511,6 +527,104 @@ function zones(){
   </div>
   <div class="panel"><h3>Comparatif des zones</h3><canvas id="cZcomp" height="110"></canvas></div>`;
   mkChart('cZcomp',{type:'bar',data:{labels:ZONES.map(z=>'Zone '+z),datasets:[{data:data.map(d=>d.tot),backgroundColor:['#e8a020','#5aa0ff','#3ddc84','#a78bfa'],borderRadius:8,barThickness:46}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
+}
+
+/* ================== FEUILLES (tableur) ================== */
+const SHEETS_DEF = {
+  tablette:{ico:'🖥️',label:'Tablette',cols:[
+    {k:'nom',l:'Nom',t:'text'},{k:'rang',l:'Rang',t:'text'},
+    {k:'factures',l:'Factures',t:'num'},{k:'runs',l:'Runs',t:'num'},{k:'ventes',l:'Ventes',t:'num'},
+    {k:'_total',l:'Total',t:'calc',f:r=>nn(r.factures)+nn(r.runs)+nn(r.ventes)},
+    {k:'part',l:'Part employé',t:'num'},{k:'heures',l:'Heures service',t:'text'}],
+    tot:['factures','runs','ventes','_total','part'], nouveau:{nom:'',rang:'Intérimaire',factures:0,runs:0,ventes:0,part:0,heures:''}},
+  eligibilite:{ico:'✅',label:'Éligibilité',cols:[
+    {k:'nom',l:'Nom employé',t:'text'},{k:'menus',l:'Menus',t:'bool'},{k:'boissons',l:'Boissons',t:'bool'},
+    {k:'bidons',l:'Bidons',t:'bool'},{k:'date',l:'Date de prise',t:'date'},{k:'don',l:'Don',t:'text'},{k:'permis',l:'Contrôle permis',t:'text'}],
+    tot:[], nouveau:{nom:'',menus:false,boissons:false,bidons:false,date:'',don:'',permis:''}},
+  ventesEnt:{ico:'🏢',label:'Ventes entreprises',cols:[
+    {k:'entreprise',l:'Entreprise / Famille',t:'text'},{k:'date',l:'Date',t:'date'},
+    {k:'quantite',l:'Quantité',t:'num'},{k:'prix',l:'Prix facture HT',t:'num'}],
+    tot:['quantite','prix'], nouveau:{entreprise:'',date:'',quantite:0,prix:0}},
+  ventesSem:{ico:'🛒',label:'Ventes de la semaine',cols:[
+    {k:'date',l:'Date',t:'date'},{k:'client',l:'Client',t:'text'},
+    {k:'quantite',l:'Quantité',t:'num'},{k:'qui',l:'Qui ?',t:'text'}],
+    tot:['quantite'], nouveau:{date:'',client:'',quantite:0,qui:''}},
+  salaires:{ico:'💰',label:'Budget & salaires',cols:[
+    {k:'nom',l:'Nom employé',t:'text'},{k:'prodBidons',l:'Prod. bidons',t:'num'},{k:'poste',l:'Salaire de poste',t:'num'},
+    {k:'run',l:'Salaire de run',t:'num'},{k:'remboursement',l:'Remboursement',t:'num'},{k:'recrutement',l:'Recrutement',t:'num'},
+    {k:'_sal',l:'Salaires',t:'calc',f:r=>Math.min(nn(r.prodBidons)+nn(r.poste)+nn(r.remboursement)+nn(r.recrutement),85000)},
+    {k:'_prime',l:'Primes',t:'calc',f:r=>Math.min(nn(r.run),42500)},
+    {k:'_tot',l:'Total',t:'calc',f:r=>Math.min(nn(r.prodBidons)+nn(r.poste)+nn(r.remboursement)+nn(r.recrutement),85000)+Math.min(nn(r.run),42500)}],
+    tot:['_sal','_prime','_tot'], nouveau:{nom:'',prodBidons:0,poste:0,run:0,remboursement:0,recrutement:0},
+    note:'Plafonds : salaires 85 000 $ · primes 42 500 $ (appliqués automatiquement)'},
+  historique:{ico:'📇',label:'Historique entreprises',cols:[
+    {k:'nom',l:'Nom',t:'text'},{k:'dateCmd',l:'Dernière commande',t:'date'},{k:'statut',l:'Client',t:'bool'},
+    {k:'charge',l:'Démarché par',t:'text'},{k:'dateDem',l:'Date démarchage',t:'date'},{k:'comm',l:'Commentaire',t:'text'}],
+    tot:[], nouveau:{nom:'',dateCmd:'',statut:false,charge:'',dateDem:'',comm:''}},
+  collection:{ico:'🗡️',label:'Objets de collection',cols:[
+    {k:'nom',l:'Vendeur',t:'text'},{k:'date',l:'Date',t:'date'},{k:'couteaux',l:'Couteaux',t:'num'},
+    {k:'katanas',l:'Katanas',t:'num'},{k:'preservatifs',l:'Préservatifs',t:'num'},{k:'prix',l:'Prix HT',t:'num'}],
+    tot:['couteaux','katanas','preservatifs','prix'], nouveau:{nom:'',date:'',couteaux:0,katanas:0,preservatifs:0,prix:0}},
+};
+const nn = x => +x||0;
+let curSheet='tablette', sheetSearch='';
+async function feuilles(){
+  if(!S.sheets){
+    $('#main').innerHTML='<div class="panel"><div class="empty">Chargement des feuilles…</div></div>';
+    try{
+      const r=await fetch('data/feuilles-seed.json?ts='+Date.now(),{cache:'no-store'});
+      S.sheets=await r.json(); save();
+    }catch(e){
+      S.sheets=Object.fromEntries(Object.keys(SHEETS_DEF).map(k=>[k,[]])); save();
+    }
+  }
+  Object.keys(SHEETS_DEF).forEach(k=>{ if(!S.sheets[k]) S.sheets[k]=[]; });
+  const def=SHEETS_DEF[curSheet], rows=S.sheets[curSheet];
+  const q=sheetSearch.toLowerCase();
+  const idx=rows.map((r,i)=>i).filter(i=>!q||Object.values(rows[i]).join(' ').toLowerCase().includes(q));
+  const head=def.cols.map(c=>`<th ${c.t==='num'||c.t==='calc'?'style="text-align:right"':''}>${c.l}</th>`).join('');
+  const body=idx.map(i=>{
+    const r=rows[i];
+    const tds=def.cols.map(c=>{
+      if(c.t==='calc') return `<td class="calc">${fmt(Math.round(c.f(r)))}</td>`;
+      if(c.t==='bool') return `<td style="text-align:center"><input type="checkbox" ${r[c.k]?'checked':''} onchange="cellEdit(${i},'${c.k}',this.checked)"></td>`;
+      if(c.t==='num')  return `<td><input type="number" value="${nn(r[c.k])}" onchange="cellEdit(${i},'${c.k}',+this.value||0)"></td>`;
+      if(c.t==='date'){ const d=/^\d{4}-\d{2}-\d{2}/.test(r[c.k]||'')?String(r[c.k]).slice(0,10):'';
+        return `<td><input type="date" value="${d}" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`; }
+      return `<td><input type="text" value="${esc(r[c.k])}" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`;
+    }).join('');
+    return `<tr>${tds}<td style="text-align:right"><button class="btn btn-sm btn-red" onclick="rowDel(${i})">✕</button></td></tr>`;
+  }).join('');
+  const foot=def.tot.length?`<tfoot><tr><td>Total (${idx.length} lignes)</td>${def.cols.slice(1).map(c=>{
+    if(!def.tot.includes(c.k)) return '<td></td>';
+    const s=idx.reduce((a,i)=>a+(c.t==='calc'?c.f(rows[i]):nn(rows[i][c.k])),0);
+    return `<td>${fmt(Math.round(s))}</td>`;
+  }).join('')}<td></td></tr></tfoot>`:'';
+  $('#main').innerHTML=`
+  <div class="topbar">
+    <div><h2>Feuilles</h2><div class="sub">Les tableaux de gestion de l'entreprise — modifiables directement, sauvegardés automatiquement</div></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="sheetCsv()">⬇ CSV</button>
+      <button class="btn btn-gold" onclick="rowAdd()">＋ Ligne</button>
+    </div>
+  </div>
+  <div class="tabs">${Object.entries(SHEETS_DEF).map(([k,d])=>`<button class="tab ${k===curSheet?'on':''}" onclick="curSheet='${k}';sheetSearch='';feuilles()">${d.ico} ${d.label} <span style="opacity:.6">(${S.sheets[k].length})</span></button>`).join('')}</div>
+  ${def.note?`<div class="warn" style="border-color:rgba(232,160,32,.35);background:rgba(232,160,32,.07);color:var(--accent)">ℹ️ ${def.note}</div>`:''}
+  <div class="panel" style="padding:10px 16px;overflow-x:auto">
+    <input class="field" style="max-width:240px;margin:6px 0 10px" placeholder="🔍 Rechercher…" value="${esc(sheetSearch)}" oninput="sheetSearch=this.value;feuilles()">
+    <table class="sheet"><thead><tr>${head}<th></th></tr></thead><tbody>${body||`<tr><td colspan="${def.cols.length+1}"><div class="empty">Aucune ligne</div></td></tr>`}</tbody>${foot}</table>
+  </div>`;
+}
+function cellEdit(i,k,val){ S.sheets[curSheet][i][k]=val; save(); feuilles(); }
+function rowAdd(){ S.sheets[curSheet].unshift(JSON.parse(JSON.stringify(SHEETS_DEF[curSheet].nouveau))); save(); feuilles(); }
+function rowDel(i){ if(confirm('Supprimer cette ligne ?')){ S.sheets[curSheet].splice(i,1); save(); feuilles(); } }
+function sheetCsv(){
+  const def=SHEETS_DEF[curSheet], rows=S.sheets[curSheet];
+  const lines=[def.cols.map(c=>c.l).join(';')];
+  rows.forEach(r=>lines.push(def.cols.map(c=>c.t==='calc'?Math.round(c.f(r)):String(r[c.k]??'').replace(/;/g,',')).join(';')));
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['﻿'+lines.join('\n')],{type:'text/csv;charset=utf-8'}));
+  a.download=`oilroxwood_${curSheet}.csv`; a.click(); toast('⬇ CSV exporté');
 }
 
 /* ================== LOGS DISCORD ================== */
