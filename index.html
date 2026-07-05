@@ -51,7 +51,8 @@
       linear-gradient(160deg, #0e1520 0%, #16202e 60%, #1b2739 100%);
     color:#fff;padding:120px 6vw 80px;position:relative;overflow:hidden;
   }
-  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:60px;align-items:center;width:100%;max-width:1200px;margin:0 auto}
+  #heroCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:60px;align-items:center;width:100%;max-width:1200px;margin:0 auto;position:relative;z-index:1}
   .kicker{display:inline-block;background:rgba(232,160,32,.14);border:1px solid rgba(232,160,32,.4);color:var(--accent);font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:99px;margin-bottom:22px}
   h1{font-size:clamp(2.2rem,5vw,3.6rem);line-height:1.12;font-weight:800;letter-spacing:-.5px}
   h1 em{font-style:normal;color:var(--accent)}
@@ -188,6 +189,7 @@
 
 <!-- ================= HERO ================= -->
 <header id="accueil">
+  <canvas id="heroCanvas"></canvas>
   <div class="hero-grid">
     <div>
       <span class="kicker">FlashbackFA · Roxwood County</span>
@@ -419,6 +421,49 @@
   document.querySelectorAll('.nav-links a').forEach(a =>
     a.addEventListener('click', () => document.querySelector('.nav-links').classList.remove('open'))
   );
+
+  /* ===== Hero canvas : derricks à l'horizon ===== */
+  (function(){
+    const cv=document.getElementById('heroCanvas'), cx=cv.getContext('2d');
+    const hero=document.getElementById('accueil');
+    const R=Math.random;
+    let W,H,stars=[],jacks=[],t=0;
+    function init(){
+      W=cv.width=hero.clientWidth; H=cv.height=hero.clientHeight;
+      stars=Array.from({length:Math.min(110,W/12|0)},()=>({x:R()*W,y:R()*H*.72,r:R()*1.4+.4,tw:R()*6.28,ts:.01+R()*.03}));
+      const n=Math.max(3,Math.min(6,W/320|0)); jacks=[];
+      for(let i=0;i<n;i++) jacks.push({x:W*(i+.5+R()*.3-.15)/n, s:.7+R()*.5, ph:R()*6.28, sp:.55+R()*.35});
+    }
+    addEventListener('resize',init); init();
+    function jack(x,base,s,ang){
+      cx.save(); cx.translate(x,base); cx.scale(s,s);
+      cx.strokeStyle='rgba(232,160,32,.9)'; cx.fillStyle='rgba(232,160,32,.9)'; cx.lineWidth=3; cx.lineCap='round';
+      cx.beginPath();cx.moveTo(-26,0);cx.lineTo(0,-52);cx.lineTo(26,0);cx.stroke();
+      cx.beginPath();cx.moveTo(-14,-24);cx.lineTo(14,-24);cx.stroke();
+      cx.save(); cx.translate(0,-52); cx.rotate(Math.sin(ang)*.16);
+      cx.beginPath();cx.moveTo(-44,0);cx.lineTo(40,0);cx.stroke();
+      cx.beginPath();cx.arc(-48,2,9,0,7);cx.fill();
+      cx.restore();
+      cx.beginPath();cx.arc(30,-8,10,ang,ang+6.28);cx.stroke();
+      cx.beginPath();cx.moveTo(30+Math.cos(ang)*10,-8+Math.sin(ang)*10);cx.lineTo(36,-52+Math.sin(ang)*.16*-40);cx.stroke();
+      cx.beginPath();cx.moveTo(-40,0);cx.lineTo(40,0);cx.stroke();
+      cx.restore();
+    }
+    (function loop(){
+      requestAnimationFrame(loop);
+      if(document.hidden) return;
+      cx.clearRect(0,0,W,H); t+=.016;
+      for(const st of stars){ st.tw+=st.ts; const g=(Math.sin(st.tw)+1)/2;
+        cx.beginPath();cx.arc(st.x,st.y,st.r,0,7);cx.fillStyle=`rgba(255,235,190,${.08+.5*g})`;cx.fill(); }
+      const base=H*.88;
+      const g=cx.createLinearGradient(0,base-90,0,base);
+      g.addColorStop(0,'rgba(232,160,32,0)'); g.addColorStop(1,'rgba(232,160,32,.10)');
+      cx.fillStyle=g; cx.fillRect(0,base-90,W,90);
+      cx.strokeStyle='rgba(232,160,32,.5)'; cx.lineWidth=2;
+      cx.beginPath();cx.moveTo(0,base);cx.lineTo(W,base);cx.stroke();
+      for(const j of jacks) jack(j.x,base,j.s,t*j.sp*2+j.ph);
+    })();
+  })();
 </script>
 </body>
 </html>

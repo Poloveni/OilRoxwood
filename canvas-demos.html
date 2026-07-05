@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oil Roxwood — Démos canvas pour le hero</title>
+<meta name="robots" content="noindex">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(160deg,#0e1520 0%,#16202e 60%,#1b2739 100%);color:#fff;min-height:100vh;overflow:hidden}
+  canvas{position:fixed;inset:0;z-index:0}
+  .ui{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .ui button{padding:10px 20px;border-radius:99px;border:1px solid rgba(255,255,255,.18);background:rgba(14,21,32,.7);backdrop-filter:blur(10px);color:#cfd6df;font-weight:700;font-size:.88rem;cursor:pointer;transition:all .2s}
+  .ui button:hover{transform:translateY(-2px);border-color:#e8a020}
+  .ui button.on{background:#e8a020;color:#0e1520;border-color:#e8a020}
+  .hero{position:relative;z-index:5;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+  .kicker{background:rgba(232,160,32,.14);border:1px solid rgba(232,160,32,.4);color:#e8a020;font-size:.78rem;font-weight:700;letter-spacing:2px;padding:6px 14px;border-radius:99px;margin-bottom:20px}
+  h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:800}
+  h1 em{font-style:normal;color:#e8a020}
+  p{color:#aeb8c4;margin-top:14px;max-width:480px}
+  .lbl{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:10;background:rgba(14,21,32,.75);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 22px;font-size:.85rem;color:#aeb8c4;text-align:center;max-width:90vw}
+  .lbl b{color:#e8a020}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div class="ui">
+  <button data-d="0" class="on">1 · Constellation d'or</button>
+  <button data-d="1">2 · Bulles de brut</button>
+  <button data-d="2">3 · Vagues de pétrole</button>
+  <button data-d="3">4 · Derricks à l'horizon</button>
+</div>
+<div class="hero">
+  <span class="kicker">FLASHBACKFA · ROXWOOD COUNTY</span>
+  <h1>L'or noir de Roxwood,<br>livré par <em>des pros</em>.</h1>
+  <p>Aperçu du hero avec chaque animation — choisis ta préférée.</p>
+</div>
+<div class="lbl" id="lbl"></div>
+
+<script>
+const cv=document.getElementById('cv'), cx=cv.getContext('2d');
+let W,H; function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight;init();}
+addEventListener('resize',rs);
+const M={x:-9999,y:-9999};
+addEventListener('pointermove',e=>{M.x=e.clientX;M.y=e.clientY});
+const R=Math.random;
+
+const DEMOS=[
+/* ============ 1 · CONSTELLATION D'OR ============ */
+{
+  nom:"<b>Constellation d'or</b> — particules dorées reliées, halo interactif au curseur. Cohérent avec le dashboard admin.",
+  P:[],
+  init(){ const N=Math.min(95,W/16|0);
+    this.P=Array.from({length:N},()=>({x:R()*W,y:R()*H,vx:(R()-.5)*.45,vy:(R()-.5)*.45,r:R()*2.2+.8,o:R()*.5+.4,tw:R()*6.28,ts:.008+R()*.02})); },
+  tick(){ const P=this.P,L=145,MO=190;
+    for(const p of P){ p.x+=p.vx;p.y+=p.vy;p.tw+=p.ts;
+      if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;if(p.y<-10)p.y=H+10;if(p.y>H+10)p.y=-10;
+      const g=(Math.sin(p.tw)+1)/2;
+      cx.beginPath();cx.arc(p.x,p.y,p.r,0,7);cx.fillStyle=`rgba(232,160,32,${p.o*(.45+.55*g)})`;cx.fill(); }
+    for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+      const a=P[i],b=P[j],dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy;
+      if(d2<L*L){cx.strokeStyle=`rgba(232,160,32,${(1-Math.sqrt(d2)/L)*.14})`;cx.lineWidth=1;cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();}}
+    for(const p of P){ const dx=p.x-M.x,dy=p.y-M.y,d2=dx*dx+dy*dy;
+      if(d2<MO*MO){const t=1-Math.sqrt(d2)/MO;
+        cx.strokeStyle=`rgba(245,178,58,${t*.3})`;cx.lineWidth=1.2;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(M.x,M.y);cx.stroke();}}
+  }
+},
+/* ============ 2 · BULLES DE BRUT ============ */
+{
+  nom:"<b>Bulles de brut</b> — gouttes de pétrole qui remontent lentement avec un reflet doré, comme dans une cuve. Hypnotique et sobre.",
+  P:[],
+  init(){ const N=Math.min(46,W/32|0);
+    this.P=Array.from({length:N},()=>this.mk(true)); },
+  mk(any){ const r=R()*26+7;
+    return {x:R()*W,y:any?R()*H:H+r*2,r,v:.25+22/r*.35,w:R()*6.28,ws:.008+R()*.014,o:.25+R()*.4}; },
+  tick(){
+    for(let i=0;i<this.P.length;i++){ const p=this.P[i];
+      p.y-=p.v; p.w+=p.ws; const wob=Math.sin(p.w)*p.r*.16;
+      if(p.y<-p.r*2) this.P[i]=this.mk(false);
+      const x=p.x+wob;
+      // corps sombre de la bulle
+      const g=cx.createRadialGradient(x-p.r*.3,p.y-p.r*.35,p.r*.1,x,p.y,p.r);
+      g.addColorStop(0,`rgba(70,60,40,${p.o})`);
+      g.addColorStop(.55,`rgba(18,16,12,${p.o})`);
+      g.addColorStop(1,`rgba(8,8,10,${p.o*.9})`);
+      cx.beginPath();cx.arc(x,p.y,p.r,0,7);cx.fillStyle=g;cx.fill();
+      // liseré doré
+      cx.beginPath();cx.arc(x,p.y,p.r,0,7);cx.strokeStyle=`rgba(232,160,32,${p.o*.55})`;cx.lineWidth=1.4;cx.stroke();
+      // reflet
+      cx.beginPath();cx.arc(x-p.r*.32,p.y-p.r*.36,p.r*.16,0,7);cx.fillStyle=`rgba(245,200,90,${p.o*.8})`;cx.fill();
+    }
+  }
+},
+/* ============ 3 · VAGUES DE PÉTROLE ============ */
+{
+  nom:"<b>Vagues de pétrole</b> — nappe liquide animée en bas du hero, crête dorée qui ondule, éclats scintillants. Élégant, n'encombre pas le texte.",
+  t:0, S:[],
+  init(){ this.S=Array.from({length:26},()=>({x:R()*W,y:H-R()*H*.28,tw:R()*6.28,ts:.02+R()*.04,r:R()*1.6+.5})); },
+  wave(base,amp,freq,speed,c1,c2,edge){
+    cx.beginPath(); cx.moveTo(0,H);
+    for(let x=0;x<=W;x+=6){
+      const y=base+Math.sin(x*freq+this.t*speed)*amp+Math.sin(x*freq*.37+this.t*speed*1.6)*amp*.5;
+      cx.lineTo(x,y);
+    }
+    cx.lineTo(W,H); cx.closePath();
+    const g=cx.createLinearGradient(0,base-amp*2,0,H);
+    g.addColorStop(0,c1); g.addColorStop(1,c2);
+    cx.fillStyle=g; cx.fill();
+    if(edge){ cx.beginPath();
+      for(let x=0;x<=W;x+=6){
+        const y=base+Math.sin(x*freq+this.t*speed)*amp+Math.sin(x*freq*.37+this.t*speed*1.6)*amp*.5;
+        x===0?cx.moveTo(x,y):cx.lineTo(x,y);
+      }
+      cx.strokeStyle=edge; cx.lineWidth=2; cx.stroke(); }
+  },
+  tick(){ this.t+=.016;
+    for(const s of this.S){ s.tw+=s.ts; const g=(Math.sin(s.tw)+1)/2;
+      cx.beginPath();cx.arc(s.x,s.y,s.r,0,7);cx.fillStyle=`rgba(245,200,90,${.12+.4*g})`;cx.fill(); }
+    this.wave(H*.84,16,.006,.9,'rgba(37,52,77,.55)','rgba(20,29,45,.9)',null);
+    this.wave(H*.885,20,.0045,-.7,'rgba(232,160,32,.20)','rgba(120,80,16,.12)','rgba(232,160,32,.55)');
+    this.wave(H*.93,14,.007,1.15,'rgba(10,14,22,.92)','rgba(6,9,14,.98)','rgba(232,160,32,.25)');
+  }
+},
+/* ============ 4 · DERRICKS À L'HORIZON ============ */
+{
+  nom:"<b>Derricks à l'horizon</b> — pompes à pétrole animées qui pompent sur la ligne d'horizon, ciel étoilé scintillant. Le plus « Roxwood County ».",
+  t:0, stars:[], jacks:[],
+  init(){
+    this.stars=Array.from({length:Math.min(110,W/12|0)},()=>({x:R()*W,y:R()*H*.72,r:R()*1.4+.4,tw:R()*6.28,ts:.01+R()*.03}));
+    const n=Math.max(3,Math.min(6,W/320|0)); this.jacks=[];
+    for(let i=0;i<n;i++) this.jacks.push({x:W*(i+.5+R()*.3-.15)/n, s:.7+R()*.5, ph:R()*6.28, sp:.55+R()*.35});
+  },
+  jack(x,base,s,ang){
+    cx.save(); cx.translate(x,base); cx.scale(s,s);
+    cx.strokeStyle='rgba(232,160,32,.9)'; cx.fillStyle='rgba(232,160,32,.9)'; cx.lineWidth=3; cx.lineCap='round';
+    // chevalet
+    cx.beginPath();cx.moveTo(-26,0);cx.lineTo(0,-52);cx.lineTo(26,0);cx.stroke();
+    cx.beginPath();cx.moveTo(-14,-24);cx.lineTo(14,-24);cx.stroke();
+    // balancier
+    const bx=Math.cos(ang)*4, by=Math.sin(ang)*4;
+    cx.save(); cx.translate(0,-52); cx.rotate(Math.sin(ang)*.16);
+    cx.beginPath();cx.moveTo(-44,0);cx.lineTo(40,0);cx.stroke();
+    cx.beginPath();cx.arc(-48,2,9,0,7);cx.fill(); // tête de cheval
+    cx.restore();
+    // bielle + contrepoids
+    cx.beginPath();cx.arc(30,-8,10,ang,ang+6.28);cx.stroke();
+    cx.beginPath();cx.moveTo(30+Math.cos(ang)*10,-8+Math.sin(ang)*10);cx.lineTo(36,-52+Math.sin(ang)*.16*-40);cx.stroke();
+    // sol
+    cx.beginPath();cx.moveTo(-40,0);cx.lineTo(40,0);cx.stroke();
+    cx.restore();
+  },
+  tick(){ this.t+=.016;
+    for(const st of this.stars){ st.tw+=st.ts; const g=(Math.sin(st.tw)+1)/2;
+      cx.beginPath();cx.arc(st.x,st.y,st.r,0,7);cx.fillStyle=`rgba(255,235,190,${.08+.5*g})`;cx.fill(); }
+    const base=H*.86;
+    // lueur d'horizon
+    const g=cx.createLinearGradient(0,base-90,0,base);
+    g.addColorStop(0,'rgba(232,160,32,0)'); g.addColorStop(1,'rgba(232,160,32,.10)');
+    cx.fillStyle=g; cx.fillRect(0,base-90,W,90);
+    // ligne d'horizon
+    cx.strokeStyle='rgba(232,160,32,.5)'; cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(0,base);cx.lineTo(W,base);cx.stroke();
+    for(const j of this.jacks) this.jack(j.x,base,j.s,this.t*j.sp*2+j.ph);
+  }
+}];
+
+let D=0;
+function init(){ DEMOS[D].init(); }
+document.querySelectorAll('.ui button').forEach(b=>b.onclick=()=>{
+  D=+b.dataset.d;
+  document.querySelectorAll('.ui button').forEach(x=>x.classList.toggle('on',x===b));
+  document.getElementById('lbl').innerHTML=DEMOS[D].nom;
+  init();
+});
+rs();
+document.getElementById('lbl').innerHTML=DEMOS[0].nom;
+(function loop(){ requestAnimationFrame(loop); if(document.hidden)return;
+  cx.clearRect(0,0,W,H); DEMOS[D].tick(); })();
+</script>
+</body>
+</html>
