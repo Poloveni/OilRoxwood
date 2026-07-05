@@ -359,7 +359,8 @@ function enter(){
   show('overview');
 }
 function logout(){ sessionStorage.removeItem('orx_auth'); location.reload(); }
-if(sessionStorage.getItem('orx_auth')==='1') enter();
+// connexion auto différée : attend que tout le script soit chargé avant d'entrer
+if(sessionStorage.getItem('orx_auth')==='1') setTimeout(enter,0);
 
 /* ================== HELPERS ================== */
 const $ = s => document.querySelector(s);
