@@ -108,6 +108,27 @@
   .org-quote p{color:var(--ink);font-size:.97rem;margin-bottom:12px}
   .org-quote p:last-child{margin-bottom:0;font-weight:800;color:var(--accent-dark);font-size:1.05rem}
 
+  /* ---------- DEVENIR CLIENT ---------- */
+  #devenir-client{background:var(--white)}
+  .offre{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:40px}
+  .offre .card b.prix{display:block;font-size:2rem;color:var(--accent-dark);font-weight:800;margin:6px 0}
+  .marquee{overflow:hidden;position:relative;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+  .marquee-track{display:flex;gap:14px;width:max-content;animation:defile 38s linear infinite}
+  .marquee:hover .marquee-track{animation-play-state:paused}
+  @keyframes defile{to{transform:translateX(-50%)}}
+  .cli-chip{white-space:nowrap;background:var(--paper);border:1px solid var(--line);border-radius:99px;padding:8px 20px;font-size:.88rem;font-weight:600;color:var(--muted)}
+  .cli-chip b{color:var(--accent-dark)}
+
+  /* ---------- STATS EN DIRECT ---------- */
+  #direct{background:var(--ink);color:#fff;padding:56px 6vw;display:none}
+  #direct .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;text-align:center}
+  #direct .d-kpi strong{display:block;font-size:2.1rem;font-weight:800;color:var(--accent)}
+  #direct .d-kpi span{font-size:.82rem;color:#8d99a8}
+  #direct .d-top{grid-column:1/-1;color:#aeb8c4;font-size:.9rem;margin-top:6px}
+  #direct .d-top b{color:var(--accent)}
+  @media(max-width:700px){#direct .wrap{grid-template-columns:1fr 1fr}}
+
   /* ---------- GRADES ---------- */
   #grades{background:var(--ink);color:#fff}
   #grades .sec-kicker{color:var(--accent)}
@@ -180,6 +201,7 @@
   <div class="nav-links">
     <a href="#presentation">L'entreprise</a>
     <a href="#organigramme">Organigramme</a>
+    <a href="#devenir-client">Devenir client</a>
     <a href="#grades">Grades &amp; Salaires</a>
     <a href="#recrutement">Recrutement</a>
     <a href="#contact">Contact</a>
@@ -298,6 +320,71 @@
   </div>
 </section>
 
+<!-- ================= STATS EN DIRECT ================= -->
+<section id="direct">
+  <div class="wrap">
+    <div class="d-kpi"><strong id="d-barils">—</strong><span>barils livrés cette semaine</span></div>
+    <div class="d-kpi"><strong id="d-ca">—</strong><span>chiffre d'affaires semaine</span></div>
+    <div class="d-kpi"><strong id="d-runners">—</strong><span>runners actifs</span></div>
+    <div class="d-kpi"><strong id="d-clients">—</strong><span>factures émises</span></div>
+    <div class="d-top" id="d-top"></div>
+  </div>
+</section>
+
+<!-- ================= DEVENIR CLIENT ================= -->
+<section id="devenir-client">
+  <div class="wrap">
+    <span class="sec-kicker">Entreprises &amp; familles</span>
+    <h2>Devenir client</h2>
+    <p class="sec-intro">
+      Oil Roxwood fournit en bidons d'essence les entreprises, familles et organisations
+      de tout San Andreas. Livraison assurée par nos équipes, du dépôt jusqu'à vos portes.
+    </p>
+    <div class="offre">
+      <div class="card">
+        <div class="ico">⛽</div>
+        <h3>Bidon d'essence</h3>
+        <b class="prix">180 $ <span style="font-size:.9rem;font-weight:600;color:var(--muted)">HT / unité</span></b>
+        <p>TVA de 0 à 5 % selon contrat. Tarifs dégressifs sur les gros volumes — demande un devis.</p>
+      </div>
+      <div class="card">
+        <div class="ico">🎁</div>
+        <h3>Offre fidélité</h3>
+        <b class="prix">+10 <span style="font-size:.9rem;font-weight:600;color:var(--muted)">offerts / 100 achetés</span></b>
+        <p>Sur chaque commande : 100 bidons achetés = 10 bidons offerts, automatiquement sur ta facture.</p>
+      </div>
+      <div class="card">
+        <div class="ico">🚚</div>
+        <h3>Livraison incluse</h3>
+        <b class="prix">24h <span style="font-size:.9rem;font-weight:600;color:var(--muted)">sur San Andreas</span></b>
+        <p>Los Santos, Paleto, Sandy Shores, Cayo, Roxwood… nos convois livrent partout, escorte possible.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-bottom:46px">
+      <a href="https://discord.com/invite/99AuEX3Kpz" target="_blank" rel="noopener" class="btn btn-primary">📋 Demander un devis sur Discord</a>
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:14px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700">Ils nous font déjà confiance</p>
+    <div class="marquee"><div class="marquee-track" id="cliTrack">
+      <span class="cli-chip"><b>Gruppe Sechs</b></span>
+      <span class="cli-chip">LTD Mirror Park</span>
+      <span class="cli-chip"><b>Bean Ice Cream</b></span>
+      <span class="cli-chip">Pizza This</span>
+      <span class="cli-chip"><b>La Linterna</b></span>
+      <span class="cli-chip">Burger Shot</span>
+      <span class="cli-chip"><b>Cayo Cigare</b></span>
+      <span class="cli-chip">Paleto Garage</span>
+      <span class="cli-chip"><b>Rockford Records</b></span>
+      <span class="cli-chip">Aqua Black</span>
+      <span class="cli-chip"><b>Post OP</b></span>
+      <span class="cli-chip">Atelier Komori</span>
+      <span class="cli-chip"><b>Pacific Bluff</b></span>
+      <span class="cli-chip">Mairie San Andreas</span>
+      <span class="cli-chip"><b>Club 77</b></span>
+      <span class="cli-chip">Casa Del Gusto</span>
+    </div></div>
+  </div>
+</section>
+
 <!-- ================= GRADES ================= -->
 <section id="grades">
   <div class="wrap">
@@ -413,7 +500,7 @@
 </section>
 
 <footer>
-  <b>OIL ROXWOOD</b> · Entreprise RP sur FlashbackFA · Site non officiel, aucun lien avec une entreprise réelle — © 2026 · <a href="admin.html" style="color:#6d7989">Admin</a>
+  <b>OIL ROXWOOD</b> · Entreprise RP sur FlashbackFA · Site non officiel, aucun lien avec une entreprise réelle — © 2026 · <a href="equipe.html" style="color:#6d7989">Espace employé</a> · <a href="admin.html" style="color:#6d7989">Admin</a>
 </footer>
 
 <script>
@@ -421,6 +508,38 @@
   document.querySelectorAll('.nav-links a').forEach(a =>
     a.addEventListener('click', () => document.querySelector('.nav-links').classList.remove('open'))
   );
+
+  /* ===== Mur des clients : boucle infinie ===== */
+  (function(){ const t=document.getElementById('cliTrack'); if(t) t.innerHTML+=t.innerHTML; })();
+
+  /* ===== Stats en direct (publiées depuis le dashboard) ===== */
+  (function(){
+    fetch('data/stats-public.json?ts='+Date.now(),{cache:'no-store'})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{
+        if(!d||!d.maj) return;
+        const sec=document.getElementById('direct');
+        sec.style.display='block';
+        const F=n=>(n||0).toLocaleString('fr-FR');
+        const vals={'d-barils':d.totalBarils,'d-ca':d.ca,'d-runners':d.effectif,'d-clients':d.clientsServis};
+        const sfx={'d-ca':' $'};
+        for(const id in vals){
+          const el=document.getElementById(id), target=+vals[id]||0;
+          const t0=performance.now(), dur=1100;
+          const io=new IntersectionObserver(es=>{ if(!es[0].isIntersecting) return; io.disconnect();
+            const t1=performance.now();
+            (function step(t){ const p=Math.min(1,(t-t1)/dur), e=1-Math.pow(1-p,3);
+              el.textContent=F(Math.round(target*e))+(sfx[id]||'');
+              if(p<1) requestAnimationFrame(step); })(t1);
+          });
+          io.observe(el);
+        }
+        if(d.top3&&d.top3.length)
+          document.getElementById('d-top').innerHTML='🏆 TOP runners de la semaine : '+
+            d.top3.map((r,i)=>`${['🥇','🥈','🥉'][i]} <b>${String(r.nom).replace(/[<>&]/g,'')}</b>`).join(' · ')+
+            ` — semaine ${d.semaine}`;
+      }).catch(()=>{});
+  })();
 
   /* ===== Hero canvas : derricks à l'horizon ===== */
   (function(){

@@ -288,6 +288,7 @@
     <button class="nav-item" data-view="zones">🗺️ <span class="txt">Zones</span></button>
     <button class="nav-item" data-view="feuilles">📋 <span class="txt">Feuilles</span></button>
     <button class="nav-item" data-view="factures">🧾 <span class="txt">Factures</span></button>
+    <button class="nav-item" data-view="relances">📞 <span class="txt">Relances</span></button>
     <button class="nav-item" data-view="dlogs">📡 <span class="txt">Logs Discord</span></button>
     <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
     <div class="spacer"></div>
@@ -397,7 +398,7 @@ function show(v){
   VIEW=v;
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
-  ({overview,effectif,runs,semaine,zones,feuilles,factures,dlogs,params})[v]();
+  ({overview,effectif,runs,semaine,zones,feuilles,factures,relances,dlogs,params})[v]();
 }
 function rerender(){ show(VIEW); }
 
@@ -409,9 +410,10 @@ function overview(){
   $('#main').innerHTML = `
   <div class="topbar">
     <div><h2>Vue d'ensemble</h2><div class="sub">Semaine ${S.settings.semaine} · ${new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}</div></div>
-    <div style="display:flex;gap:10px">
+    <div style="display:flex;gap:10px;align-items:center">
       <span class="chip">🛢️ Prix : <b>${S.settings.prix} $/u</b></span>
       <span class="chip">🎯 Limite : <b>${fmt(S.settings.limite)}</b></span>
+      <button class="btn btn-gold" onclick="publishStats()">📊 Publier sur le site</button>
     </div>
   </div>
   <div class="grid g4" style="margin-bottom:18px">
@@ -637,6 +639,36 @@ function zones(){
   </div>
   <div class="panel"><h3>Comparatif des zones</h3><canvas id="cZcomp" height="110"></canvas></div>`;
   mkChart('cZcomp',{type:'bar',data:{labels:ZONES.map(z=>'Zone '+z),datasets:[{data:data.map(d=>d.tot),backgroundColor:['#e8a020','#5aa0ff','#3ddc84','#a78bfa'],borderRadius:8,barThickness:46}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
+}
+
+/* ================== PUBLICATION DES STATS PUBLIQUES ================== */
+async function publishStats(){
+  const token=(localStorage.getItem('orx_gh')||'').trim();
+  if(!token){ toast('⚠️ Ajoute d\'abord un token GitHub dans Paramètres'); return; }
+  const sorted=[...S.runners].sort((a,b)=>b.barils-a.barils);
+  const data={
+    maj:new Date().toISOString(), semaine:S.settings.semaine,
+    totalBarils:S.runners.reduce((a,r)=>a+r.barils,0),
+    ca:S.runners.reduce((a,r)=>a+r.barils,0)*S.settings.prix,
+    effectif:S.runners.length,
+    clientsServis:(S.fact&&S.fact.factures.length)||0,
+    top3:sorted.slice(0,3).filter(r=>r.barils>0).map(r=>({nom:r.nom,barils:r.barils})),
+    runners:S.runners.map(r=>({nom:r.nom,grade:r.grade,barils:r.barils,total:r.total,quota:GRADES[r.grade].quota,prime:primeProj(r)}))
+  };
+  const api='https://api.github.com/repos/Poloveni/OilRoxwood/contents/data/stats-public.json';
+  const hdr={Authorization:'Bearer '+token,Accept:'application/vnd.github+json'};
+  toast('📡 Publication en cours…');
+  try{
+    let sha;
+    const g=await fetch(api,{headers:hdr});
+    if(g.ok) sha=(await g.json()).sha;
+    const body={message:'📊 Publication des stats publiques',
+      content:btoa(unescape(encodeURIComponent(JSON.stringify(data,null,1))))};
+    if(sha) body.sha=sha;
+    const r=await fetch(api,{method:'PUT',headers:hdr,body:JSON.stringify(body)});
+    if(r.ok){ toast('✅ Stats publiées ! Visibles sur le site dans ~1 min'); sendLog('📊 Stats publiées','Le site public affiche maintenant la semaine '+S.settings.semaine,0x3ddc84); }
+    else{ const e=await r.json().catch(()=>({})); toast('⚠️ Échec ('+(e.message||r.status)+') — vérifie le token'); }
+  }catch(e){ toast('⚠️ Erreur réseau pendant la publication'); }
 }
 
 /* ================== FEUILLES (tableur) ================== */
@@ -933,6 +965,64 @@ function printFact(f){
   window.print();
 }
 
+/* ================== RELANCES COMMERCIALES ================== */
+let REL_J=30;
+async function ensureSheets(){
+  if(S.sheets) return;
+  try{
+    const r=await fetch('data/feuilles-seed.json?ts='+Date.now(),{cache:'no-store'});
+    S.sheets=await r.json();
+  }catch(e){ S.sheets=Object.fromEntries(Object.keys(SHEETS_DEF).map(k=>[k,[]])); }
+  save();
+}
+async function relances(){
+  $('#main').innerHTML='<div class="panel"><div class="empty">Analyse de l\'historique…</div></div>';
+  await ensureSheets();
+  const H=S.sheets.historique||[];
+  const now=Date.now(), jour=86400000;
+  const age=d=>{ const t=Date.parse(d); return isNaN(t)?null:Math.floor((now-t)/jour); };
+  const clients=H.filter(r=>r.statut&&age(r.dateCmd)!==null&&age(r.dateCmd)>=REL_J)
+                 .sort((a,b)=>age(b.dateCmd)-age(a.dateCmd));
+  const prospects=H.filter(r=>!r.statut&&(!r.dateDem||age(r.dateDem)>=REL_J))
+                   .sort((a,b)=>(age(b.dateDem)??9999)-(age(a.dateDem)??9999));
+  const idxOf=r=>H.indexOf(r);
+  const ligne=(r,type)=>`<tr>
+    <td><b>${esc(r.nom)}</b></td>
+    <td>${type==='c'
+      ?`<span class="badge bg3">client</span> <span style="color:var(--muted);font-size:.8rem">dernière cmd : ${esc(r.dateCmd||'—')}</span>`
+      :`<span class="badge bg0">prospect</span> <span style="color:var(--muted);font-size:.8rem">${r.dateDem?'démarché le '+esc(r.dateDem):'jamais démarché'}</span>`}</td>
+    <td>${(()=>{const a=type==='c'?age(r.dateCmd):age(r.dateDem);return a===null?'<span class="down">jamais</span>':`<b class="${a>=60?'down':'gold'}">${a} j</b>`;})()}</td>
+    <td><input class="field" style="padding:6px 10px;max-width:150px;font-size:.8rem" value="${esc(r.charge)}" placeholder="Commercial…" onchange="S.sheets.historique[${idxOf(r)}].charge=this.value;save()"></td>
+    <td><input class="field" style="padding:6px 10px;font-size:.8rem" value="${esc(r.comm)}" placeholder="Commentaire…" onchange="S.sheets.historique[${idxOf(r)}].comm=this.value;save()"></td>
+    <td style="text-align:right"><button class="btn btn-sm btn-gold" onclick="marqueRelance(${idxOf(r)})">✓ Relancé</button></td>
+  </tr>`;
+  $('#main').innerHTML=`
+  <div class="topbar">
+    <div><h2>Relances commerciales</h2><div class="sub">${clients.length} client(s) à relancer · ${prospects.length} prospect(s) à démarcher</div></div>
+    <div class="tabs" style="margin:0">
+      ${[30,60,90].map(j=>`<button class="tab ${REL_J===j?'on':''}" onclick="REL_J=${j};relances()">+${j} jours</button>`).join('')}
+    </div>
+  </div>
+  <div class="panel" style="margin-bottom:18px;padding:8px 16px;overflow-x:auto">
+    <h3 style="padding:12px 0 4px">💰 Clients sans commande depuis ${REL_J} jours ou plus</h3>
+    ${clients.length?`<table><thead><tr><th>Entreprise</th><th>Statut</th><th>Inactif</th><th>Assigné à</th><th>Commentaire</th><th></th></tr></thead>
+    <tbody>${clients.map(r=>ligne(r,'c')).join('')}</tbody></table>`:'<div class="empty">Aucun client inactif sur cette période 🎉</div>'}
+  </div>
+  <div class="panel" style="padding:8px 16px;overflow-x:auto">
+    <h3 style="padding:12px 0 4px">🎯 Prospects à démarcher (jamais clients)</h3>
+    ${prospects.length?`<table><thead><tr><th>Entreprise</th><th>Statut</th><th>Depuis</th><th>Assigné à</th><th>Commentaire</th><th></th></tr></thead>
+    <tbody>${prospects.slice(0,40).map(r=>ligne(r,'p')).join('')}</tbody></table>
+    ${prospects.length>40?`<p class="note">… et ${prospects.length-40} autres (affinez avec les filtres)</p>`:''}`:'<div class="empty">Aucun prospect en attente</div>'}
+  </div>`;
+}
+function marqueRelance(i){
+  const r=S.sheets.historique[i];
+  r.dateDem=new Date().toISOString().slice(0,10);
+  save(); relances();
+  sendLog('📞 Relance effectuée', `**${r.nom}** relancé${r.charge?' par **'+r.charge+'**':''}`, 0x5aa0ff);
+  toast('✓ '+r.nom+' marqué comme relancé');
+}
+
 /* ================== LOGS DISCORD ================== */
 const TYPE_ICON={vente:'💵',recolte:'⛏️',raffinage:'🏭',depot:'📦',retrait:'📤',autre:'📄'};
 async function dlogs(){
@@ -1034,6 +1124,13 @@ function params(){
         <div class="f-row"><input class="field" id="p_pw1" type="password" placeholder="Nouveau mot de passe"></div>
         <div class="f-row"><input class="field" id="p_pw2" type="password" placeholder="Confirmer"></div>
         <button class="btn btn-ghost" style="width:100%" onclick="changePw()">Changer le mot de passe</button>
+      </div>
+      <div class="panel" style="margin-bottom:18px">
+        <h3>📊 Publication sur le site</h3>
+        <div class="f-row"><label class="f-lbl">Token GitHub (fine-grained, droit « Contents » en écriture sur OilRoxwood)</label>
+        <input class="field" id="p_gh" type="password" value="${esc(localStorage.getItem('orx_gh')||'')}" placeholder="github_pat_…"></div>
+        <button class="btn btn-ghost" onclick="localStorage.setItem('orx_gh',document.getElementById('p_gh').value.trim());toast('🔑 Token enregistré (uniquement dans ce navigateur)')">Enregistrer le token</button>
+        <p style="color:var(--muted);font-size:.78rem;margin-top:12px">À créer sur github.com → Settings → Developer settings → Fine-grained tokens. Le token reste dans ce navigateur, il n'est ni exporté ni publié.</p>
       </div>
       <div class="panel" style="margin-bottom:18px">
         <h3>📡 Logs Discord (compte entreprise)</h3>
