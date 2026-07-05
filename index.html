@@ -449,19 +449,42 @@
       cx.beginPath();cx.moveTo(-40,0);cx.lineTo(40,0);cx.stroke();
       cx.restore();
     }
+    function wave(base,amp,freq,speed,c1,c2,edge){
+      cx.beginPath(); cx.moveTo(0,H);
+      for(let x=0;x<=W;x+=6){
+        const y=base+Math.sin(x*freq+t*speed)*amp+Math.sin(x*freq*.37+t*speed*1.6)*amp*.5;
+        cx.lineTo(x,y);
+      }
+      cx.lineTo(W,H); cx.closePath();
+      const g=cx.createLinearGradient(0,base-amp*2,0,H);
+      g.addColorStop(0,c1); g.addColorStop(1,c2);
+      cx.fillStyle=g; cx.fill();
+      if(edge){ cx.beginPath();
+        for(let x=0;x<=W;x+=6){
+          const y=base+Math.sin(x*freq+t*speed)*amp+Math.sin(x*freq*.37+t*speed*1.6)*amp*.5;
+          x===0?cx.moveTo(x,y):cx.lineTo(x,y);
+        }
+        cx.strokeStyle=edge; cx.lineWidth=2; cx.stroke(); }
+    }
     (function loop(){
       requestAnimationFrame(loop);
       if(document.hidden) return;
       cx.clearRect(0,0,W,H); t+=.016;
+      /* ciel étoilé */
       for(const st of stars){ st.tw+=st.ts; const g=(Math.sin(st.tw)+1)/2;
         cx.beginPath();cx.arc(st.x,st.y,st.r,0,7);cx.fillStyle=`rgba(255,235,190,${.08+.5*g})`;cx.fill(); }
-      const base=H*.88;
+      /* horizon + derricks */
+      const base=H*.84;
       const g=cx.createLinearGradient(0,base-90,0,base);
       g.addColorStop(0,'rgba(232,160,32,0)'); g.addColorStop(1,'rgba(232,160,32,.10)');
       cx.fillStyle=g; cx.fillRect(0,base-90,W,90);
       cx.strokeStyle='rgba(232,160,32,.5)'; cx.lineWidth=2;
       cx.beginPath();cx.moveTo(0,base);cx.lineTo(W,base);cx.stroke();
       for(const j of jacks) jack(j.x,base,j.s,t*j.sp*2+j.ph);
+      /* mer de pétrole devant les derricks */
+      wave(H*.885,13,.006,.9,'rgba(37,52,77,.55)','rgba(20,29,45,.9)',null);
+      wave(H*.915,16,.0045,-.7,'rgba(232,160,32,.20)','rgba(120,80,16,.12)','rgba(232,160,32,.55)');
+      wave(H*.955,11,.007,1.15,'rgba(10,14,22,.92)','rgba(6,9,14,.98)','rgba(232,160,32,.25)');
     })();
   })();
 </script>
