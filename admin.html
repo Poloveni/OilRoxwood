@@ -350,6 +350,7 @@
     <button class="nav-item" data-view="feuilles">📋 <span class="txt">Feuilles</span></button>
     <button class="nav-item" data-view="factures">🧾 <span class="txt">Factures</span></button>
     <button class="nav-item" data-view="relances">📞 <span class="txt">Relances</span></button>
+    <button class="nav-item" data-view="bilan">🏦 <span class="txt">Bilan compta</span></button>
     <button class="nav-item" data-view="dlogs">📡 <span class="txt">Logs Discord</span></button>
     <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
     <div class="spacer"></div>
@@ -463,7 +464,7 @@ function show(v){
   VIEW=v;
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
-  ({overview,effectif,runs,semaine,zones,feuilles,factures,relances,dlogs,params})[v]();
+  ({overview,effectif,runs,semaine,zones,feuilles,factures,relances,bilan,dlogs,params})[v]();
 }
 function rerender(){ show(VIEW); }
 
@@ -779,20 +780,42 @@ const SHEETS_DEF = {
     {k:'nom',l:'Vendeur',t:'text'},{k:'date',l:'Date',t:'date'},{k:'couteaux',l:'Couteaux',t:'num'},
     {k:'katanas',l:'Katanas',t:'num'},{k:'preservatifs',l:'Préservatifs',t:'num'},{k:'prix',l:'Prix HT',t:'num'}],
     tot:['couteaux','katanas','preservatifs','prix'], nouveau:{nom:'',date:'',couteaux:0,katanas:0,preservatifs:0,prix:0}},
+  rh:{ico:'🗂️',label:'RH',cols:[
+    {k:'nom',l:'Employé',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
+    {k:'rib',l:'RIB',t:'text'},{k:'idU',l:'ID unique',t:'text'},{k:'arrivee',l:'Arrivée',t:'date'},
+    {k:'discord',l:'Discord',t:'text'},{k:'avert',l:'Avert.',t:'text'},{k:'contrat',l:'Contrat signé',t:'bool'},
+    {k:'recrut',l:'Recruté par',t:'text'},{k:'actif',l:'Actif',t:'bool'}],
+    tot:[], nouveau:{nom:'',grade:'Intérimaire',tel:'',rib:'',idU:'',arrivee:'',discord:'',avert:'',contrat:false,recrut:'',actif:true}},
+  prodSem:{ico:'📅',label:'Production semaine',cols:[
+    {k:'nom',l:'Employé',t:'text'},{k:'lun',l:'Lun',t:'num'},{k:'mar',l:'Mar',t:'num'},{k:'mer',l:'Mer',t:'num'},
+    {k:'jeu',l:'Jeu',t:'num'},{k:'ven',l:'Ven',t:'num'},{k:'sam',l:'Sam',t:'num'},{k:'dim',l:'Dim',t:'num'},
+    {k:'_tot',l:'Total',t:'calc',f:r=>nn(r.lun)+nn(r.mar)+nn(r.mer)+nn(r.jeu)+nn(r.ven)+nn(r.sam)+nn(r.dim)},
+    {k:'_arg',l:'Montant ($)',t:'calc',f:r=>(nn(r.lun)+nn(r.mar)+nn(r.mer)+nn(r.jeu)+nn(r.ven)+nn(r.sam)+nn(r.dim))*5}],
+    tot:['lun','mar','mer','jeu','ven','sam','dim','_tot','_arg'],
+    nouveau:{nom:'',lun:0,mar:0,mer:0,jeu:0,ven:0,sam:0,dim:0},
+    note:'Montant = total de barils × 5 $'},
+  histEmp:{ico:'📜',label:'Anciens employés',cols:[
+    {k:'nom',l:'Employé',t:'text'},{k:'motif',l:'Motif départ',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
+    {k:'idU',l:'ID unique',t:'text'},{k:'arrivee',l:'Arrivée',t:'date'},{k:'discord',l:'Discord',t:'text'},
+    {k:'depart',l:'Départ (sem.)',t:'text'},{k:'comm',l:'Commentaire',t:'text'}],
+    tot:[], nouveau:{nom:'',motif:'Démission',tel:'',rib:'',idU:'',arrivee:'',discord:'',depart:'',comm:''}},
+  blacklist:{ico:'⛔',label:'Blacklist',cols:[
+    {k:'nom',l:'Nom',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
+    {k:'idU',l:'ID unique',t:'text'},{k:'date',l:'Date',t:'date'},{k:'discord',l:'Discord',t:'text'},
+    {k:'comm',l:'Raison',t:'text'}],
+    tot:[], nouveau:{nom:'',grade:'',tel:'',idU:'',date:'',discord:'',comm:''},
+    note:'Liste interne — personnes à ne pas recruter'},
+  compta:{ico:'🏦',label:'Compta',cols:[
+    {k:'type',l:'Type',t:'text'},{k:'date',l:'Date',t:'date'},{k:'justif',l:'Justificatif',t:'text'},
+    {k:'montant',l:'Montant',t:'num'}],
+    tot:['montant'], nouveau:{type:'Dépense déductible',date:'',justif:'',montant:0},
+    note:'Dépenses déductibles et retraits du compte entreprise'},
 };
 const nn = x => +x||0;
 let curSheet='tablette', sheetSearch='';
 async function feuilles(){
-  if(!S.sheets){
-    $('#main').innerHTML='<div class="panel"><div class="empty">Chargement des feuilles…</div></div>';
-    try{
-      const r=await fetch('data/feuilles-seed.json?ts='+Date.now(),{cache:'no-store'});
-      S.sheets=await r.json(); save();
-    }catch(e){
-      S.sheets=Object.fromEntries(Object.keys(SHEETS_DEF).map(k=>[k,[]])); save();
-    }
-  }
-  Object.keys(SHEETS_DEF).forEach(k=>{ if(!S.sheets[k]) S.sheets[k]=[]; });
+  if(!S.sheets) $('#main').innerHTML='<div class="panel"><div class="empty">Chargement des feuilles…</div></div>';
+  await ensureSheets();
   const def=SHEETS_DEF[curSheet], rows=S.sheets[curSheet];
   const q=sheetSearch.toLowerCase();
   const idx=rows.map((r,i)=>i).filter(i=>!q||Object.values(rows[i]).join(' ').toLowerCase().includes(q));
@@ -1128,11 +1151,17 @@ function printFact(f){
 /* ================== RELANCES COMMERCIALES ================== */
 let REL_J=30;
 async function ensureSheets(){
-  if(S.sheets) return;
+  // charge le seed pour les feuilles manquantes (première fois OU nouvelles feuilles ajoutées)
+  const missing = S.sheets ? Object.keys(SHEETS_DEF).filter(k=>!S.sheets[k]) : Object.keys(SHEETS_DEF);
+  if(S.sheets && !missing.length) return;
+  if(!S.sheets) S.sheets={};
   try{
     const r=await fetch('data/feuilles-seed.json?ts='+Date.now(),{cache:'no-store'});
-    S.sheets=await r.json();
-  }catch(e){ S.sheets=Object.fromEntries(Object.keys(SHEETS_DEF).map(k=>[k,[]])); }
+    const d=await r.json();
+    missing.forEach(k=>S.sheets[k]=d[k]||[]);
+  }catch(e){
+    missing.forEach(k=>S.sheets[k]=[]);
+  }
   save();
 }
 async function relances(){
@@ -1181,6 +1210,84 @@ function marqueRelance(i){
   save(); relances();
   sendLog('📞 Relance effectuée', `**${r.nom}** relancé${r.charge?' par **'+r.charge+'**':''}`, 0x5aa0ff);
   toast('✓ '+r.nom+' marqué comme relancé');
+}
+
+/* ================== BILAN COMPTABLE ================== */
+const CAPS={emp:{sal:85000,prime:42500}, patron:{sal:90000,prime:45000}};
+function bilanData(){
+  const T=S.sheets.tablette||[], SAL=S.sheets.salaires||[], CPT=S.sheets.compta||[];
+  const low=s=>String(s||'').toLowerCase().trim();
+  const isPatron=r=>/patron/i.test(r.rang||'');
+  const lignes=T.filter(r=>r.nom&&!low(r.nom).startsWith('nom')).map(r=>{
+    const s=SAL.find(x=>low(x.nom)===low(r.nom))||{};
+    const cap=isPatron(r)?CAPS.patron:CAPS.emp;
+    const sal=Math.min(nn(s.prodBidons)+nn(s.poste)+nn(s.remboursement)+nn(s.recrutement),cap.sal);
+    const prime=Math.min(nn(s.run),cap.prime);
+    return {nom:r.nom,rang:r.rang,run:nn(r.runs),facture:nn(r.factures),vente:nn(r.ventes),
+      ca:nn(r.runs)+nn(r.factures)+nn(r.ventes),sal,prime};
+  });
+  const caBrut=lignes.reduce((a,l)=>a+l.ca,0);
+  const masseSal=lignes.reduce((a,l)=>a+l.sal,0);
+  const totalPrimes=lignes.reduce((a,l)=>a+l.prime,0);
+  const depDed=CPT.filter(c=>/d[ée]pense/i.test(c.type)).reduce((a,c)=>a+nn(c.montant),0);
+  const retraits=CPT.filter(c=>/retrait/i.test(c.type)).reduce((a,c)=>a+nn(c.montant),0);
+  // méthode compta FBFA : impôt sur (CA − salaires − dépenses), primes déduites APRÈS impôt
+  const depenses=masseSal+depDed;
+  const benefice=caBrut-depenses;
+  const taux=S.settings.impot??0.29;
+  const impots=Math.max(0,benefice*taux);
+  const apresImpot=benefice-impots;
+  const apresPrimes=apresImpot-totalPrimes;
+  return {lignes,caBrut,masseSal,totalPrimes,depDed,retraits,depenses,benefice,taux,impots,apresImpot,apresPrimes,net:apresPrimes-retraits};
+}
+async function bilan(){
+  $('#main').innerHTML='<div class="panel"><div class="empty">Calcul du bilan…</div></div>';
+  await ensureSheets();
+  const B=bilanData();
+  const actifs=B.lignes.filter(l=>l.ca>0||l.sal>0||l.prime>0).sort((a,b)=>b.ca-a.ca);
+  $('#main').innerHTML=`
+  <div class="topbar">
+    <div><h2>Bilan comptable</h2><div class="sub">Calculé en direct depuis les feuilles Tablette, Budget & salaires et Compta</div></div>
+    <span class="chip">Taux d'imposition :
+      <input class="field" type="number" step="1" min="0" max="100" value="${Math.round(B.taux*100)}"
+        style="width:70px;display:inline-block;padding:4px 8px;margin:0 4px"
+        onchange="S.settings.impot=(+this.value||0)/100;save();bilan()"> <b>%</b></span>
+  </div>
+  <div class="grid g4" style="margin-bottom:18px">
+    <div class="panel kpi"><div class="lbl">CA brut réalisé</div><div class="val gold">${money(B.caBrut)}</div><div class="delta">runs + factures + ventes</div></div>
+    <div class="panel kpi"><div class="lbl">Dépenses déductibles</div><div class="val">${money(B.depenses)}</div><div class="delta">salaires ${money(B.masseSal)} · autres ${money(B.depDed)}</div></div>
+    <div class="panel kpi"><div class="lbl">Bénéfice imposable</div><div class="val ${B.benefice>=0?'up':'down'}">${money(B.benefice)}</div><div class="delta">CA − dépenses</div></div>
+    <div class="panel kpi"><div class="lbl">Impôts (${Math.round(B.taux*100)} %)</div><div class="val down">${money(B.impots)}</div><div class="delta">sur le bénéfice</div></div>
+  </div>
+  <div class="grid g4" style="margin-bottom:18px">
+    <div class="panel kpi"><div class="lbl">Bénéfice après impôt</div><div class="val gold">${money(B.apresImpot)}</div></div>
+    <div class="panel kpi"><div class="lbl">Total des primes</div><div class="val">${money(B.totalPrimes)}</div><div class="delta">déduites après impôt</div></div>
+    <div class="panel kpi"><div class="lbl">Bénéfice après primes</div><div class="val ${B.apresPrimes>=0?'up':'down'}">${money(B.apresPrimes)}</div></div>
+    <div class="panel kpi"><div class="lbl">Trésorerie nette finale</div><div class="val ${B.net>=0?'up':'down'}">${money(B.net)}</div><div class="delta">après retraits (${money(B.retraits)})</div></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:18px">
+    <div class="panel"><h3>Répartition du chiffre d'affaires</h3><canvas id="cBilan" height="230"></canvas></div>
+    <div class="panel"><h3>TOP contributeurs au CA</h3><canvas id="cTopCA" height="230"></canvas></div>
+  </div>
+  <div class="panel" style="padding:8px 16px;overflow-x:auto">
+    <h3 style="padding:12px 0 4px">Détail par employé (${actifs.length} actifs sur ${B.lignes.length})</h3>
+    <table><thead><tr><th>Employé</th><th>Grade</th><th>Runs</th><th>Factures</th><th>Ventes</th><th>CA total</th><th>Salaire</th><th>Prime</th></tr></thead><tbody>
+    ${actifs.map(l=>`<tr><td><b>${esc(l.nom)}</b></td><td style="color:var(--muted);font-size:.8rem">${esc(l.rang)}</td>
+      <td>${money(l.run)}</td><td>${money(l.facture)}</td><td>${money(l.vente)}</td>
+      <td class="gold" style="font-weight:700">${money(l.ca)}</td><td>${money(l.sal)}</td><td>${money(l.prime)}</td></tr>`).join('')}
+    </tbody></table>
+    <p class="note">💡 Plafonds appliqués : employés ${fmt(CAPS.emp.sal)} $ / ${fmt(CAPS.emp.prime)} $ · direction ${fmt(CAPS.patron.sal)} $ / ${fmt(CAPS.patron.prime)} $. Ajoute les dépenses et retraits dans Feuilles → 🏦 Compta.</p>
+  </div>`;
+  const reste=Math.max(0,B.net);
+  mkChart('cBilan',{type:'doughnut',data:{
+    labels:['Salaires','Primes','Autres dépenses','Impôts','Retraits','Trésorerie nette'],
+    datasets:[{data:[B.masseSal,B.totalPrimes,B.depDed,B.impots,B.retraits,reste],
+      backgroundColor:['#5aa0ff','#a78bfa','#ff2d95','#ff5c5c','#8494a9','#3ddc84'],borderWidth:0}]},
+    options:{cutout:'60%',plugins:{legend:{position:'bottom'}}}});
+  const top=actifs.slice(0,8);
+  mkChart('cTopCA',{type:'bar',data:{labels:top.map(l=>l.nom),
+    datasets:[{data:top.map(l=>l.ca),backgroundColor:top.map((_,i)=>i===0?'#e8a020':i===1?'#ff2d95':i===2?'#22d7ee':'rgba(90,160,255,.55)'),borderRadius:6}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
 }
 
 /* ================== LOGS DISCORD ================== */
