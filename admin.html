@@ -459,7 +459,15 @@ function grade(r){ return GRADES[r.grade]; }
 function gTitle(r){ return r.poste||grade(r).nom; } // rang réel (Patron, Commercial…) ou grade raffineur
 function gCls(r){ return r.poste?(/patron/i.test(r.poste)?'bg3':'bg2'):grade(r).cls; }
 function quotaOK(r){ return r.barils >= grade(r).quota; }
-function primeProj(r){ return quotaOK(r) ? S.settings.primeBase * grade(r).mult : 0; }
+function caps(){
+  if(!S.settings.caps) S.settings.caps={empSal:85000,empPrime:42500,patSal:90000,patPrime:45000};
+  return S.settings.caps;
+}
+function primeProj(r){
+  if(!quotaOK(r)) return 0;
+  const cap = r.poste && /patron/i.test(r.poste) ? caps().patPrime : caps().empPrime;
+  return Math.min(r.barils * grade(r).mult, cap); // barils × multiplicateur du grade, plafonné
+}
 function eligible(r){ return r.grade < 3 && r.total >= grade(r).montee; }
 let charts = [];
 function destroyCharts(){ charts.forEach(c=>c.destroy()); charts=[]; }
@@ -647,7 +655,7 @@ function semaine(){
   const totalPrimes = R.reduce((a,r)=>a+primeProj(r),0) + S.settings.top.slice(0,Math.min(3,R.length)).reduce((a,b)=>a+b,0);
   $('#main').innerHTML = `
   <div class="topbar">
-    <div><h2>Semaine ${S.settings.semaine} — Primes</h2><div class="sub">${weekRange()} · prime de base : ${money(S.settings.primeBase)} (montant minimum, versée le lundi si quota effectué)</div></div>
+    <div><h2>Semaine ${S.settings.semaine} — Primes</h2><div class="sub">${weekRange()} · prime = barils × multiplicateur du grade, si quota atteint (plafond ${fmt(caps().empPrime)} $ · direction ${fmt(caps().patPrime)} $) · versée le lundi</div></div>
     <button class="btn btn-gold" onclick="closeWeek()">🗓️ Clôturer la semaine (lundi)</button>
   </div>
   <div class="panel" style="margin-bottom:18px;padding:8px 16px">
@@ -747,11 +755,11 @@ const SHEETS_DEF = {
   salaires:{ico:'💰',label:'Budget & salaires',cols:[
     {k:'nom',l:'Nom employé',t:'text'},{k:'prodBidons',l:'Prod. bidons',t:'num'},{k:'poste',l:'Salaire de poste',t:'num'},
     {k:'run',l:'Salaire de run',t:'num'},{k:'remboursement',l:'Remboursement',t:'num'},{k:'recrutement',l:'Recrutement',t:'num'},
-    {k:'_sal',l:'Salaires',t:'calc',f:r=>Math.min(nn(r.prodBidons)+nn(r.poste)+nn(r.remboursement)+nn(r.recrutement),85000)},
-    {k:'_prime',l:'Primes',t:'calc',f:r=>Math.min(nn(r.run),42500)},
-    {k:'_tot',l:'Total',t:'calc',f:r=>Math.min(nn(r.prodBidons)+nn(r.poste)+nn(r.remboursement)+nn(r.recrutement),85000)+Math.min(nn(r.run),42500)}],
+    {k:'_sal',l:'Salaires',t:'calc',f:r=>Math.min(nn(r.prodBidons)+nn(r.poste)+nn(r.remboursement)+nn(r.recrutement),caps().empSal)},
+    {k:'_prime',l:'Primes',t:'calc',f:r=>Math.min(nn(r.run),caps().empPrime)},
+    {k:'_tot',l:'Total',t:'calc',f:r=>Math.min(nn(r.prodBidons)+nn(r.poste)+nn(r.remboursement)+nn(r.recrutement),caps().empSal)+Math.min(nn(r.run),caps().empPrime)}],
     tot:['_sal','_prime','_tot'], nouveau:{nom:'',prodBidons:0,poste:0,run:0,remboursement:0,recrutement:0},
-    note:'Plafonds : salaires 85 000 $ · primes 42 500 $ (appliqués automatiquement)'},
+    note:'Plafonds appliqués automatiquement — modifiables dans 🏦 Bilan compta'},
   historique:{ico:'📇',label:'Historique entreprises',cols:[
     {k:'nom',l:'Nom',t:'text'},{k:'dateCmd',l:'Dernière commande',t:'date'},{k:'statut',l:'Client',t:'bool'},
     {k:'charge',l:'Démarché par',t:'text'},{k:'dateDem',l:'Date démarchage',t:'date'},{k:'comm',l:'Commentaire',t:'text'}],
@@ -1203,16 +1211,15 @@ function marqueRelance(i){
 }
 
 /* ================== BILAN COMPTABLE ================== */
-const CAPS={emp:{sal:85000,prime:42500}, patron:{sal:90000,prime:45000}};
 function bilanData(){
   const T=S.sheets.tablette||[], SAL=S.sheets.salaires||[], CPT=S.sheets.compta||[];
   const low=s=>String(s||'').toLowerCase().trim();
   const isPatron=r=>/patron/i.test(r.rang||'');
   const lignes=T.filter(r=>r.nom&&!low(r.nom).startsWith('nom')).map(r=>{
     const s=SAL.find(x=>low(x.nom)===low(r.nom))||{};
-    const cap=isPatron(r)?CAPS.patron:CAPS.emp;
-    const sal=Math.min(nn(s.prodBidons)+nn(s.poste)+nn(s.remboursement)+nn(s.recrutement),cap.sal);
-    const prime=Math.min(nn(s.run),cap.prime);
+    const C=caps();
+    const sal=Math.min(nn(s.prodBidons)+nn(s.poste)+nn(s.remboursement)+nn(s.recrutement),isPatron(r)?C.patSal:C.empSal);
+    const prime=Math.min(nn(s.run),isPatron(r)?C.patPrime:C.empPrime);
     return {nom:r.nom,rang:r.rang,run:nn(r.runs),facture:nn(r.factures),vente:nn(r.ventes),
       ca:nn(r.runs)+nn(r.factures)+nn(r.ventes),sal,prime};
   });
@@ -1238,10 +1245,18 @@ async function bilan(){
   $('#main').innerHTML=`
   <div class="topbar">
     <div><h2>Bilan comptable</h2><div class="sub">Calculé en direct depuis les feuilles Tablette, Budget & salaires et Compta</div></div>
-    <span class="chip">Taux d'imposition :
-      <input class="field" type="number" step="1" min="0" max="100" value="${Math.round(B.taux*100)}"
-        style="width:70px;display:inline-block;padding:4px 8px;margin:0 4px"
-        onchange="S.settings.impot=(+this.value||0)/100;save();bilan()"> <b>%</b></span>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <span class="chip">Taux d'imposition :
+        <input class="field" type="number" step="1" min="0" max="100" value="${Math.round(B.taux*100)}"
+          style="width:64px;display:inline-block;padding:4px 8px;margin:0 4px"
+          onchange="S.settings.impot=(+this.value||0)/100;save();bilan()"> <b>%</b></span>
+      <span class="chip">Plafond salaire :
+        <input class="field" type="number" value="${caps().empSal}" title="Employé" style="width:86px;display:inline-block;padding:4px 8px;margin:0 4px" onchange="caps().empSal=+this.value||0;save();bilan()">
+        / <input class="field" type="number" value="${caps().patSal}" title="Direction" style="width:86px;display:inline-block;padding:4px 8px;margin:0 4px" onchange="caps().patSal=+this.value||0;save();bilan()"> <b>emp / dir</b></span>
+      <span class="chip">Plafond prime :
+        <input class="field" type="number" value="${caps().empPrime}" title="Employé" style="width:86px;display:inline-block;padding:4px 8px;margin:0 4px" onchange="caps().empPrime=+this.value||0;save();bilan()">
+        / <input class="field" type="number" value="${caps().patPrime}" title="Direction" style="width:86px;display:inline-block;padding:4px 8px;margin:0 4px" onchange="caps().patPrime=+this.value||0;save();bilan()"> <b>emp / dir</b></span>
+    </div>
   </div>
   <div class="grid g4" style="margin-bottom:18px">
     <div class="panel kpi"><div class="lbl">CA brut réalisé</div><div class="val gold">${money(B.caBrut)}</div><div class="delta">runs + factures + ventes</div></div>
@@ -1266,7 +1281,7 @@ async function bilan(){
       <td>${money(l.run)}</td><td>${money(l.facture)}</td><td>${money(l.vente)}</td>
       <td class="gold" style="font-weight:700">${money(l.ca)}</td><td>${money(l.sal)}</td><td>${money(l.prime)}</td></tr>`).join('')}
     </tbody></table>
-    <p class="note">💡 Plafonds appliqués : employés ${fmt(CAPS.emp.sal)} $ / ${fmt(CAPS.emp.prime)} $ · direction ${fmt(CAPS.patron.sal)} $ / ${fmt(CAPS.patron.prime)} $. Ajoute les dépenses et retraits dans Feuilles → 🏦 Compta.</p>
+    <p class="note">💡 Plafonds appliqués : employés ${fmt(caps().empSal)} $ / ${fmt(caps().empPrime)} $ · direction ${fmt(caps().patSal)} $ / ${fmt(caps().patPrime)} $ — modifiables en haut de page. Ajoute les dépenses et retraits dans Feuilles → 🏦 Compta.</p>
   </div>`;
   const reste=Math.max(0,B.net);
   mkChart('cBilan',{type:'doughnut',data:{
@@ -1363,7 +1378,6 @@ function params(){
       <h3>💼 Économie</h3>
       <div class="grid g2">
         <div class="f-row"><label class="f-lbl">Prix du pétrole ($/u)</label><input class="field" id="p_prix" type="number" value="${S.settings.prix}"></div>
-        <div class="f-row"><label class="f-lbl">Prime de base ($)</label><input class="field" id="p_base" type="number" value="${S.settings.primeBase}"></div>
         <div class="f-row"><label class="f-lbl">Limite pétroles</label><input class="field" id="p_lim" type="number" value="${S.settings.limite}"></div>
         <div class="f-row"><label class="f-lbl">N° de semaine</label><input class="field" id="p_sem" type="number" value="${S.settings.semaine}"></div>
       </div>
@@ -1419,8 +1433,7 @@ function params(){
   </div>`;
 }
 function saveParams(){
-  S.settings.prix=+$('#p_prix').value||10;
-  S.settings.primeBase=+$('#p_base').value||5000;
+  S.settings.prix=+$('#p_prix').value||5;
   S.settings.limite=+$('#p_lim').value||24000;
   S.settings.semaine=+$('#p_sem').value||1;
   S.settings.top=[+$('#p_t1').value||15000,+$('#p_t2').value||10000,+$('#p_t3').value||5000];
