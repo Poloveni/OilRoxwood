@@ -552,7 +552,10 @@ function logout(){
 /* ---- Connexion via Discord (OAuth Supabase) ---- */
 async function loginDiscord(){
   if(!SYNC.cli) return alert('Connexion Discord indisponible : Supabase injoignable. Utilise l\'identifiant en secours.');
-  await SYNC.cli.auth.signInWithOAuth({provider:'discord',options:{redirectTo:location.origin+location.pathname}});
+  await SYNC.cli.auth.signInWithOAuth({provider:'discord',options:{
+    redirectTo:location.origin+location.pathname,
+    queryParams:{prompt:'none'} // saute l'écran d'autorisation si l'appli est déjà approuvée
+  }});
 }
 async function checkDiscordAuth(){
   if(!SYNC.cli) return;
