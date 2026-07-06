@@ -142,15 +142,6 @@
   .cli-chip{white-space:nowrap;background:var(--paper);border:1px solid var(--line);border-radius:99px;padding:8px 20px;font-size:.88rem;font-weight:600;color:var(--muted)}
   .cli-chip b{color:var(--accent-dark)}
 
-  /* ---------- STATS EN DIRECT ---------- */
-  #direct{background:var(--dk);color:#fff;padding:56px 6vw;display:none}
-  #direct .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;text-align:center}
-  #direct .d-kpi strong{display:block;font-size:2.1rem;font-weight:800;color:var(--accent)}
-  #direct .d-kpi span{font-size:.82rem;color:#8d99a8}
-  #direct .d-top{grid-column:1/-1;color:#aeb8c4;font-size:.9rem;margin-top:6px}
-  #direct .d-top b{color:var(--accent)}
-  @media(max-width:700px){#direct .wrap{grid-template-columns:1fr 1fr}}
-
   /* ---------- GRADES ---------- */
   #grades{background:var(--dk);color:#fff}
   #grades .sec-kicker{color:var(--accent)}
@@ -341,17 +332,6 @@
   </div>
 </section>
 
-<!-- ================= STATS EN DIRECT ================= -->
-<section id="direct">
-  <div class="wrap">
-    <div class="d-kpi"><strong id="d-barils">—</strong><span>barils livrés cette semaine</span></div>
-    <div class="d-kpi"><strong id="d-ca">—</strong><span>chiffre d'affaires semaine</span></div>
-    <div class="d-kpi"><strong id="d-runners">—</strong><span>runners actifs</span></div>
-    <div class="d-kpi"><strong id="d-clients">—</strong><span>factures émises</span></div>
-    <div class="d-top" id="d-top"></div>
-  </div>
-</section>
-
 <!-- ================= DEVENIR CLIENT ================= -->
 <section id="devenir-client">
   <div class="wrap">
@@ -535,35 +515,6 @@
 
   /* ===== Mur des clients : boucle infinie ===== */
   (function(){ const t=document.getElementById('cliTrack'); if(t) t.innerHTML+=t.innerHTML; })();
-
-  /* ===== Stats en direct (publiées depuis le dashboard) ===== */
-  (function(){
-    fetch('data/stats-public.json?ts='+Date.now(),{cache:'no-store'})
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{
-        if(!d||!d.maj) return;
-        const sec=document.getElementById('direct');
-        sec.style.display='block';
-        const F=n=>(n||0).toLocaleString('fr-FR');
-        const vals={'d-barils':d.totalBarils,'d-ca':d.ca,'d-runners':d.effectif,'d-clients':d.clientsServis};
-        const sfx={'d-ca':' $'};
-        for(const id in vals){
-          const el=document.getElementById(id), target=+vals[id]||0;
-          const t0=performance.now(), dur=1100;
-          const io=new IntersectionObserver(es=>{ if(!es[0].isIntersecting) return; io.disconnect();
-            const t1=performance.now();
-            (function step(t){ const p=Math.min(1,(t-t1)/dur), e=1-Math.pow(1-p,3);
-              el.textContent=F(Math.round(target*e))+(sfx[id]||'');
-              if(p<1) requestAnimationFrame(step); })(t1);
-          });
-          io.observe(el);
-        }
-        if(d.top3&&d.top3.length)
-          document.getElementById('d-top').innerHTML='🏆 TOP runners de la semaine : '+
-            d.top3.map((r,i)=>`${['🥇','🥈','🥉'][i]} <b>${String(r.nom).replace(/[<>&]/g,'')}</b>`).join(' · ')+
-            ` — semaine ${d.semaine}`;
-      }).catch(()=>{});
-  })();
 
   /* ===== Hero canvas : derricks à l'horizon ===== */
   (function(){
