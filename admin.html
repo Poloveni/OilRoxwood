@@ -1424,6 +1424,7 @@ function params(){
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn btn-gold" onclick="exportData()">⬇️ Exporter (JSON)</button>
           <button class="btn btn-ghost" onclick="document.getElementById('impFile').click()">⬆️ Importer</button>
+          <button class="btn btn-ghost" onclick="reloadSheets()">♻️ Recharger les feuilles du dépôt</button>
           <button class="btn btn-red" onclick="resetAll()">🗑️ Tout réinitialiser</button>
         </div>
         <input type="file" id="impFile" accept=".json" style="display:none" onchange="importData(this)">
@@ -1477,6 +1478,14 @@ function importData(inp){
     S=Object.assign(defaults(),d); save(); rerender(); toast('⬆️ Données importées');
   }catch(e){ toast('⚠️ Fichier invalide'); } };
   rd.readAsText(f); inp.value='';
+}
+async function reloadSheets(){
+  if(!confirm('Recharger toutes les feuilles depuis le dépôt GitHub ?\n\nLes modifications faites localement dans les feuilles seront remplacées par la version du dépôt. (Runners, factures et paramètres ne sont pas touchés.)')) return;
+  S.sheets=null; save();
+  await ensureSheets();
+  syncRunners(false);
+  rerender();
+  toast('♻️ Feuilles rechargées et effectif resynchronisé');
 }
 function resetAll(){
   if(confirm('Tout effacer ? (runners, semaines, paramètres)') && confirm('Vraiment sûr ? Cette action est définitive.')){
