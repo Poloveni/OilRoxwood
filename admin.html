@@ -1041,6 +1041,7 @@ async function feuilles(){
     <div style="display:flex;gap:10px">
       ${curSheet==='tablette'?'<button class="btn btn-ghost" onclick="openPasteModal()">📋 Coller depuis Excel</button>':''}
       <button class="btn btn-ghost" onclick="sheetCsv()">⬇ CSV</button>
+      <button class="btn btn-red" onclick="sheetReset()">♻️ Réinitialiser</button>
       <button class="btn btn-gold" onclick="rowAdd()">＋ Ligne</button>
     </div>
   </div>
@@ -1143,6 +1144,16 @@ function applyPaste(replace){
   toast(replace?`♻️ Tablette remplacée : ${rows.length} lignes — effectif resynchronisé`
               :`🔀 Tablette fusionnée : ${maj} mise(s) à jour, ${add} ajout(s) — effectif resynchronisé`);
   sendLog('📋 Import tablette', `${replace?'Remplacement complet':'Fusion'} : **${rows.length} lignes** collées depuis Excel`, 0x22d7ee);
+}
+async function sheetReset(){
+  const def=SHEETS_DEF[curSheet], n=S.sheets[curSheet].length;
+  if(!confirm(`Réinitialiser la feuille « ${def.label} » ?\n\nLes ${n} ligne(s) actuelles seront supprimées (pense à ⬇ CSV avant si tu veux une archive).`)) return;
+  S.sheets[curSheet]=[];
+  save(); sbPushNow();
+  if(curSheet==='tablette') syncRunners(false);
+  feuilles();
+  toast(`♻️ Feuille « ${def.label} » réinitialisée (${n} lignes supprimées)`);
+  sendLog('♻️ Feuille réinitialisée', `**${def.label}** vidée (${n} lignes) — nouvelle semaine !`, 0x8b5cf6);
 }
 function sheetCsv(){
   const def=SHEETS_DEF[curSheet], rows=S.sheets[curSheet];
