@@ -500,7 +500,10 @@ function top3html(sorted){
 let filterG=-1, filterZ='', search='';
 function effectif(){
   let R=[...S.runners].sort((a,b)=>b.grade-a.grade||b.barils-a.barils);
-  if(filterG>-1) R=R.filter(r=>r.grade===filterG);
+  if(String(filterG)!=='-1'){
+    if(String(filterG).startsWith('p:')) R=R.filter(r=>r.poste===String(filterG).slice(2));
+    else R=R.filter(r=>r.grade===+filterG&&!r.poste);
+  }
   if(filterZ) R=R.filter(r=>r.zone===filterZ);
   if(search) R=R.filter(r=>(r.nom+' '+r.discord).toLowerCase().includes(search.toLowerCase()));
   $('#main').innerHTML = `
@@ -513,9 +516,10 @@ function effectif(){
   </div>
   <div class="panel" style="margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
     <input class="field" style="max-width:220px" placeholder="🔍 Rechercher…" value="${esc(search)}" oninput="search=this.value;effectif()">
-    <select class="field" style="max-width:200px" onchange="filterG=+this.value;effectif()">
+    <select class="field" style="max-width:200px" onchange="filterG=this.value;effectif()">
       <option value="-1">Tous les grades</option>
-      ${GRADES.map((g,i)=>`<option value="${i}" ${filterG===i?'selected':''}>${g.nom}</option>`).join('')}
+      ${GRADES.map((g,i)=>`<option value="${i}" ${String(filterG)===String(i)?'selected':''}>${g.nom}</option>`).join('')}
+      ${[...new Set(S.runners.filter(r=>r.poste).map(r=>r.poste))].sort().map(p=>`<option value="p:${esc(p)}" ${String(filterG)==='p:'+p?'selected':''}>💼 ${esc(p)}</option>`).join('')}
     </select>
     <select class="field" style="max-width:160px" onchange="filterZ=this.value;effectif()">
       <option value="">Toutes zones</option>
