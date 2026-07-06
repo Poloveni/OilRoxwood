@@ -999,7 +999,7 @@ const SHEETS_DEF = {
     {k:'bidons',l:'Bidons',t:'bool'},{k:'date',l:'Date de prise',t:'date'},{k:'don',l:'Don',t:'text'},{k:'permis',l:'Contrôle permis',t:'text'}],
     tot:[], nouveau:{nom:'',menus:false,boissons:false,bidons:false,date:'',don:'',permis:''}},
   ventesSem:{ico:'🛒',label:'Ventes de la semaine',cols:[
-    {k:'date',l:'Date',t:'date'},{k:'client',l:'Client',t:'text'},
+    {k:'date',l:'Date',t:'date'},{k:'client',l:'Client',t:'client'},
     {k:'quantite',l:'Quantité',t:'num'},{k:'qui',l:'Qui ?',t:'text'}],
     tot:['quantite'], nouveau:{date:'',client:'',quantite:0,qui:''}},
   salaires:{ico:'💰',label:'Budget & salaires',cols:[
@@ -1033,6 +1033,7 @@ let curSheet='tablette', sheetSearch='';
 async function feuilles(){
   if(!S.sheets) $('#main').innerHTML='<div class="panel"><div class="empty">Chargement des feuilles…</div></div>';
   await ensureSheets();
+  await ensureFact(); // base clients pour la colonne Client des ventes
   const def=SHEETS_DEF[curSheet], rows=S.sheets[curSheet];
   const q=sheetSearch.toLowerCase();
   const idx=rows.map((r,i)=>i).filter(i=>!q||Object.values(rows[i]).join(' ').toLowerCase().includes(q));
@@ -1043,6 +1044,7 @@ async function feuilles(){
       if(c.t==='calc') return `<td class="calc">${fmt(Math.round(c.f(r)))}</td>`;
       if(c.t==='bool') return `<td style="text-align:center"><input type="checkbox" ${r[c.k]?'checked':''} onchange="cellEdit(${i},'${c.k}',this.checked)"></td>`;
       if(c.t==='num')  return `<td><input type="number" value="${nn(r[c.k])}" onchange="cellEdit(${i},'${c.k}',+this.value||0)"></td>`;
+      if(c.t==='client') return `<td><input type="text" list="dlSheetClients" value="${esc(r[c.k])}" placeholder="Client…" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`;
       if(c.t==='date'){ const d=/^\d{4}-\d{2}-\d{2}/.test(r[c.k]||'')?String(r[c.k]).slice(0,10):'';
         return `<td><input type="date" value="${d}" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`; }
       return `<td><input type="text" value="${esc(r[c.k])}" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`;
@@ -1069,7 +1071,8 @@ async function feuilles(){
   <div class="panel" style="padding:10px 16px;overflow-x:auto">
     <input class="field" style="max-width:240px;margin:6px 0 10px" placeholder="🔍 Rechercher…" value="${esc(sheetSearch)}" oninput="sheetSearch=this.value;feuilles()">
     <table class="sheet"><thead><tr>${head}<th></th></tr></thead><tbody>${body||`<tr><td colspan="${def.cols.length+1}"><div class="empty">Aucune ligne</div></td></tr>`}</tbody>${foot}</table>
-  </div>`;
+  </div>
+  <datalist id="dlSheetClients">${((S.fact&&S.fact.clients)||[]).map(c=>`<option value="${esc(c.nom)}">`).join('')}</datalist>`;
 }
 function cellEdit(i,k,val){ S.sheets[curSheet][i][k]=val; save(); if(curSheet==='tablette') syncRunners(false); feuilles(); }
 function rowAdd(){ S.sheets[curSheet].unshift(JSON.parse(JSON.stringify(SHEETS_DEF[curSheet].nouveau))); save(); feuilles(); }
@@ -1351,6 +1354,12 @@ function saveFact(){
   // cohérence Relances : la facture met à jour la dernière commande du client et clôt la relance en cours
   const cRel=cli(FD.client);
   if(cRel){ cRel.lastCmd=FD.date; delete cRel.relance; }
+  // cohérence Ventes de la semaine : les bidons facturés s'y ajoutent automatiquement
+  const qteB=FD.lignes.filter(l=>l.ref==='CMD'||/bidon/i.test(ligneCalc(l).desc||'')).reduce((a,l)=>a+nn(l.qte),0);
+  if(qteB>0){
+    const addVente=()=>{ S.sheets.ventesSem.push({date:FD.date,client:FD.client,quantite:qteB,qui:FD.emetteur||''}); save(); };
+    if(S.sheets&&S.sheets.ventesSem) addVente(); else ensureSheets().then(addVente);
+  }
   sendLog('🧾 Facture n°'+FD.num, `Client : **${FD.client}**\nTotal TTC : **${money(factTotaux().ttc)}**\nÉmise par : ${FD.emetteur||'—'}`, 0xa78bfa);
   newDraft(); save(); factures(); toast('💾 Facture enregistrée');
 }
