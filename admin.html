@@ -716,7 +716,15 @@ function delRun(rid,t){
 }
 
 /* ================== SEMAINE & PRIMES ================== */
-function semaine(){
+function salaireDe(r){
+  const SAL=(S.sheets&&S.sheets.salaires)||[];
+  const s=SAL.find(x=>String(x.nom||'').toLowerCase().trim()===r.nom.toLowerCase().trim())||{};
+  const base=Math.max(nn(s.prodBidons)+nn(s.poste)+nn(s.remboursement)+nn(s.recrutement), salFixeDe(r.poste||''));
+  const C=caps();
+  return Math.min(base, r.poste&&/patron/i.test(r.poste)?C.patSal:C.empSal);
+}
+async function semaine(){
+  await ensureSheets();
   const R=[...S.runners].sort((a,b)=>b.barils-a.barils);
   const totalPrimes = R.reduce((a,r)=>a+primeProj(r),0) + S.settings.top.slice(0,Math.min(3,R.length)).reduce((a,b)=>a+b,0);
   $('#main').innerHTML = `
@@ -725,15 +733,17 @@ function semaine(){
     <button class="btn btn-gold" onclick="closeWeek()">🗓️ Clôturer la semaine (lundi)</button>
   </div>
   <div class="panel" style="margin-bottom:18px;padding:8px 16px">
-    ${R.length?`<table><thead><tr><th>#</th><th>Runner</th><th>Grade</th><th>Barils</th><th>Quota</th><th>Multiplicateur</th><th>Prime projetée</th></tr></thead><tbody>
-    ${R.map((r,i)=>{const g=grade(r),okk=quotaOK(r);return `<tr>
+    ${R.length?`<table><thead><tr><th>#</th><th>Runner</th><th>Grade</th><th>Barils</th><th>Quota</th><th>Multiplicateur</th><th>Prime projetée</th><th>Salaire</th><th>Total</th></tr></thead><tbody>
+    ${R.map((r,i)=>{const g=grade(r),okk=quotaOK(r),sal=salaireDe(r),pr=okk?primeProj(r)+(i<3?S.settings.top[i]:0):0;return `<tr>
       <td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td>
       <td><b>${esc(r.nom)}</b></td>
       <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span></td>
       <td>${fmt(r.barils)}</td>
       <td>${okk?'<span class="up">✔ atteint</span>':`<span class="down">${fmt(g.quota-r.barils)} restants</span>`}</td>
       <td>×${g.mult}</td>
-      <td class="${okk?'gold':''}" style="font-weight:700">${okk?money(primeProj(r)+(i<3?S.settings.top[i]:0)):'—'}${okk&&i<3?`<div style="font-size:.7rem;color:var(--muted)">dont TOP ${i+1} : ${money(S.settings.top[i])}</div>`:''}</td>
+      <td class="${okk?'gold':''}" style="font-weight:700">${okk?money(pr):'—'}${okk&&i<3?`<div style="font-size:.7rem;color:var(--muted)">dont TOP ${i+1} : ${money(S.settings.top[i])}</div>`:''}</td>
+      <td>${sal?money(sal):'—'}</td>
+      <td style="font-weight:700">${sal+pr?money(sal+pr):'—'}</td>
     </tr>`}).join('')}
     </tbody></table>`:'<div class="empty">Aucun runner</div>'}
   </div>
