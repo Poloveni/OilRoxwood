@@ -370,7 +370,6 @@ const GRADES = [
   {nom:'Raffineur Confirmé', quota:5000, mult:2,   montee:8000,  cls:'bg2'},
   {nom:'Raffineur Expert',   quota:6500, mult:2.5, montee:10000, cls:'bg3'},
 ];
-const ZONES = ['A','B','C','D'];
 const LS_KEY = 'oilroxwood_admin_v1';
 const DEFAULT_HASH = null; // défini au premier login avec le mdp par défaut
 
@@ -678,27 +677,6 @@ function closeWeek(){
   S.settings.semaine++;
   save(); rerender();
   toast(`🗓️ Semaine clôturée — ${money(primes)} de primes${promus.length?` · promus : ${promus.join(', ')}`:''}`);
-}
-
-/* ================== ZONES ================== */
-function zones(){
-  const data=ZONES.map(z=>{
-    const rs=S.runners.filter(r=>r.zone===z);
-    return {z, rs, tot:rs.reduce((a,r)=>a+r.barils,0)};
-  });
-  const best=Math.max(...data.map(d=>d.tot));
-  $('#main').innerHTML = `
-  <div class="topbar"><div><h2>Zones de travail</h2><div class="sub">4 zones équivalentes — la compétition fait grimper la production 📈</div></div></div>
-  <div class="grid g4" style="margin-bottom:18px">
-    ${data.map(d=>`<div class="panel" style="${d.tot===best&&best>0?'border-color:rgba(232,160,32,.5)':''}">
-      <h3><span><span class="zone-tag z${d.z}">${d.z}</span> Zone ${d.z}</span>${d.tot===best&&best>0?'<span class="gold">👑</span>':''}</h3>
-      <div class="val" style="font-size:1.6rem;font-weight:800">${fmt(d.tot)} <span style="font-size:.8rem;color:var(--muted)">barils</span></div>
-      <div style="color:var(--muted);font-size:.8rem;margin:8px 0 12px">${d.rs.length} runner(s) · CA ${money(d.tot*S.settings.prix)}</div>
-      ${d.rs.sort((a,b)=>b.barils-a.barils).slice(0,4).map(r=>`<div style="display:flex;justify-content:space-between;font-size:.82rem;padding:5px 0;border-top:1px solid var(--line)"><span>${esc(r.nom)}</span><b>${fmt(r.barils)}</b></div>`).join('')||'<div class="empty" style="padding:10px 0">Zone vide</div>'}
-    </div>`).join('')}
-  </div>
-  <div class="panel"><h3>Comparatif des zones</h3><canvas id="cZcomp" height="110"></canvas></div>`;
-  mkChart('cZcomp',{type:'bar',data:{labels:ZONES.map(z=>'Zone '+z),datasets:[{data:data.map(d=>d.tot),backgroundColor:['#e8a020','#5aa0ff','#3ddc84','#a78bfa'],borderRadius:8,barThickness:46}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
 }
 
 /* ================== PUBLICATION DES STATS PUBLIQUES ================== */
