@@ -774,11 +774,12 @@ function rowRunner(r){
   const g=grade(r), pc=Math.min(100,Math.round(r.barils/g.quota*100));
   return `<tr>
     <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
-    <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span>${!r.poste&&eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(grade(r).montee)} barils)</span>`:''}</td>
+    <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span>${r.absent?'<div style="font-size:.7rem;color:var(--red);font-weight:700;margin-top:3px">🌴 Congé / absence</div>':''}${!r.poste&&eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(grade(r).montee)} barils)</span>`:''}</td>
     <td><div class="prog"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></div><div class="pct">${fmt(r.barils)} / ${fmt(g.quota)} (${pc}%)</div></td>
     <td>${fmt(r.total)}</td>
     <td style="text-align:right;white-space:nowrap">
       ${eligible(r)?`<button class="btn btn-sm btn-gold" onclick="promote(${r.id})" title="Monter de grade">▲</button>`:''}
+      <button class="btn btn-sm btn-ghost" onclick="toggleAbsent(${r.id})" title="${r.absent?'Marquer de retour':'Mettre en congé / absence'}">${r.absent?'💼':'🌴'}</button>
       <button class="btn btn-sm btn-ghost" onclick="openRunnerModal(${r.id})">✎</button>
       <button class="btn btn-sm btn-red" onclick="delRunner(${r.id})">✕</button>
     </td>
@@ -865,12 +866,30 @@ function delRun(rid,t){
 
 /* ================== SEMAINE & PRIMES ================== */
 function prixRecrue(){ return S.settings.prixRecrue??4000; }
+/* ---- rémunération commerciale : 45 $/bidon produit ---- */
+function estCommercial(r){ return !!(r.poste&&/commercial/i.test(r.poste)); }
+function commerciauxActifs(){ return S.runners.filter(r=>estCommercial(r)&&!r.absent); }
+function bidonsVendusSem(){ return ((S.sheets&&S.sheets.ventesSem)||[]).reduce((a,v)=>a+nn(v.quantite),0); }
+function salaireProdCom(r){
+  if(!estCommercial(r)||r.absent) return 0;
+  const n=commerciauxActifs().length;
+  if(!n) return 0;
+  return Math.round(bidonsVendusSem()/n)*(S.settings.prixBidonCom??45);
+}
+function toggleAbsent(id){
+  const r=S.runners.find(x=>x.id===id); if(!r) return;
+  r.absent=!r.absent;
+  save(); sbPushNow(); rerender();
+  toast(r.absent?`🌴 ${r.nom} en congé/absence — retiré des calculs commerciaux`:`💼 ${r.nom} de retour — réintégré aux calculs`);
+  sendLog(r.absent?'🌴 Absence':'💼 Retour', `**${r.nom}** ${r.absent?'passe en congé/absence':'est de retour'}`, r.absent?0xe8a020:0x3ddc84);
+}
 function salaireDe(r){
   const SAL=(S.sheets&&S.sheets.salaires)||[];
   const s=SAL.find(x=>String(x.nom||'').toLowerCase().trim()===r.nom.toLowerCase().trim())||{};
   // recrutements : saisis directement sur le site, réservés à la direction (4 000 $/recrue par défaut)
   const rec=r.poste?nn(r.recrues)*prixRecrue():0;
-  const base=Math.max(nn(s.prodBidons)+nn(s.poste)+nn(s.remboursement)+rec, salFixeDe(r.poste||''));
+  // production bidons automatique (remplace la colonne Excel) : ventes semaine ÷ commerciaux actifs × 45 $
+  const base=Math.max(salaireProdCom(r)+nn(s.poste)+nn(s.remboursement)+rec, salFixeDe(r.poste||''));
   const C=caps();
   return Math.min(base, r.poste&&/patron/i.test(r.poste)?C.patSal:C.empSal);
 }
@@ -887,7 +906,7 @@ async function semaine(){
   const totalPrimes = R.reduce((a,r)=>a+primeProj(r),0) + S.settings.top.slice(0,Math.min(3,R.length)).reduce((a,b)=>a+b,0);
   $('#main').innerHTML = `
   <div class="topbar">
-    <div><h2>Semaine ${S.settings.semaine} — Primes</h2><div class="sub">${weekRange()} · prime = barils × multiplicateur du grade, si quota atteint (plafond ${fmt(caps().empPrime)} $ · direction ${fmt(caps().patPrime)} $) · versée le lundi</div></div>
+    <div><h2>Semaine ${S.settings.semaine} — Primes</h2><div class="sub">${weekRange()} · prime = barils × multiplicateur (plafond ${fmt(caps().empPrime)} $ · dir. ${fmt(caps().patPrime)} $)${(()=>{const n=commerciauxActifs().length,b=bidonsVendusSem();return n?` · 🛢 commerciaux : ${fmt(b)} bidons ÷ ${n} actif(s) = ${fmt(Math.round(b/n))} × ${S.settings.prixBidonCom??45} $ = ${money(Math.round(b/n)*(S.settings.prixBidonCom??45))} chacun`:''})()}</div></div>
     <button class="btn btn-gold" onclick="closeWeek()">🗓️ Clôturer la semaine (lundi)</button>
   </div>
   <div class="panel" style="margin-bottom:18px;padding:8px 16px">
@@ -1506,8 +1525,9 @@ function bilanData(){
     // recrutements saisis sur le site (direction uniquement) — la colonne Excel n'est plus utilisée
     const run=S.runners.find(x=>x.nom.toLowerCase()===low(r.nom));
     const rec=(run&&run.poste)?nn(run.recrues)*prixRecrue():0;
+    const prodCom=run?salaireProdCom(run):0;
     // salaire calculé, avec plancher = salaire fixe du poste (Paramètres), puis plafond
-    const base=Math.max(nn(s.prodBidons)+nn(s.poste)+nn(s.remboursement)+rec, salFixeDe(r.rang));
+    const base=Math.max(prodCom+nn(s.poste)+nn(s.remboursement)+rec, salFixeDe(r.rang));
     const sal=Math.min(base, isPatron(r)?C.patSal:C.empSal);
     const prime=Math.min(nn(s.run),isPatron(r)?C.patPrime:C.empPrime);
     return {nom:r.nom,rang:r.rang,run:nn(r.runs),facture:nn(r.factures),vente:nn(r.ventes),
@@ -1669,6 +1689,7 @@ function params(){
       <div class="grid g2">
         <div class="f-row"><label class="f-lbl">Prix du pétrole ($/u)</label><input class="field" id="p_prix" type="number" value="${S.settings.prix}"></div>
         <div class="f-row"><label class="f-lbl">Salaire par recrue ($)</label><input class="field" id="p_rec" type="number" value="${prixRecrue()}"></div>
+        <div class="f-row"><label class="f-lbl">$ par bidon produit (commerciaux)</label><input class="field" id="p_bid" type="number" value="${S.settings.prixBidonCom??45}"></div>
         <div class="f-row"><label class="f-lbl">Limite pétroles</label><input class="field" id="p_lim" type="number" value="${S.settings.limite}"></div>
         <div class="f-row"><label class="f-lbl">N° de semaine</label><input class="field" id="p_sem" type="number" value="${S.settings.semaine}"></div>
       </div>
@@ -1768,6 +1789,7 @@ function params(){
 function saveParams(){
   S.settings.prix=+$('#p_prix').value||5;
   S.settings.prixRecrue=+$('#p_rec').value||4000;
+  S.settings.prixBidonCom=+$('#p_bid').value||45;
   S.settings.limite=+$('#p_lim').value||24000;
   S.settings.semaine=+$('#p_sem').value||1;
   S.settings.top=[+$('#p_t1').value||15000,+$('#p_t2').value||10000,+$('#p_t3').value||5000];
