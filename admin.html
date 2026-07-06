@@ -448,6 +448,13 @@ function isoWeek(d=new Date()){
   const y0=new Date(Date.UTC(d.getUTCFullYear(),0,1));
   return Math.ceil(((d-y0)/86400000+1)/7);
 }
+function weekRange(){
+  const now=new Date(), day=(now.getDay()+6)%7; // 0 = lundi
+  const mon=new Date(now); mon.setDate(now.getDate()-day);
+  const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  const f=d=>d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  return `du ${f(mon)} au ${f(sun)}`;
+}
 function grade(r){ return GRADES[r.grade]; }
 function gTitle(r){ return r.poste||grade(r).nom; } // rang réel (Patron, Commercial…) ou grade raffineur
 function gCls(r){ return r.poste?(/patron/i.test(r.poste)?'bg3':'bg2'):grade(r).cls; }
@@ -481,7 +488,7 @@ function overview(){
   const lastW = S.weeks[S.weeks.length-1];
   $('#main').innerHTML = `
   <div class="topbar">
-    <div><h2>Vue d'ensemble</h2><div class="sub">Semaine ${S.settings.semaine} · ${new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}</div></div>
+    <div><h2>Vue d'ensemble</h2><div class="sub">Semaine ${S.settings.semaine} · ${weekRange()}</div></div>
     <div style="display:flex;gap:10px;align-items:center">
       <span class="chip">🛢️ Prix : <b>${S.settings.prix} $/u</b></span>
       <span class="chip">🎯 Limite : <b>${fmt(S.settings.limite)}</b></span>
@@ -490,7 +497,7 @@ function overview(){
   </div>
   <div class="grid g4" style="margin-bottom:18px">
     <div class="panel kpi"><div class="lbl">Effectif</div><div class="val">${R.length}</div><div class="delta">${R.filter(r=>r.grade===3).length} expert(s)</div></div>
-    <div class="panel kpi"><div class="lbl">Barils · semaine</div><div class="val">${fmt(tot)}</div><div class="delta">${lastW?`sem. préc. : ${fmt(lastW.total)}`:'première semaine'}</div></div>
+    <div class="panel kpi"><div class="lbl">Barils · semaine</div><div class="val">${fmt(tot)}</div><div class="delta">${lastW?`sem. préc. : ${fmt(lastW.total)}`:weekRange()}</div></div>
     <div class="panel kpi"><div class="lbl">Chiffre d'affaires</div><div class="val gold">${money(tot*S.settings.prix)}</div><div class="delta">à ${S.settings.prix} $/unité</div></div>
     <div class="panel kpi"><div class="lbl">Quotas atteints</div><div class="val ${ok===R.length&&R.length?'up':''}">${ok}<span style="font-size:1rem;color:var(--muted)">/${R.length}</span></div><div class="delta">primes projetées : ${money(R.reduce((a,r)=>a+primeProj(r),0))}</div></div>
   </div>
@@ -640,7 +647,7 @@ function semaine(){
   const totalPrimes = R.reduce((a,r)=>a+primeProj(r),0) + S.settings.top.slice(0,Math.min(3,R.length)).reduce((a,b)=>a+b,0);
   $('#main').innerHTML = `
   <div class="topbar">
-    <div><h2>Semaine ${S.settings.semaine} — Primes</h2><div class="sub">Prime de base : ${money(S.settings.primeBase)} (montant minimum, versée le lundi si quota effectué)</div></div>
+    <div><h2>Semaine ${S.settings.semaine} — Primes</h2><div class="sub">${weekRange()} · prime de base : ${money(S.settings.primeBase)} (montant minimum, versée le lundi si quota effectué)</div></div>
     <button class="btn btn-gold" onclick="closeWeek()">🗓️ Clôturer la semaine (lundi)</button>
   </div>
   <div class="panel" style="margin-bottom:18px;padding:8px 16px">
