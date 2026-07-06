@@ -589,7 +589,7 @@ async function checkDiscordAuth(){
       if(!S.pending.find(x=>x.did===did)){
         S.pending.push({id:Date.now(),user:pseudo,did,date:new Date().toLocaleDateString('fr-FR')});
         save(); await sbPushNow();
-        sendLog('🔔 Demande d\'accès au dashboard', `**${pseudo}** attend une validation — Paramètres → Comptes d'accès → ✓`, 0xe8a020);
+        sendLog('🔔 Demande d\'accès au dashboard', `**${pseudo}** attend une validation — Paramètres → Comptes d'accès → ✓`, 0xe8a020, '<@186397473374208000>');
       }
       const d=document.getElementById('lg_denied');
       if(d){ d.style.display='block';
@@ -609,11 +609,12 @@ const money = n => fmt(Math.round(n)) + ' $';
 const esc = t => String(t??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2600); }
 /* ---- Logs Discord (webhook compte entreprise) ---- */
-function sendLog(title, desc, color){
+function sendLog(title, desc, color, mention){
   const url=(S.settings.webhook||'').trim();
   if(!url.startsWith('https://discord.com/api/webhooks/')) return;
   fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
     username:'Oil Roxwood — Logs',
+    content:mention||undefined,
     embeds:[{title, description:desc, color:color||0xe8a020,
       footer:{text:`Semaine ${S.settings.semaine} · Dashboard admin`},
       timestamp:new Date().toISOString()}]
