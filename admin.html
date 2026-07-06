@@ -531,7 +531,7 @@ function rowRunner(r){
   const g=grade(r), pc=Math.min(100,Math.round(r.barils/g.quota*100));
   return `<tr>
     <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
-    <td><span class="badge ${g.cls}">${g.nom}</span>${eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(grade(r).montee)} barils)</span>`:''}</td>
+    <td><span class="badge ${g.cls}">${g.nom}</span>${r.poste?`<div style="font-size:.7rem;color:var(--neon-c);font-weight:700;margin-top:3px">💼 ${esc(r.poste)}</div>`:''}${eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(grade(r).montee)} barils)</span>`:''}</td>
     <td><span class="zone-tag z${r.zone}">${r.zone}</span></td>
     <td><div class="prog"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></div><div class="pct">${fmt(r.barils)} / ${fmt(g.quota)} (${pc}%)</div></td>
     <td>${fmt(r.total)}</td>
@@ -820,15 +820,18 @@ function syncRunners(silent){
   let added=0, updated=0, removed=0;
   const present=new Set();
   S.sheets.tablette.forEach(row=>{
-    const g=MAP[norm(row.rang)];
     const nom=String(row.nom||'').trim();
-    if(g===undefined||!nom) return;
+    if(!nom||norm(nom).startsWith('nom')) return; // ignore lignes d'en-tête
+    const known=MAP[norm(row.rang)];
+    const g=known!==undefined?known:0; // hors grades raffineur : quota Intérimaire
+    const rang=String(row.rang||'').trim();
+    const poste=(known===undefined&&rang&&rang!=='-')?rang:null; // Patron, Commercial, RH…
     present.add(nom.toLowerCase());
     const r=S.runners.find(x=>x.nom.toLowerCase()===nom.toLowerCase());
-    if(r){ if(r.grade!==g){ r.grade=g; updated++; } r.src='tablette'; }
+    if(r){ if(r.grade!==g&&r.src==='tablette'){ r.grade=g; updated++; } r.src='tablette'; r.poste=poste; }
     else{
       S.runners.push({id:Date.now()+Math.floor(Math.random()*1e6),nom,discord:'',grade:g,
-        zone:suggestZone(),barils:0,total:0,runs:[],src:'tablette'});
+        zone:suggestZone(),barils:0,total:0,runs:[],src:'tablette',poste});
       added++;
     }
   });
