@@ -114,8 +114,8 @@
   .chip b{color:var(--ink)}
   .up{color:var(--green)} .down{color:var(--red)} .gold{color:var(--accent)}
 
-  input.field,select.field{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:10px 13px;font-size:.88rem;width:100%}
-  input.field:focus,select.field:focus{outline:none;border-color:var(--accent)}
+  input.field,select.field,textarea.field{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:10px 13px;font-size:.88rem;width:100%}
+  input.field:focus,select.field:focus,textarea.field:focus{outline:none;border-color:var(--accent)}
   label.f-lbl{display:block;font-size:.75rem;color:var(--muted);font-weight:700;margin:0 0 6px;text-transform:uppercase;letter-spacing:1px}
   .f-row{margin-bottom:14px}
 
@@ -926,6 +926,7 @@ async function feuilles(){
   <div class="topbar">
     <div><h2>Feuilles</h2><div class="sub">Les tableaux de gestion de l'entreprise — modifiables directement, sauvegardés automatiquement</div></div>
     <div style="display:flex;gap:10px">
+      ${curSheet==='tablette'?'<button class="btn btn-ghost" onclick="openPasteModal()">📋 Coller depuis Excel</button>':''}
       <button class="btn btn-ghost" onclick="sheetCsv()">⬇ CSV</button>
       <button class="btn btn-gold" onclick="rowAdd()">＋ Ligne</button>
     </div>
@@ -985,6 +986,44 @@ function syncRunners(silent){
     if(!silent){ toast(msg); sendLog('🔄 Sync tablette → effectif', msg.replace('🔄 ',''), 0x22d7ee); }
   }
   return {added,updated,removed};
+}
+/* ---- Import tablette par copier-coller (Excel / Google Sheets) ---- */
+function openPasteModal(){
+  openModal(`<h3>📋 Coller la tablette depuis Excel</h3>
+  <p style="color:var(--muted);font-size:.82rem;margin-bottom:12px">
+    Sélectionne les lignes dans Excel/Google Sheets (colonnes : Nom · Rang · Factures · Runs · Ventes · Total · Part · Heures),
+    copie, et colle ici. Les formats « 18 000 » et « 35 370,00 » sont acceptés.</p>
+  <textarea class="field" id="pasteZone" style="min-height:220px;white-space:pre;font-size:.76rem;font-family:monospace" placeholder="Stella Collins	Patron	0	0	0	0	0,00	2h30min&#10;…"></textarea>
+  <div style="display:flex;gap:10px;margin-top:14px">
+    <button class="btn btn-gold" style="flex:1" onclick="applyPaste(false)">🔀 Fusionner<br><small style="font-weight:400">met à jour + ajoute</small></button>
+    <button class="btn btn-red" style="flex:1" onclick="applyPaste(true)">♻️ Remplacer la feuille<br><small style="font-weight:400">les absents du collage disparaissent</small></button>
+  </div>`);
+}
+function applyPaste(replace){
+  const pn=s=>+String(s||'').replace(/[\s  ]/g,'').replace(',','.')||0;
+  const rows=$('#pasteZone').value.split(/\r?\n/)
+    .map(l=>l.split('\t').map(x=>x.trim()))
+    .filter(c=>c[0]&&!/^nom/i.test(c[0])&&!/^[\d.,\s]+$/.test(c[0]))
+    .map(c=>({
+      nom:c[0], rang:c[1]||'',
+      factures:pn(c[2]), runs:pn(c[3]), ventes:pn(c[4]),
+      part:pn(c[6]),
+      heures:/h/.test(c[c.length-1]||'')?c[c.length-1]:''
+    }));
+  if(!rows.length) return toast('⚠️ Aucune ligne reconnue — colle bien des colonnes séparées par des tabulations');
+  let maj=0, add=0;
+  if(replace){
+    S.sheets.tablette=rows;
+  } else {
+    rows.forEach(nr=>{
+      const ex=S.sheets.tablette.find(x=>String(x.nom).toLowerCase().trim()===nr.nom.toLowerCase());
+      if(ex){ Object.assign(ex,nr); maj++; } else { S.sheets.tablette.push(nr); add++; }
+    });
+  }
+  save(); syncRunners(false); closeModal(); feuilles();
+  toast(replace?`♻️ Tablette remplacée : ${rows.length} lignes — effectif resynchronisé`
+              :`🔀 Tablette fusionnée : ${maj} mise(s) à jour, ${add} ajout(s) — effectif resynchronisé`);
+  sendLog('📋 Import tablette', `${replace?'Remplacement complet':'Fusion'} : **${rows.length} lignes** collées depuis Excel`, 0x22d7ee);
 }
 function sheetCsv(){
   const def=SHEETS_DEF[curSheet], rows=S.sheets[curSheet];
