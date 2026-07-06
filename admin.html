@@ -979,10 +979,6 @@ const SHEETS_DEF = {
     {k:'nom',l:'Nom employé',t:'text'},{k:'menus',l:'Menus',t:'bool'},{k:'boissons',l:'Boissons',t:'bool'},
     {k:'bidons',l:'Bidons',t:'bool'},{k:'date',l:'Date de prise',t:'date'},{k:'don',l:'Don',t:'text'},{k:'permis',l:'Contrôle permis',t:'text'}],
     tot:[], nouveau:{nom:'',menus:false,boissons:false,bidons:false,date:'',don:'',permis:''}},
-  ventesEnt:{ico:'🏢',label:'Ventes entreprises',cols:[
-    {k:'entreprise',l:'Entreprise / Famille',t:'text'},{k:'date',l:'Date',t:'date'},
-    {k:'quantite',l:'Quantité',t:'num'},{k:'prix',l:'Prix facture HT',t:'num'}],
-    tot:['quantite','prix'], nouveau:{entreprise:'',date:'',quantite:0,prix:0}},
   ventesSem:{ico:'🛒',label:'Ventes de la semaine',cols:[
     {k:'date',l:'Date',t:'date'},{k:'client',l:'Client',t:'text'},
     {k:'quantite',l:'Quantité',t:'num'},{k:'qui',l:'Qui ?',t:'text'}],
@@ -995,33 +991,12 @@ const SHEETS_DEF = {
     {k:'_tot',l:'Total',t:'calc',f:r=>Math.min(nn(r.prodBidons)+nn(r.poste)+nn(r.remboursement)+nn(r.recrutement),caps().empSal)+Math.min(nn(r.run),caps().empPrime)}],
     tot:['_sal','_prime','_tot'], nouveau:{nom:'',prodBidons:0,poste:0,run:0,remboursement:0,recrutement:0},
     note:'Plafonds appliqués automatiquement — modifiables dans 🏦 Bilan compta'},
-  historique:{ico:'📇',label:'Historique entreprises',cols:[
-    {k:'nom',l:'Nom',t:'text'},{k:'dateCmd',l:'Dernière commande',t:'date'},{k:'statut',l:'Client',t:'bool'},
-    {k:'charge',l:'Démarché par',t:'text'},{k:'dateDem',l:'Date démarchage',t:'date'},{k:'comm',l:'Commentaire',t:'text'}],
-    tot:[], nouveau:{nom:'',dateCmd:'',statut:false,charge:'',dateDem:'',comm:''}},
-  collection:{ico:'🗡️',label:'Objets de collection',cols:[
-    {k:'nom',l:'Vendeur',t:'text'},{k:'date',l:'Date',t:'date'},{k:'couteaux',l:'Couteaux',t:'num'},
-    {k:'katanas',l:'Katanas',t:'num'},{k:'preservatifs',l:'Préservatifs',t:'num'},{k:'prix',l:'Prix HT',t:'num'}],
-    tot:['couteaux','katanas','preservatifs','prix'], nouveau:{nom:'',date:'',couteaux:0,katanas:0,preservatifs:0,prix:0}},
   rh:{ico:'🗂️',label:'RH',cols:[
     {k:'nom',l:'Employé',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
     {k:'rib',l:'RIB',t:'text'},{k:'idU',l:'ID unique',t:'text'},{k:'arrivee',l:'Arrivée',t:'date'},
     {k:'discord',l:'Discord',t:'text'},{k:'avert',l:'Avert.',t:'text'},{k:'contrat',l:'Contrat signé',t:'bool'},
     {k:'recrut',l:'Recruté par',t:'text'},{k:'actif',l:'Actif',t:'bool'}],
     tot:[], nouveau:{nom:'',grade:'Intérimaire',tel:'',rib:'',idU:'',arrivee:'',discord:'',avert:'',contrat:false,recrut:'',actif:true}},
-  prodSem:{ico:'📅',label:'Production semaine',cols:[
-    {k:'nom',l:'Employé',t:'text'},{k:'lun',l:'Lun',t:'num'},{k:'mar',l:'Mar',t:'num'},{k:'mer',l:'Mer',t:'num'},
-    {k:'jeu',l:'Jeu',t:'num'},{k:'ven',l:'Ven',t:'num'},{k:'sam',l:'Sam',t:'num'},{k:'dim',l:'Dim',t:'num'},
-    {k:'_tot',l:'Total',t:'calc',f:r=>nn(r.lun)+nn(r.mar)+nn(r.mer)+nn(r.jeu)+nn(r.ven)+nn(r.sam)+nn(r.dim)},
-    {k:'_arg',l:'Montant ($)',t:'calc',f:r=>(nn(r.lun)+nn(r.mar)+nn(r.mer)+nn(r.jeu)+nn(r.ven)+nn(r.sam)+nn(r.dim))*5}],
-    tot:['lun','mar','mer','jeu','ven','sam','dim','_tot','_arg'],
-    nouveau:{nom:'',lun:0,mar:0,mer:0,jeu:0,ven:0,sam:0,dim:0},
-    note:'Montant = total de barils × 5 $'},
-  histEmp:{ico:'📜',label:'Anciens employés',cols:[
-    {k:'nom',l:'Employé',t:'text'},{k:'motif',l:'Motif départ',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
-    {k:'idU',l:'ID unique',t:'text'},{k:'arrivee',l:'Arrivée',t:'date'},{k:'discord',l:'Discord',t:'text'},
-    {k:'depart',l:'Départ (sem.)',t:'text'},{k:'comm',l:'Commentaire',t:'text'}],
-    tot:[], nouveau:{nom:'',motif:'Démission',tel:'',rib:'',idU:'',arrivee:'',discord:'',depart:'',comm:''}},
   blacklist:{ico:'⛔',label:'Blacklist',cols:[
     {k:'nom',l:'Nom',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
     {k:'idU',l:'ID unique',t:'text'},{k:'date',l:'Date',t:'date'},{k:'discord',l:'Discord',t:'text'},
