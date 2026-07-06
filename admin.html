@@ -402,6 +402,8 @@ function enter(){
   document.getElementById('login').style.display='none';
   document.getElementById('app').style.display='block';
   show('overview');
+  // synchronise l'effectif avec la feuille tablette à chaque connexion
+  setTimeout(()=>{ ensureSheets().then(()=>{ const r=syncRunners(true); if(r&&(r.added||r.removed||r.updated)) rerender(); }); }, 100);
 }
 function logout(){ sessionStorage.removeItem('orx_auth'); location.reload(); }
 // connexion auto différée : attend que tout le script soit chargé avant d'entrer
@@ -501,8 +503,11 @@ function effectif(){
   if(search) R=R.filter(r=>(r.nom+' '+r.discord).toLowerCase().includes(search.toLowerCase()));
   $('#main').innerHTML = `
   <div class="topbar">
-    <div><h2>Effectif</h2><div class="sub">${S.runners.length} runner(s) · ${S.runners.filter(eligible).length} montée(s) de grade en attente</div></div>
-    <button class="btn btn-gold" onclick="openRunnerModal()">＋ Ajouter un runner</button>
+    <div><h2>Effectif</h2><div class="sub">${S.runners.length} runner(s) · ${S.runners.filter(eligible).length} montée(s) de grade en attente · synchronisé avec la feuille Tablette</div></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="ensureSheets().then(()=>{syncRunners(false);effectif();})">🔄 Sync tablette</button>
+      <button class="btn btn-gold" onclick="openRunnerModal()">＋ Ajouter un runner</button>
+    </div>
   </div>
   <div class="panel" style="margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
     <input class="field" style="max-width:220px" placeholder="🔍 Rechercher…" value="${esc(search)}" oninput="search=this.value;effectif()">
@@ -803,9 +808,42 @@ async function feuilles(){
     <table class="sheet"><thead><tr>${head}<th></th></tr></thead><tbody>${body||`<tr><td colspan="${def.cols.length+1}"><div class="empty">Aucune ligne</div></td></tr>`}</tbody>${foot}</table>
   </div>`;
 }
-function cellEdit(i,k,val){ S.sheets[curSheet][i][k]=val; save(); feuilles(); }
+function cellEdit(i,k,val){ S.sheets[curSheet][i][k]=val; save(); if(curSheet==='tablette') syncRunners(false); feuilles(); }
 function rowAdd(){ S.sheets[curSheet].unshift(JSON.parse(JSON.stringify(SHEETS_DEF[curSheet].nouveau))); save(); feuilles(); }
-function rowDel(i){ if(confirm('Supprimer cette ligne ?')){ S.sheets[curSheet].splice(i,1); save(); feuilles(); } }
+function rowDel(i){ if(confirm('Supprimer cette ligne ?')){ S.sheets[curSheet].splice(i,1); save(); if(curSheet==='tablette') syncRunners(false); feuilles(); } }
+
+/* ---- Synchronisation Tablette → Effectif runners ---- */
+function syncRunners(silent){
+  if(!S.sheets||!S.sheets.tablette) return;
+  const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+  const MAP={'interimaire':0,'raffineur':1,'raffineur confirme':2,'raffineur expert':3};
+  let added=0, updated=0, removed=0;
+  const present=new Set();
+  S.sheets.tablette.forEach(row=>{
+    const g=MAP[norm(row.rang)];
+    const nom=String(row.nom||'').trim();
+    if(g===undefined||!nom) return;
+    present.add(nom.toLowerCase());
+    const r=S.runners.find(x=>x.nom.toLowerCase()===nom.toLowerCase());
+    if(r){ if(r.grade!==g){ r.grade=g; updated++; } r.src='tablette'; }
+    else{
+      S.runners.push({id:Date.now()+Math.floor(Math.random()*1e6),nom,discord:'',grade:g,
+        zone:suggestZone(),barils:0,total:0,runs:[],src:'tablette'});
+      added++;
+    }
+  });
+  // retire uniquement les runners issus de la tablette qui n'y figurent plus
+  for(let i=S.runners.length-1;i>=0;i--){
+    const r=S.runners[i];
+    if(r.src==='tablette'&&!present.has(r.nom.toLowerCase())){ S.runners.splice(i,1); removed++; }
+  }
+  if(added||updated||removed){
+    save();
+    const msg=`🔄 Effectif synchronisé avec la tablette : ${added?'+'+added+' runner(s) ':''}${updated?updated+' grade(s) ajusté(s) ':''}${removed?'-'+removed+' départ(s)':''}`.trim();
+    if(!silent){ toast(msg); sendLog('🔄 Sync tablette → effectif', msg.replace('🔄 ',''), 0x22d7ee); }
+  }
+  return {added,updated,removed};
+}
 function sheetCsv(){
   const def=SHEETS_DEF[curSheet], rows=S.sheets[curSheet];
   const lines=[def.cols.map(c=>c.l).join(';')];
