@@ -949,7 +949,7 @@ function fNew(){
         <div class="combo">
           <input class="field" id="cliInput" value="${esc(FD.client)}" placeholder="🔍 Tape pour chercher…" autocomplete="off"
             oninput="cliFilter(this.value)" onfocus="cliFilter(this.value)" onkeydown="cliKey(event)"
-            onblur="setTimeout(()=>{const l=document.getElementById('cliList');if(l)l.classList.remove('open');},160);if(FD.client!==this.value){FD.client=this.value;setTimeout(fNew,170);}">
+            onblur="cliBlur(this.value)">
           <div class="combo-list" id="cliList"></div>
         </div></div>
       ${c?`<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)">
@@ -1004,7 +1004,15 @@ function cliFilter(q){
     ||'<div class="combo-item" style="cursor:default"><small>Aucun résultat — le nom saisi sera un client hors base</small></div>');
   list.classList.add('open');
 }
-function cliPick(i){ if(cliMatches[i]){ FD.client=cliMatches[i].nom; fNew(); } }
+let cliJustPicked=false;
+function cliPick(i){ if(cliMatches[i]){ cliJustPicked=true; FD.client=cliMatches[i].nom; fNew(); } }
+function cliBlur(val){
+  setTimeout(()=>{
+    const l=document.getElementById('cliList'); if(l) l.classList.remove('open');
+    if(cliJustPicked){ cliJustPicked=false; return; } // une sélection vient d'être faite : on n'écrase pas
+    if(FD.client!==val){ FD.client=val; fNew(); }     // saisie manuelle (client hors base)
+  },160);
+}
 function cliKey(e){
   const list=document.getElementById('cliList');
   if(!list||!list.classList.contains('open')) return;
