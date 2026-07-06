@@ -409,7 +409,7 @@ function load(){
   try{ const d = JSON.parse(localStorage.getItem(LS_KEY)); return d ? Object.assign(defaults(), d) : defaults(); }
   catch(e){ return defaults(); }
 }
-function save(){ localStorage.setItem(LS_KEY, JSON.stringify(S)); sbQueue(); }
+function save(){ S._maj=Date.now(); localStorage.setItem(LS_KEY, JSON.stringify(S)); sbQueue(); }
 
 /* ================== SYNCHRO SUPABASE (multi-admin temps réel) ================== */
 const SB_URL='https://prwdtdmdkhzwfyivaepw.supabase.co';
@@ -431,6 +431,7 @@ function initSync(){
     .on('postgres_changes',{event:'*',schema:'public',table:'oilroxwood_etat',filter:'id=eq.1'},p=>{
       const d=p.new&&p.new.data;
       if(!d||d._cid===SYNC.cid) return; // ignore l'écho de nos propres écritures
+      if(d._maj&&S._maj&&d._maj<S._maj) return; // jamais d'écrasement par un état plus ancien
       const monPass=S.passHash; // le mot de passe reste propre à chaque navigateur
       S=Object.assign(defaults(),d);
       S.passHash=monPass;
@@ -446,17 +447,25 @@ async function sbPull(){
     const {data,error}=await SYNC.cli.from('oilroxwood_etat').select('data').eq('id',1).maybeSingle();
     if(error) throw error;
     if(data&&data.data){
-      const monPass=S.passHash; // le mot de passe reste propre à chaque navigateur
-      S=Object.assign(defaults(),data.data);
-      S.passHash=monPass;
-      localStorage.setItem(LS_KEY,JSON.stringify(S));
+      const rem=data.data;
+      if(S._maj && rem._maj && rem._maj < S._maj){
+        // notre état local est plus récent (envoi perdu ?) : on le repousse au lieu de régresser
+        SYNC.ready=true; await sbPushNow();
+      } else {
+        const monPass=S.passHash; // le mot de passe reste propre à chaque navigateur
+        S=Object.assign(defaults(),rem);
+        S.passHash=monPass;
+        localStorage.setItem(LS_KEY,JSON.stringify(S));
+      }
     } else {
       await sbPushNow(); // base vide : on y pousse l'état local (première installation)
     }
     SYNC.ready=true; syncDot(true,'Synchronisé');
   }catch(e){ syncDot(false,'Connexion Supabase impossible'); }
 }
-function sbQueue(){ if(!SYNC.on||!SYNC.ready) return; clearTimeout(SYNC.t); SYNC.t=setTimeout(sbPushNow,800); }
+function sbQueue(){ if(!SYNC.on||!SYNC.ready) return; clearTimeout(SYNC.t); SYNC.t=setTimeout(sbPushNow,250); }
+// filet de sécurité : si on quitte la page avec un envoi en attente, on tente de l'expédier
+addEventListener('beforeunload',()=>{ if(SYNC.t){ clearTimeout(SYNC.t); SYNC.t=null; sbPushNow(); } });
 async function sbPushNow(){
   if(!SYNC.on) return;
   try{
@@ -1115,6 +1124,7 @@ function syncRunners(silent){
   }
   if(added||updated||removed){
     save();
+    sbPushNow(); // envoi immédiat, sans attendre le différé
     const msg=`🔄 Effectif synchronisé avec la tablette : ${added?'+'+added+' runner(s) ':''}${updated?updated+' grade(s) ajusté(s) ':''}${removed?'-'+removed+' départ(s)':''}`.trim();
     if(!silent){ toast(msg); sendLog('🔄 Sync tablette → effectif', msg.replace('🔄 ',''), 0x22d7ee); }
   }
