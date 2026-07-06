@@ -936,7 +936,7 @@ function fNew(){
       <td><button class="btn btn-sm btn-red" onclick="delL(${i})">✕</button></td></tr>`;
   }).join('');
   $('#factBody').innerHTML=`
-  <div class="grid g3" style="margin-bottom:16px">
+  <div class="grid g3" style="margin-bottom:16px;position:relative;z-index:5">
     <div class="panel"><h3>Facture</h3>
       <div class="grid g2" style="gap:10px">
         <div class="f-row"><label class="f-lbl">N°</label><input class="field" type="number" value="${FD.num}" onchange="FD.num=+this.value||1;fNew()"></div>
