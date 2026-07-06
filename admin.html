@@ -508,10 +508,9 @@ function enter(){
   if(wu) wu.innerHTML=cu?`👤 <b style="color:var(--ink)">${esc(cu.user)}</b> · ${ROLES[cu.role]||cu.role}`:'';
   S.settings.semaine=isoWeek(); save(); // semaine calendaire (S27, S28…)
   show('overview');
-  // synchro Supabase (si configurée) puis effectif ← tablette
+  // effectif ← tablette (le pull Supabase a déjà eu lieu au chargement de la page)
   setTimeout(async()=>{
     initSync();
-    await sbPull();
     await ensureSheets();
     const r=syncRunners(true);
     S.settings.semaine=isoWeek();
@@ -543,10 +542,11 @@ async function checkDiscordAuth(){
       // premier lancement : le premier connecté Discord devient Direction
       u={id:Date.now(),user:pseudo,did,role:'direction'};
       S.users=[u]; save();
+      await sbPushNow(); // envoi IMMÉDIAT (sans délai) pour ne pas être écrasé par un pull
       sendLog('👤 Premier compte créé', `**${pseudo}** (Direction) via Discord`, 0x5865F2);
     }
     if(u){
-      if(!u.did){ u.did=did; save(); } // liaison définitive au premier login
+      if(!u.did){ u.did=did; save(); await sbPushNow(); } // liaison définitive au premier login
       sessionStorage.setItem('orx_auth','1');
       sessionStorage.setItem('orx_user',u.user);
       enter();
