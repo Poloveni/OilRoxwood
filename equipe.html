@@ -79,7 +79,7 @@ document.getElementById('q').addEventListener('input',function(){
   const r=DATA.runners.find(x=>x.nom.toLowerCase()===q)
         ||DATA.runners.find(x=>x.nom.toLowerCase().includes(q));
   if(!r){ out.innerHTML='<div class="empty">Aucun runner trouvé à ce nom. Vérifie l\'orthographe ou vois avec les RH.</div>'; return; }
-  const g=GRADES[r.grade]||GRADES[0];
+  const g=r.poste?{nom:r.poste,cls:/patron/i.test(r.poste)?'bg3':'bg2',montee:GRADES[r.grade].montee}:(GRADES[r.grade]||GRADES[0]);
   const pc=Math.min(100,Math.round(r.barils/r.quota*100));
   const sorted=[...DATA.runners].sort((a,b)=>b.barils-a.barils);
   const pos=sorted.findIndex(x=>x.nom===r.nom)+1;
@@ -95,7 +95,7 @@ document.getElementById('q').addEventListener('input',function(){
     <div class="row"><span>Prime projetée (lundi)</span><b class="gold">${r.prime?F(Math.round(r.prime))+' $':'— (quota non atteint)'}</b></div>
     <div class="row"><span>Classement de la semaine</span><b>${pos<=3?['🥇','🥈','🥉'][pos-1]+' ':''}${pos}ᵉ sur ${DATA.runners.length}</b></div>
     <div class="row"><span>Total barils (carrière)</span><b>${F(r.total)}</b></div>
-    ${next?`<div class="row"><span>Prochain grade : ${next.nom}</span><b>${r.total>=g.montee?'📈 Éligible — vois avec la direction !':F(g.montee-r.total)+' barils restants'}</b></div>`:'<div class="row"><span>Grade</span><b>👑 Grade maximum atteint</b></div>'}
+    ${r.poste?'':next?`<div class="row"><span>Prochain grade : ${next.nom}</span><b>${r.total>=g.montee?'📈 Éligible — vois avec la direction !':F(g.montee-r.total)+' barils restants'}</b></div>`:'<div class="row"><span>Grade</span><b>👑 Grade maximum atteint</b></div>'}
   </div>`;
 });
 </script>

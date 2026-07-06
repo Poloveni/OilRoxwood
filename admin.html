@@ -427,6 +427,8 @@ function sendLog(title, desc, color){
   })}).catch(()=>{});
 }
 function grade(r){ return GRADES[r.grade]; }
+function gTitle(r){ return r.poste||grade(r).nom; } // rang réel (Patron, Commercial…) ou grade raffineur
+function gCls(r){ return r.poste?(/patron/i.test(r.poste)?'bg3':'bg2'):grade(r).cls; }
 function quotaOK(r){ return r.barils >= grade(r).quota; }
 function primeProj(r){ return quotaOK(r) ? S.settings.primeBase * grade(r).mult : 0; }
 function eligible(r){ return r.grade < 3 && r.total >= grade(r).montee; }
@@ -531,7 +533,7 @@ function rowRunner(r){
   const g=grade(r), pc=Math.min(100,Math.round(r.barils/g.quota*100));
   return `<tr>
     <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
-    <td><span class="badge ${g.cls}">${g.nom}</span>${r.poste?`<div style="font-size:.7rem;color:var(--neon-c);font-weight:700;margin-top:3px">💼 ${esc(r.poste)}</div>`:''}${eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(grade(r).montee)} barils)</span>`:''}</td>
+    <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span>${!r.poste&&eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(grade(r).montee)} barils)</span>`:''}</td>
     <td><span class="zone-tag z${r.zone}">${r.zone}</span></td>
     <td><div class="prog"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></div><div class="pct">${fmt(r.barils)} / ${fmt(g.quota)} (${pc}%)</div></td>
     <td>${fmt(r.total)}</td>
@@ -590,7 +592,7 @@ function runs(){
     <div class="panel">
       <h3>➕ Enregistrer un run</h3>
       ${S.runners.length?`
-      <div class="f-row"><label class="f-lbl">Runner</label><select class="field" id="run_r">${[...S.runners].sort((a,b)=>a.nom.localeCompare(b.nom)).map(r=>`<option value="${r.id}">${esc(r.nom)} — ${grade(r).nom}</option>`).join('')}</select></div>
+      <div class="f-row"><label class="f-lbl">Runner</label><select class="field" id="run_r">${[...S.runners].sort((a,b)=>a.nom.localeCompare(b.nom)).map(r=>`<option value="${r.id}">${esc(r.nom)} — ${esc(gTitle(r))}</option>`).join('')}</select></div>
       <div class="f-row"><label class="f-lbl">Barils livrés</label><input class="field" id="run_b" type="number" min="1" placeholder="Ex : 500"></div>
       <button class="btn btn-gold" style="width:100%" onclick="addRun()">Valider le run 🚛</button>
       <p style="color:var(--muted);font-size:.78rem;margin-top:12px">💡 CA généré = barils × ${S.settings.prix} $ · le quota et le total du runner sont mis à jour automatiquement.</p>
@@ -632,7 +634,7 @@ function semaine(){
     ${R.map((r,i)=>{const g=grade(r),okk=quotaOK(r);return `<tr>
       <td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td>
       <td><b>${esc(r.nom)}</b></td>
-      <td><span class="badge ${g.cls}">${g.nom}</span></td>
+      <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span></td>
       <td>${fmt(r.barils)}</td>
       <td>${okk?'<span class="up">✔ atteint</span>':`<span class="down">${fmt(g.quota-r.barils)} restants</span>`}</td>
       <td>×${g.mult}</td>
@@ -704,7 +706,7 @@ async function publishStats(){
     effectif:S.runners.length,
     clientsServis:(S.fact&&S.fact.factures.length)||0,
     top3:sorted.slice(0,3).filter(r=>r.barils>0).map(r=>({nom:r.nom,barils:r.barils})),
-    runners:S.runners.map(r=>({nom:r.nom,grade:r.grade,barils:r.barils,total:r.total,quota:GRADES[r.grade].quota,prime:primeProj(r)}))
+    runners:S.runners.map(r=>({nom:r.nom,grade:r.grade,poste:r.poste||null,barils:r.barils,total:r.total,quota:GRADES[r.grade].quota,prime:primeProj(r)}))
   };
   const api='https://api.github.com/repos/Poloveni/OilRoxwood/contents/data/stats-public.json';
   const hdr={Authorization:'Bearer '+token,Accept:'application/vnd.github+json'};
