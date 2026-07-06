@@ -410,7 +410,9 @@ function initSync(){
     .on('postgres_changes',{event:'*',schema:'public',table:'oilroxwood_etat',filter:'id=eq.1'},p=>{
       const d=p.new&&p.new.data;
       if(!d||d._cid===SYNC.cid) return; // ignore l'écho de nos propres écritures
+      const monPass=S.passHash; // le mot de passe reste propre à chaque navigateur
       S=Object.assign(defaults(),d);
+      S.passHash=monPass;
       localStorage.setItem(LS_KEY,JSON.stringify(S));
       if(sessionStorage.getItem('orx_auth')==='1'){ rerender(); toast('☁️ Mise à jour reçue d\'un autre admin'); }
     })
@@ -422,7 +424,9 @@ async function sbPull(){
     const {data,error}=await SYNC.cli.from('oilroxwood_etat').select('data').eq('id',1).maybeSingle();
     if(error) throw error;
     if(data&&data.data){
+      const monPass=S.passHash; // le mot de passe reste propre à chaque navigateur
       S=Object.assign(defaults(),data.data);
+      S.passHash=monPass;
       localStorage.setItem(LS_KEY,JSON.stringify(S));
     } else {
       await sbPushNow(); // base vide : on y pousse l'état local (première installation)
@@ -435,6 +439,7 @@ async function sbPushNow(){
   if(!SYNC.on) return;
   try{
     const d=JSON.parse(JSON.stringify(S)); d._cid=SYNC.cid;
+    delete d.passHash; // jamais synchronisé : chaque navigateur garde le sien
     const {error}=await SYNC.cli.from('oilroxwood_etat').upsert({id:1,data:d,maj:new Date().toISOString()});
     if(error) throw error;
     syncDot(true,'Synchronisé · '+new Date().toLocaleTimeString('fr-FR'));
