@@ -459,6 +459,17 @@ function grade(r){ return GRADES[r.grade]; }
 function gTitle(r){ return r.poste||grade(r).nom; } // rang réel (Patron, Commercial…) ou grade raffineur
 function gCls(r){ return r.poste?(/patron/i.test(r.poste)?'bg3':'bg2'):grade(r).cls; }
 function quotaOK(r){ return r.barils >= grade(r).quota; }
+function salairesPoste(){
+  if(!S.settings.salPoste) S.settings.salPoste={
+    'Patron':70000,'Co Patron':70000,'Comptable':50000,'RH':0,
+    'Responsable Commercial':0,'Commercial':0,'Graphiste':0};
+  return S.settings.salPoste;
+}
+function salFixeDe(rang){
+  const sp=salairesPoste();
+  const k=Object.keys(sp).find(x=>x.toLowerCase()===String(rang||'').toLowerCase().trim());
+  return k ? (+sp[k]||0) : 0;
+}
 function caps(){
   if(!S.settings.caps) S.settings.caps={empSal:85000,empPrime:42500,patSal:90000,patPrime:45000};
   return S.settings.caps;
@@ -1218,7 +1229,9 @@ function bilanData(){
   const lignes=T.filter(r=>r.nom&&!low(r.nom).startsWith('nom')).map(r=>{
     const s=SAL.find(x=>low(x.nom)===low(r.nom))||{};
     const C=caps();
-    const sal=Math.min(nn(s.prodBidons)+nn(s.poste)+nn(s.remboursement)+nn(s.recrutement),isPatron(r)?C.patSal:C.empSal);
+    // salaire calculé, avec plancher = salaire fixe du poste (Paramètres), puis plafond
+    const base=Math.max(nn(s.prodBidons)+nn(s.poste)+nn(s.remboursement)+nn(s.recrutement), salFixeDe(r.rang));
+    const sal=Math.min(base, isPatron(r)?C.patSal:C.empSal);
     const prime=Math.min(nn(s.run),isPatron(r)?C.patPrime:C.empPrime);
     return {nom:r.nom,rang:r.rang,run:nn(r.runs),facture:nn(r.factures),vente:nn(r.ventes),
       ca:nn(r.runs)+nn(r.factures)+nn(r.ventes),sal,prime};
@@ -1380,6 +1393,18 @@ function params(){
         <div class="f-row"><label class="f-lbl">Prix du pétrole ($/u)</label><input class="field" id="p_prix" type="number" value="${S.settings.prix}"></div>
         <div class="f-row"><label class="f-lbl">Limite pétroles</label><input class="field" id="p_lim" type="number" value="${S.settings.limite}"></div>
         <div class="f-row"><label class="f-lbl">N° de semaine</label><input class="field" id="p_sem" type="number" value="${S.settings.semaine}"></div>
+      </div>
+      <div style="margin:6px 0 16px;border-top:1px solid var(--line);padding-top:16px">
+        <label class="f-lbl">💼 Salaires fixes minimum par poste (direction & co)</label>
+        ${(()=>{
+          const postes=[...new Set([...Object.keys(salairesPoste()),...S.runners.filter(r=>r.poste).map(r=>r.poste)])];
+          return postes.map(p=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0">
+            <span style="font-size:.86rem">${esc(p)}</span>
+            <input class="field" type="number" style="max-width:130px;text-align:right" value="${salairesPoste()[p]??0}"
+              onchange="salairesPoste()['${esc(p)}']=+this.value||0;save();toast('💼 Salaire fixe ${esc(p)} enregistré')">
+          </div>`).join('');
+        })()}
+        <p style="color:var(--muted);font-size:.76rem;margin-top:8px">Garantie plancher : si le salaire calculé (production, factures…) est inférieur, c'est ce montant qui s'applique dans le Bilan compta. Plafonds toujours respectés.</p>
       </div>
       <label class="f-lbl">Primes TOP 3 ($)</label>
       <div class="grid g3" style="gap:10px">
