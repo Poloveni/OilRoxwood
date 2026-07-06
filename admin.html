@@ -716,12 +716,22 @@ function delRun(rid,t){
 }
 
 /* ================== SEMAINE & PRIMES ================== */
+function prixRecrue(){ return S.settings.prixRecrue??4000; }
 function salaireDe(r){
   const SAL=(S.sheets&&S.sheets.salaires)||[];
   const s=SAL.find(x=>String(x.nom||'').toLowerCase().trim()===r.nom.toLowerCase().trim())||{};
-  const base=Math.max(nn(s.prodBidons)+nn(s.poste)+nn(s.remboursement)+nn(s.recrutement), salFixeDe(r.poste||''));
+  // recrutements : saisis directement sur le site, réservés à la direction (4 000 $/recrue par défaut)
+  const rec=r.poste?nn(r.recrues)*prixRecrue():0;
+  const base=Math.max(nn(s.prodBidons)+nn(s.poste)+nn(s.remboursement)+rec, salFixeDe(r.poste||''));
   const C=caps();
   return Math.min(base, r.poste&&/patron/i.test(r.poste)?C.patSal:C.empSal);
+}
+function setRecrues(id,v){
+  const r=S.runners.find(x=>x.id===id);
+  if(!r) return;
+  r.recrues=Math.max(0,v);
+  save(); semaine();
+  toast(`👥 ${r.nom} : ${r.recrues} recrue(s) → ${money(r.recrues*prixRecrue())}`);
 }
 async function semaine(){
   await ensureSheets();
@@ -733,7 +743,7 @@ async function semaine(){
     <button class="btn btn-gold" onclick="closeWeek()">🗓️ Clôturer la semaine (lundi)</button>
   </div>
   <div class="panel" style="margin-bottom:18px;padding:8px 16px">
-    ${R.length?`<table><thead><tr><th>#</th><th>Runner</th><th>Grade</th><th>Barils</th><th>Quota</th><th>Multiplicateur</th><th>Prime projetée</th><th>Salaire</th><th>Total</th></tr></thead><tbody>
+    ${R.length?`<table><thead><tr><th>#</th><th>Runner</th><th>Grade</th><th>Barils</th><th>Quota</th><th>Multiplicateur</th><th>Prime projetée</th><th>Recrues<br><small style="text-transform:none;letter-spacing:0">(direction · ${money(prixRecrue())}/recrue)</small></th><th>Salaire</th><th>Total</th></tr></thead><tbody>
     ${R.map((r,i)=>{const g=grade(r),okk=quotaOK(r),sal=salaireDe(r),pr=okk?primeProj(r)+(i<3?S.settings.top[i]:0):0;return `<tr>
       <td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td>
       <td><b>${esc(r.nom)}</b></td>
@@ -742,6 +752,7 @@ async function semaine(){
       <td>${okk?'<span class="up">✔ atteint</span>':`<span class="down">${fmt(g.quota-r.barils)} restants</span>`}</td>
       <td>×${g.mult}</td>
       <td class="${okk?'gold':''}" style="font-weight:700">${okk?money(pr):'—'}${okk&&i<3?`<div style="font-size:.7rem;color:var(--muted)">dont TOP ${i+1} : ${money(S.settings.top[i])}</div>`:''}</td>
+      <td>${r.poste?`<input class="field" type="number" min="0" value="${nn(r.recrues)}" style="width:72px;padding:5px 8px;text-align:right" onchange="setRecrues(${r.id},+this.value||0)">`:'<span style="color:var(--muted)">—</span>'}</td>
       <td>${sal?money(sal):'—'}</td>
       <td style="font-weight:700">${sal+pr?money(sal+pr):'—'}</td>
     </tr>`}).join('')}
@@ -772,7 +783,7 @@ function closeWeek(){
   const podium=sorted.slice(0,3).filter(r=>r.barils>0).map((r,i)=>`${['🥇','🥈','🥉'][i]} **${r.nom}** — ${fmt(r.barils)} barils (+${money(S.settings.top[i])})`).join('\n');
   sendLog(`🗓️ Clôture de la semaine ${w.num}`,
     `**Production totale : ${fmt(w.total)} barils** (CA ${money(w.total*S.settings.prix)})\n**Primes versées : ${money(primes)}**\n\n${podium||'_Aucun run cette semaine_'}${promus.length?`\n\n📈 Promotions : ${promus.map(n=>'**'+n+'**').join(', ')}`:''}`, 0xe8a020);
-  S.runners.forEach(r=>{ r.barils=0; r.runs=[]; });
+  S.runners.forEach(r=>{ r.barils=0; r.runs=[]; r.recrues=0; });
   S.settings.semaine=isoWeek();
   save(); rerender();
   toast(`🗓️ Semaine clôturée — ${money(primes)} de primes${promus.length?` · promus : ${promus.join(', ')}`:''}`);
@@ -1294,8 +1305,11 @@ function bilanData(){
   const lignes=T.filter(r=>r.nom&&!low(r.nom).startsWith('nom')).map(r=>{
     const s=SAL.find(x=>low(x.nom)===low(r.nom))||{};
     const C=caps();
+    // recrutements saisis sur le site (direction uniquement) — la colonne Excel n'est plus utilisée
+    const run=S.runners.find(x=>x.nom.toLowerCase()===low(r.nom));
+    const rec=(run&&run.poste)?nn(run.recrues)*prixRecrue():0;
     // salaire calculé, avec plancher = salaire fixe du poste (Paramètres), puis plafond
-    const base=Math.max(nn(s.prodBidons)+nn(s.poste)+nn(s.remboursement)+nn(s.recrutement), salFixeDe(r.rang));
+    const base=Math.max(nn(s.prodBidons)+nn(s.poste)+nn(s.remboursement)+rec, salFixeDe(r.rang));
     const sal=Math.min(base, isPatron(r)?C.patSal:C.empSal);
     const prime=Math.min(nn(s.run),isPatron(r)?C.patPrime:C.empPrime);
     return {nom:r.nom,rang:r.rang,run:nn(r.runs),facture:nn(r.factures),vente:nn(r.ventes),
@@ -1456,6 +1470,7 @@ function params(){
       <h3>💼 Économie</h3>
       <div class="grid g2">
         <div class="f-row"><label class="f-lbl">Prix du pétrole ($/u)</label><input class="field" id="p_prix" type="number" value="${S.settings.prix}"></div>
+        <div class="f-row"><label class="f-lbl">Salaire par recrue ($)</label><input class="field" id="p_rec" type="number" value="${prixRecrue()}"></div>
         <div class="f-row"><label class="f-lbl">Limite pétroles</label><input class="field" id="p_lim" type="number" value="${S.settings.limite}"></div>
         <div class="f-row"><label class="f-lbl">N° de semaine</label><input class="field" id="p_sem" type="number" value="${S.settings.semaine}"></div>
       </div>
@@ -1524,6 +1539,7 @@ function params(){
 }
 function saveParams(){
   S.settings.prix=+$('#p_prix').value||5;
+  S.settings.prixRecrue=+$('#p_rec').value||4000;
   S.settings.limite=+$('#p_lim').value||24000;
   S.settings.semaine=+$('#p_sem').value||1;
   S.settings.top=[+$('#p_t1').value||15000,+$('#p_t2').value||10000,+$('#p_t3').value||5000];
