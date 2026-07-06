@@ -56,6 +56,13 @@
     border-bottom:1px solid rgba(255,255,255,.08);
   }
   .logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;font-size:1.05rem;letter-spacing:.5px}
+  .logo img{animation:logoFloat 4s ease-in-out infinite}
+  .logo:hover img{animation:logoSpin .7s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes logoFloat{
+    0%,100%{transform:translateY(0);filter:drop-shadow(0 0 4px rgba(232,160,32,.25))}
+    50%{transform:translateY(-3px);filter:drop-shadow(0 4px 10px rgba(232,160,32,.55))}
+  }
+  @keyframes logoSpin{to{transform:rotate(360deg) scale(1.12)}}
   .logo svg{flex-shrink:0}
   .logo span b{color:var(--accent)}
   .nav-links{display:flex;gap:28px;align-items:center}

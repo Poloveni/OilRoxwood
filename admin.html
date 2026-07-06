@@ -45,6 +45,13 @@
     border-right:1px solid var(--line);padding:26px 16px;display:flex;flex-direction:column;z-index:50
   }
   .brand{display:flex;align-items:center;gap:10px;padding:0 10px 24px;font-weight:800;letter-spacing:.5px}
+  .brand img{animation:logoFloat 4s ease-in-out infinite;cursor:pointer}
+  .brand img:hover{animation:logoSpin .7s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes logoFloat{
+    0%,100%{transform:translateY(0);filter:drop-shadow(0 0 4px rgba(232,160,32,.25))}
+    50%{transform:translateY(-4px);filter:drop-shadow(0 4px 10px rgba(232,160,32,.55))}
+  }
+  @keyframes logoSpin{to{transform:rotate(360deg) scale(1.12)}}
   .brand small{display:block;color:var(--muted);font-weight:500;font-size:.7rem;letter-spacing:1.5px}
   .brand b{color:var(--accent)}
   .nav-item{
