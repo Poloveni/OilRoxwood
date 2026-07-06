@@ -652,18 +652,28 @@ function openRunnerModal(id){
     <h3>${id?'Modifier':'Nouveau'} runner</h3>
     <div class="f-row"><label class="f-lbl">Nom RP</label><input class="field" id="m_nom" value="${esc(r.nom)}" placeholder="John Baker"></div>
     <div class="f-row"><label class="f-lbl">Discord</label><input class="field" id="m_dc" value="${esc(r.discord)}" placeholder="john_baker"></div>
-    <div class="f-row"><label class="f-lbl">Grade</label><select class="field" id="m_gr">${GRADES.map((g,i)=>`<option value="${i}" ${r.grade===i?'selected':''}>${g.nom}</option>`).join('')}</select></div>
+    <div class="f-row"><label class="f-lbl">Grade / Poste</label><select class="field" id="m_gr">
+      <optgroup label="Grades runner">
+        ${GRADES.map((g,i)=>`<option value="${i}" ${!r.poste&&r.grade===i?'selected':''}>${g.nom}</option>`).join('')}
+      </optgroup>
+      <optgroup label="Direction & postes">
+        ${[...new Set([...Object.keys(salairesPoste()),...S.runners.filter(x=>x.poste).map(x=>x.poste)])].sort().map(p=>`<option value="p:${esc(p)}" ${r.poste===p?'selected':''}>💼 ${esc(p)}</option>`).join('')}
+      </optgroup>
+    </select></div>
     <button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="saveRunner(${id||0})">Enregistrer</button>`);
 }
 function saveRunner(id){
   const nom=$('#m_nom').value.trim(), dc=$('#m_dc').value.trim();
   if(!nom) return toast('⚠️ Le nom est requis');
+  const v=$('#m_gr').value;
+  const poste=v.startsWith('p:')?v.slice(2):null;
+  const gr=poste?0:+v;
   if(id){
     const r=S.runners.find(x=>x.id===id);
-    Object.assign(r,{nom,discord:dc,grade:+$('#m_gr').value});
+    Object.assign(r,{nom,discord:dc,grade:gr,poste});
   } else {
-    S.runners.push({id:Date.now(),nom,discord:dc,grade:+$('#m_gr').value,barils:0,total:0,runs:[]});
-    sendLog('👥 Nouvelle recrue', `**${nom}** (@${dc}) rejoint l'entreprise — ${GRADES[+$('#m_gr').value].nom}`, 0x3ddc84);
+    S.runners.push({id:Date.now(),nom,discord:dc,grade:gr,poste,barils:0,total:0,runs:[]});
+    sendLog('👥 Nouvelle recrue', `**${nom}** (@${dc}) rejoint l'entreprise — ${poste||GRADES[gr].nom}`, 0x3ddc84);
   }
   save(); closeModal(); rerender(); toast('✅ Runner enregistré');
 }
