@@ -430,7 +430,7 @@ function initSync(){
       S=Object.assign(defaults(),d);
       S.passHash=monPass;
       localStorage.setItem(LS_KEY,JSON.stringify(S));
-      if(sessionStorage.getItem('orx_auth')==='1'){ rerender(); toast('☁️ Mise à jour reçue d\'un autre admin'); }
+      if(sessionStorage.getItem('orx_auth')==='1'){ applyPerms(); rerender(); toast('☁️ Mise à jour reçue d\'un autre admin'); }
     })
     .subscribe(st=>{ if(st==='SUBSCRIBED') syncDot(true,'Temps réel actif'); });
 }
@@ -468,6 +468,25 @@ async function sha(t){
   return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
 }
 const ROLES={direction:'Direction',rh:'RH',comptable:'Comptable',commercial:'Commercial',membre:'Membre'};
+/* Onglets visibles par rôle — la Direction voit tout, un Membre ne voit que la vue d'ensemble */
+const PERMS={
+  direction:['overview','effectif','runs','semaine','feuilles','factures','relances','bilan','dlogs','params'],
+  rh:       ['overview','effectif','runs','semaine','feuilles','dlogs'],
+  comptable:['overview','feuilles','factures','bilan'],
+  commercial:['overview','factures','relances','feuilles'],
+  membre:   ['overview']
+};
+function allowedViews(){
+  if(!S.users||!S.users.length) return PERMS.direction; // phase d'installation : tout ouvert
+  const cu=currentUser();
+  return cu ? (PERMS[cu.role]||PERMS.membre) : PERMS.membre; // session sans compte : minimum
+}
+function applyPerms(){
+  const al=allowedViews();
+  document.querySelectorAll('.nav-item[data-view]').forEach(b=>{
+    b.style.display=al.includes(b.dataset.view)?'':'none';
+  });
+}
 function currentUser(){
   const u=sessionStorage.getItem('orx_user');
   return (S.users||[]).find(x=>x.user.toLowerCase()===String(u||'').toLowerCase())||null;
@@ -506,6 +525,7 @@ function enter(){
   document.getElementById('app').style.display='block';
   const cu=currentUser(), wu=document.getElementById('whoami');
   if(wu) wu.innerHTML=cu?`👤 <b style="color:var(--ink)">${esc(cu.user)}</b> · ${ROLES[cu.role]||cu.role}`:'';
+  applyPerms();
   S.settings.semaine=isoWeek(); save(); // semaine calendaire (S27, S28…)
   show('overview');
   // effectif ← tablette (le pull Supabase a déjà eu lieu au chargement de la page)
@@ -630,6 +650,8 @@ function mkChart(id, cfg){
 document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.onclick=()=>show(b.dataset.view));
 let VIEW='overview';
 function show(v){
+  const al=allowedViews();
+  if(!al.includes(v)) v=al[0]||'overview'; // vue non autorisée → première vue permise
   VIEW=v;
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
@@ -1648,7 +1670,7 @@ function params(){
         <div class="grid g3" style="gap:8px">
           <input class="field" id="nu_user" placeholder="Identifiant">
           <input class="field" id="nu_pw" type="password" placeholder="Mot de passe">
-          <select class="field" id="nu_role">${Object.entries(ROLES).map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select>
+          <select class="field" id="nu_role">${Object.entries(ROLES).map(([k,l])=>`<option value="${k}" ${k==='membre'?'selected':''}>${l}</option>`).join('')}</select>
         </div>
         <button class="btn btn-gold" style="width:100%;margin-top:10px" onclick="addUser()">＋ Créer le compte</button>
         <p style="color:var(--muted);font-size:.76rem;margin-top:10px">Pour la connexion Discord : crée le compte avec l'identifiant = <b>pseudo Discord exact</b> de la personne (le mot de passe sert de secours). À sa première connexion Discord, le compte est lié définitivement à son ID. Restrictions par rôle à venir.</p>
