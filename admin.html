@@ -554,8 +554,13 @@ async function checkDiscordAuth(){
     const {data:{session}}=await SYNC.cli.auth.getSession();
     if(!session) return;
     const m=session.user.user_metadata||{};
-    const pseudo=m.full_name||m.name||m.preferred_username||'inconnu';
-    const did=m.provider_id||session.user.id;
+    const idn=(session.user.identities&&session.user.identities[0]&&session.user.identities[0].identity_data)||{};
+    const cc=m.custom_claims||{};
+    const pseudo=cc.global_name||m.full_name||m.name||m.preferred_username
+      ||idn.custom_claims&&idn.custom_claims.global_name||idn.full_name||idn.name||idn.preferred_username
+      ||(m.email||session.user.email||'').split('@')[0]||'inconnu';
+    const did=m.provider_id||idn.provider_id||m.sub||session.user.id;
+    console.log('[OilRoxwood] identité Discord reçue :',{pseudo,did,user_metadata:m,identity_data:idn});
     let u=(S.users||[]).find(x=>x.did===did)
         ||(S.users||[]).find(x=>String(x.user).toLowerCase()===String(pseudo).toLowerCase());
     if(!u&&!(S.users&&S.users.length)){
