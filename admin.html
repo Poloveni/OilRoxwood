@@ -852,9 +852,9 @@ async function feuilles(){
     <table class="sheet"><thead><tr>${head}<th></th></tr></thead><tbody>${body||`<tr><td colspan="${def.cols.length+1}"><div class="empty">Aucune ligne</div></td></tr>`}</tbody>${foot}</table>
   </div>`;
 }
-function cellEdit(i,k,val){ S.sheets[curSheet][i][k]=val; save(); if(curSheet==='tablette') syncRunners(false); feuilles(); }
+function cellEdit(i,k,val){ S.sheets[curSheet][i][k]=val; save(); if(curSheet==='tablette'||curSheet==='prodSem') syncRunners(false); feuilles(); }
 function rowAdd(){ S.sheets[curSheet].unshift(JSON.parse(JSON.stringify(SHEETS_DEF[curSheet].nouveau))); save(); feuilles(); }
-function rowDel(i){ if(confirm('Supprimer cette ligne ?')){ S.sheets[curSheet].splice(i,1); save(); if(curSheet==='tablette') syncRunners(false); feuilles(); } }
+function rowDel(i){ if(confirm('Supprimer cette ligne ?')){ S.sheets[curSheet].splice(i,1); save(); if(curSheet==='tablette'||curSheet==='prodSem') syncRunners(false); feuilles(); } }
 
 /* ---- Synchronisation Tablette → Effectif runners ---- */
 function syncRunners(silent){
@@ -863,20 +863,30 @@ function syncRunners(silent){
   const MAP={'interimaire':0,'raffineur':1,'raffineur confirme':2,'raffineur expert':3};
   let added=0, updated=0, removed=0;
   const present=new Set();
+  const JOURS=['lun','mar','mer','jeu','ven','sam','dim'];
+  const prod=S.sheets.prodSem||[];
   S.sheets.tablette.forEach(row=>{
     const nom=String(row.nom||'').trim();
-    if(!nom||norm(nom).startsWith('nom')) return; // ignore lignes d'en-tête
+    if(!nom||norm(nom).startsWith('nom')||/^[\d.,\s]+$/.test(nom)) return; // ignore en-têtes et lignes parasites
     const known=MAP[norm(row.rang)];
     const g=known!==undefined?known:0; // hors grades raffineur : quota Intérimaire
     const rang=String(row.rang||'').trim();
     const poste=(known===undefined&&rang&&rang!=='-')?rang:null; // Patron, Commercial, RH…
     present.add(nom.toLowerCase());
-    const r=S.runners.find(x=>x.nom.toLowerCase()===nom.toLowerCase());
+    // barils de la semaine depuis la feuille Production semaine · total carrière = chiffre run ÷ 5 $
+    const p=prod.find(x=>norm(x.nom)===norm(nom));
+    const barilsSem=p?JOURS.reduce((a,k)=>a+nn(p[k]),0):null;
+    const totalCarriere=Math.round(nn(row.runs)/5);
+    let r=S.runners.find(x=>x.nom.toLowerCase()===nom.toLowerCase());
     if(r){ if(r.grade!==g&&r.src==='tablette'){ r.grade=g; updated++; } r.src='tablette'; r.poste=poste; }
     else{
-      S.runners.push({id:Date.now()+Math.floor(Math.random()*1e6),nom,discord:'',grade:g,
-        zone:suggestZone(),barils:0,total:0,runs:[],src:'tablette',poste});
-      added++;
+      r={id:Date.now()+Math.floor(Math.random()*1e6),nom,discord:'',grade:g,
+        zone:suggestZone(),barils:0,total:0,runs:[],src:'tablette',poste};
+      S.runners.push(r); added++;
+    }
+    if(r.src==='tablette'){
+      if(barilsSem!==null&&r.barils!==barilsSem){ r.barils=barilsSem; updated++; }
+      if(totalCarriere&&r.total<totalCarriere) r.total=totalCarriere;
     }
   });
   // retire uniquement les runners issus de la tablette qui n'y figurent plus
