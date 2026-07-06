@@ -8,6 +8,7 @@
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --bg:#0b111b; --panel:#121a28; --panel-2:#182337; --line:rgba(255,255,255,.07);
@@ -341,7 +342,7 @@
 <!-- ============ APP ============ -->
 <div id="app">
   <aside>
-    <div class="brand"><img src="assets/logo.png" alt="" width="32" height="32" style="object-fit:contain"> <span>OIL <b>ROXWOOD</b><small>DASHBOARD ADMIN</small></span></div>
+    <div class="brand"><img src="assets/logo.png" alt="" width="32" height="32" style="object-fit:contain"> <span>OIL <b>ROXWOOD</b><small>DASHBOARD ADMIN <span id="syncDot" title="Synchro non configurée" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-left:4px;vertical-align:middle"></span></small></span></div>
     <button class="nav-item active" data-view="overview">📊 <span class="txt">Vue d'ensemble</span></button>
     <button class="nav-item" data-view="effectif">👥 <span class="txt">Effectif</span></button>
     <button class="nav-item" data-view="runs">🚛 <span class="txt">Runs</span></button>
@@ -391,7 +392,54 @@ function load(){
   try{ const d = JSON.parse(localStorage.getItem(LS_KEY)); return d ? Object.assign(defaults(), d) : defaults(); }
   catch(e){ return defaults(); }
 }
-function save(){ localStorage.setItem(LS_KEY, JSON.stringify(S)); }
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(S)); sbQueue(); }
+
+/* ================== SYNCHRO SUPABASE (multi-admin temps réel) ================== */
+const SB_URL='https://prwdtdmdkhzwfyivaepw.supabase.co';
+const SB_KEY='sb_publishable_qgN4fRX9eVdKn3SWAjtmhw_F00rlqXz';
+const SYNC={on:false, cli:null, cid:Math.random().toString(36).slice(2), t:null, ready:false};
+function syncDot(ok,msg){
+  const el=document.getElementById('syncDot');
+  if(el){ el.style.background=ok===null?'var(--muted)':ok?'var(--green)':'var(--red)'; el.title=msg||''; }
+}
+function initSync(){
+  if(SYNC.on||!SB_URL||!SB_KEY||typeof supabase==='undefined') return;
+  SYNC.cli=supabase.createClient(SB_URL,SB_KEY);
+  SYNC.on=true;
+  SYNC.cli.channel('etat-sync')
+    .on('postgres_changes',{event:'*',schema:'public',table:'oilroxwood_etat',filter:'id=eq.1'},p=>{
+      const d=p.new&&p.new.data;
+      if(!d||d._cid===SYNC.cid) return; // ignore l'écho de nos propres écritures
+      S=Object.assign(defaults(),d);
+      localStorage.setItem(LS_KEY,JSON.stringify(S));
+      if(sessionStorage.getItem('orx_auth')==='1'){ rerender(); toast('☁️ Mise à jour reçue d\'un autre admin'); }
+    })
+    .subscribe(st=>{ if(st==='SUBSCRIBED') syncDot(true,'Temps réel actif'); });
+}
+async function sbPull(){
+  if(!SYNC.on) return;
+  try{
+    const {data,error}=await SYNC.cli.from('oilroxwood_etat').select('data').eq('id',1).maybeSingle();
+    if(error) throw error;
+    if(data&&data.data){
+      S=Object.assign(defaults(),data.data);
+      localStorage.setItem(LS_KEY,JSON.stringify(S));
+    } else {
+      await sbPushNow(); // base vide : on y pousse l'état local (première installation)
+    }
+    SYNC.ready=true; syncDot(true,'Synchronisé');
+  }catch(e){ syncDot(false,'Connexion Supabase impossible'); }
+}
+function sbQueue(){ if(!SYNC.on||!SYNC.ready) return; clearTimeout(SYNC.t); SYNC.t=setTimeout(sbPushNow,800); }
+async function sbPushNow(){
+  if(!SYNC.on) return;
+  try{
+    const d=JSON.parse(JSON.stringify(S)); d._cid=SYNC.cid;
+    const {error}=await SYNC.cli.from('oilroxwood_etat').upsert({id:1,data:d,maj:new Date().toISOString()});
+    if(error) throw error;
+    syncDot(true,'Synchronisé · '+new Date().toLocaleTimeString('fr-FR'));
+  }catch(e){ syncDot(false,'Échec d\'envoi — modifs gardées en local'); }
+}
 
 /* ================== AUTH ================== */
 async function sha(t){
@@ -417,8 +465,15 @@ function enter(){
   document.getElementById('app').style.display='block';
   S.settings.semaine=isoWeek(); save(); // semaine calendaire (S27, S28…)
   show('overview');
-  // synchronise l'effectif avec la feuille tablette à chaque connexion
-  setTimeout(()=>{ ensureSheets().then(()=>{ const r=syncRunners(true); if(r&&(r.added||r.removed||r.updated)) rerender(); }); }, 100);
+  // synchro Supabase (si configurée) puis effectif ← tablette
+  setTimeout(async()=>{
+    initSync();
+    await sbPull();
+    await ensureSheets();
+    const r=syncRunners(true);
+    S.settings.semaine=isoWeek();
+    rerender();
+  }, 50);
 }
 function logout(){ sessionStorage.removeItem('orx_auth'); location.reload(); }
 // connexion auto différée : attend que tout le script soit chargé avant d'entrer
