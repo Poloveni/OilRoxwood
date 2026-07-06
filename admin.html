@@ -259,6 +259,38 @@
     linear-gradient(160deg,rgba(11,17,27,.86),rgba(22,32,46,.90))}
   .login-card{background:linear-gradient(165deg,rgba(25,34,52,.9),rgba(15,22,35,.96));backdrop-filter:blur(16px)}
 
+  /* ================== NÉON GTA6 ================== */
+  :root{--neon-p:#ff2d95;--neon-c:#22d7ee;--neon-v:#8b5cf6}
+  body{background:
+    radial-gradient(ellipse at 12% -5%, rgba(139,92,246,.16), transparent 50%),
+    radial-gradient(ellipse at 90% 105%, rgba(255,45,149,.12), transparent 55%),
+    radial-gradient(ellipse at 60% 40%, rgba(34,215,238,.05), transparent 60%),
+    var(--bg)}
+  aside{border-right:1px solid rgba(255,45,149,.14)}
+  .brand b{text-shadow:0 0 14px rgba(232,160,32,.85)}
+  .brand small{color:var(--neon-c);text-shadow:0 0 9px rgba(34,215,238,.7)}
+  .topbar h2{background:linear-gradient(90deg,#fff 10%,var(--neon-p) 55%,var(--accent-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 12px rgba(255,45,149,.35))}
+  .nav-item:hover{color:var(--neon-c)}
+  .nav-item.active{color:var(--neon-p);background:linear-gradient(135deg,rgba(255,45,149,.16),rgba(139,92,246,.07));box-shadow:inset 3px 0 0 var(--neon-p), 0 4px 18px rgba(255,45,149,.14)}
+  .panel{border-color:rgba(139,92,246,.16)}
+  .panel:hover{border-color:rgba(255,45,149,.35);box-shadow:0 16px 44px rgba(0,0,0,.4), 0 0 26px rgba(255,45,149,.10), inset 0 1px 0 rgba(255,255,255,.06)}
+  .kpi::after{background:radial-gradient(circle,rgba(255,45,149,.16),transparent 70%)}
+  .kpi .val{filter:drop-shadow(0 0 8px rgba(255,255,255,.12))}
+  .kpi .val.gold,.kpi .val .gold{filter:drop-shadow(0 0 12px rgba(232,160,32,.55))}
+  .btn-gold{box-shadow:0 4px 16px rgba(232,160,32,.3), 0 0 24px rgba(232,160,32,.22)}
+  .btn-gold:hover{box-shadow:0 8px 28px rgba(232,160,32,.5), 0 0 34px rgba(255,45,149,.25)}
+  .btn-ghost:hover{border-color:var(--neon-c);color:var(--neon-c);box-shadow:0 0 18px rgba(34,215,238,.22)}
+  .tab:hover{border-color:rgba(34,215,238,.45);color:var(--neon-c)}
+  .tab.on{color:var(--neon-p);border-color:rgba(255,45,149,.5);background:linear-gradient(135deg,rgba(255,45,149,.17),rgba(139,92,246,.08));box-shadow:0 6px 22px rgba(255,45,149,.2)}
+  input.field:focus,select.field:focus,.login-card input:focus,.sheet input:focus{border-color:var(--neon-c);box-shadow:0 0 0 3px rgba(34,215,238,.14), 0 0 16px rgba(34,215,238,.15)}
+  .prog i{background:linear-gradient(90deg,var(--neon-p),var(--accent-2))}
+  .prog i.full{background:linear-gradient(90deg,#2eb872,var(--green));box-shadow:0 0 10px rgba(61,220,132,.5)}
+  ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,var(--neon-p),var(--neon-v))}
+  .login-card{border-color:rgba(255,45,149,.25)}
+  .login-card h1 b{text-shadow:0 0 16px rgba(232,160,32,.85)}
+  @keyframes glowPulse{0%,100%{box-shadow:0 0 24px rgba(255,45,149,.14)}50%{box-shadow:0 0 56px rgba(139,92,246,.4)}}
+  #toast{border-left-color:var(--neon-p);box-shadow:0 15px 40px rgba(0,0,0,.4), 0 0 22px rgba(255,45,149,.18)}
+
   @media(max-width:1000px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
   @media(max-width:760px){
     aside{width:100%;height:auto;position:sticky;flex-direction:row;overflow-x:auto;padding:12px;align-items:center}
@@ -1232,11 +1264,13 @@ const MOTION_OK = true; // animations toujours actives (demande du patron 😄)
   function rs(){
     W=cv.width=innerWidth; H=cv.height=innerHeight;
     const N=Math.min(95, Math.floor(innerWidth/16));
+    const COLS=['232,160,32','232,160,32','255,45,149','34,215,238','139,92,246'];
     if(PS.length!==N) PS=Array.from({length:N},()=>({
       x:Math.random()*W, y:Math.random()*H,
       vx:(Math.random()-.5)*.45, vy:(Math.random()-.5)*.45,
       r:Math.random()*2.2+.8, o:Math.random()*.5+.4,
-      tw:Math.random()*6.28, ts:.008+Math.random()*.02
+      tw:Math.random()*6.28, ts:.008+Math.random()*.02,
+      c:COLS[Math.floor(Math.random()*COLS.length)]
     }));
   }
   addEventListener('resize',rs); rs();
@@ -1253,14 +1287,16 @@ const MOTION_OK = true; // animations toujours actives (demande du patron 😄)
       if(p.x<-10)p.x=W+10; if(p.x>W+10)p.x=-10;
       if(p.y<-10)p.y=H+10; if(p.y>H+10)p.y=-10;
       const glow=(Math.sin(p.tw)+1)/2;
+      cx.shadowColor=`rgba(${p.c},.9)`; cx.shadowBlur=8+glow*8;
       cx.beginPath(); cx.arc(p.x,p.y,p.r,0,6.2832);
-      cx.fillStyle=`rgba(232,160,32,${(p.o*(.45+.55*glow)).toFixed(3)})`;
+      cx.fillStyle=`rgba(${p.c},${(p.o*(.45+.55*glow)).toFixed(3)})`;
       cx.fill();
     }
+    cx.shadowBlur=0;
     for(let i=0;i<PS.length;i++)for(let j=i+1;j<PS.length;j++){
       const a=PS[i],b=PS[j],dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy;
       if(d2<LINK*LINK){
-        cx.strokeStyle=`rgba(232,160,32,${((1-Math.sqrt(d2)/LINK)*.14).toFixed(3)})`;
+        cx.strokeStyle=`rgba(${a.c},${((1-Math.sqrt(d2)/LINK)*.13).toFixed(3)})`;
         cx.lineWidth=1; cx.beginPath(); cx.moveTo(a.x,a.y); cx.lineTo(b.x,b.y); cx.stroke();
       }
     }
@@ -1269,7 +1305,7 @@ const MOTION_OK = true; // animations toujours actives (demande du patron 😄)
       const dx=p.x-M.x, dy=p.y-M.y, d2=dx*dx+dy*dy;
       if(d2<MOUSE*MOUSE){
         const t=1-Math.sqrt(d2)/MOUSE;
-        cx.strokeStyle=`rgba(245,178,58,${(t*.30).toFixed(3)})`;
+        cx.strokeStyle=`rgba(34,215,238,${(t*.30).toFixed(3)})`;
         cx.lineWidth=1.2; cx.beginPath(); cx.moveTo(p.x,p.y); cx.lineTo(M.x,M.y); cx.stroke();
         p.vx+=dx/18000; p.vy+=dy/18000;
       }
