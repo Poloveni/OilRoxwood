@@ -95,7 +95,7 @@ document.getElementById('q').addEventListener('input',function(){
     <div class="row"><span>Prime projetée (lundi)</span><b class="gold">${r.prime?F(Math.round(r.prime))+' $':'— (quota non atteint)'}</b></div>
     <div class="row"><span>Classement de la semaine</span><b>${pos<=3?['🥇','🥈','🥉'][pos-1]+' ':''}${pos}ᵉ sur ${DATA.runners.length}</b></div>
     <div class="row"><span>Total barils (carrière)</span><b>${F(r.total)}</b></div>
-    ${r.poste?'':next?`<div class="row"><span>Prochain grade : ${next.nom}</span><b>${r.total>=g.montee?'📈 Éligible — vois avec la direction !':F(g.montee-r.total)+' barils restants'}</b></div>`:'<div class="row"><span>Grade</span><b>👑 Grade maximum atteint</b></div>'}
+    ${r.poste?'':next?`<div class="row"><span>Prochain grade : ${next.nom}</span><b>${r.barils>=g.montee?'📈 Éligible — vois avec la direction !':F(g.montee-r.barils)+' barils restants cette semaine'}</b></div>`:'<div class="row"><span>Grade</span><b>👑 Grade maximum atteint</b></div>'}
   </div>`;
 });
 </script>

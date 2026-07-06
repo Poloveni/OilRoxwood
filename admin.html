@@ -661,7 +661,7 @@ function primeProj(r){
   const cap = r.poste && /patron/i.test(r.poste) ? caps().patPrime : caps().empPrime;
   return Math.min(r.barils * grade(r).mult, cap); // barils × multiplicateur du grade, plafonné
 }
-function eligible(r){ return r.grade < 3 && r.total >= grade(r).montee; }
+function eligible(r){ return r.grade < 3 && r.barils >= grade(r).montee; } // montée basée sur les barils de la semaine
 let charts = [];
 function destroyCharts(){ charts.forEach(c=>c.destroy()); charts=[]; }
 function mkChart(id, cfg){
