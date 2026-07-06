@@ -400,6 +400,7 @@ function defaults(){
     sheets:null,
     fact:null,
     users:[],
+    pending:[],
     settings:{prix:10, primeBase:5000, top:[15000,10000,5000], limite:24000, semaine:1,
       webhook:'https://discord.com/api/webhooks/1247564402782371985/X8pynlKA1sn26In6aONz4IO7XZl7pwtnW19yvmLKX2DiMq_LXEBZRHGW1rBgyes0h9kg'}
   };
@@ -435,6 +436,7 @@ function initSync(){
       S.passHash=monPass;
       localStorage.setItem(LS_KEY,JSON.stringify(S));
       if(sessionStorage.getItem('orx_auth')==='1'){ applyPerms(); rerender(); toast('☁️ Mise à jour reçue d\'un autre admin'); }
+      else checkDiscordAuth(); // en attente de validation : entre automatiquement dès que la direction valide
     })
     .subscribe(st=>{ if(st==='SUBSCRIBED') syncDot(true,'Temps réel actif'); });
 }
@@ -582,9 +584,17 @@ async function checkDiscordAuth(){
       sessionStorage.setItem('orx_user',u.user);
       enter();
     } else {
+      // inconnu → demande d'accès automatique, la direction n'a plus qu'à cliquer ✓
+      if(!S.pending) S.pending=[];
+      if(!S.pending.find(x=>x.did===did)){
+        S.pending.push({id:Date.now(),user:pseudo,did,date:new Date().toLocaleDateString('fr-FR')});
+        save(); await sbPushNow();
+        sendLog('🔔 Demande d\'accès au dashboard', `**${pseudo}** attend une validation — Paramètres → Comptes d'accès → ✓`, 0xe8a020);
+      }
       const d=document.getElementById('lg_denied');
       if(d){ d.style.display='block';
-        d.innerHTML=`⛔ <b>${esc(pseudo)}</b> n'a pas encore d'accès.<br>Demande à la direction d'ajouter le compte « <b>${esc(pseudo)}</b> » dans Paramètres → Comptes d'accès, puis reviens. <a href="#" onclick="logout();return false" style="color:#ffb0b0;text-decoration:underline">Changer de compte Discord</a>`;
+        d.style.background='rgba(232,160,32,.08)'; d.style.borderColor='rgba(232,160,32,.35)'; d.style.color='var(--accent-2)';
+        d.innerHTML=`⏳ Demande d'accès envoyée pour <b>${esc(pseudo)}</b>.<br>Dès que la direction valide, cette page se connectera <b>automatiquement</b> — laisse-la ouverte. <a href="#" onclick="logout();return false" style="color:inherit;text-decoration:underline">Changer de compte</a>`;
       }
     }
   }catch(e){ /* session illisible : on reste sur l'écran de connexion */ }
@@ -1668,6 +1678,16 @@ function params(){
       </div>
       <div class="panel" style="margin-bottom:18px">
         <h3>👤 Comptes d'accès (${(S.users||[]).length})</h3>
+        ${(S.pending&&S.pending.length)?`<div class="warn" style="border-color:rgba(232,160,32,.35);background:rgba(232,160,32,.07);color:var(--accent-2)">
+          🔔 <b>${S.pending.length} demande(s) d'accès en attente</b>
+          ${S.pending.map(p=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px">
+            <span>👤 <b>${esc(p.user)}</b> <small style="opacity:.7">· ${esc(p.date||'')}</small></span>
+            <span style="white-space:nowrap">
+              <button class="btn btn-sm btn-gold" onclick="approvePending(${p.id})">✓ Valider</button>
+              <button class="btn btn-sm btn-red" onclick="refusePending(${p.id})">✕</button>
+            </span>
+          </div>`).join('')}
+        </div>`:''}
         <table style="margin-bottom:12px"><thead><tr><th>Identifiant</th><th>Rôle</th><th style="text-align:right"></th></tr></thead><tbody>
         ${(S.users||[]).map(u=>`<tr>
           <td><b>${esc(u.user)}</b></td>
@@ -1769,6 +1789,20 @@ async function resetUserPw(id){
   if(!p) return;
   if(p.length<4) return toast('⚠️ 4 caractères minimum');
   u.hash=await sha(p); save(); toast('🔑 Mot de passe réinitialisé pour '+u.user);
+}
+async function approvePending(id){
+  const p=(S.pending||[]).find(x=>x.id===id); if(!p) return;
+  if(!S.users.find(x=>x.did===p.did))
+    S.users.push({id:Date.now(),user:p.user,did:p.did,role:'membre'});
+  S.pending=S.pending.filter(x=>x.id!==id);
+  save(); await sbPushNow(); params();
+  toast('✅ '+p.user+' validé — il entre automatiquement (rôle Membre, modifiable ci-dessous)');
+  sendLog('✅ Accès validé', `**${p.user}** a maintenant accès au dashboard (Membre)`, 0x3ddc84);
+}
+async function refusePending(id){
+  const p=(S.pending||[]).find(x=>x.id===id); if(!p) return;
+  S.pending=S.pending.filter(x=>x.id!==id);
+  save(); await sbPushNow(); params(); toast('Demande de '+p.user+' refusée');
 }
 function delUser(id){
   const u=S.users.find(x=>x.id===id); if(!u) return;
