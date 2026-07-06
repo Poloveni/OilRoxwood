@@ -333,9 +333,15 @@
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
     <p>Espace administrateur — accès restreint</p>
-    <input type="text" id="lg_user" placeholder="Identifiant" autofocus autocomplete="username" style="margin-bottom:10px">
+    <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
+      Se connecter avec Discord
+    </button>
+    <div id="lg_denied" style="display:none;margin-top:12px;padding:10px 14px;border-radius:9px;background:rgba(255,92,92,.1);border:1px solid rgba(255,92,92,.3);color:#ffb0b0;font-size:.8rem"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin:18px 0 12px;color:var(--muted);font-size:.72rem"><span style="flex:1;height:1px;background:var(--line)"></span>ou par identifiant<span style="flex:1;height:1px;background:var(--line)"></span></div>
+    <input type="text" id="lg_user" placeholder="Identifiant" autocomplete="username" style="margin-bottom:10px">
     <input type="password" id="pw" placeholder="Mot de passe" autocomplete="current-password">
-    <p id="lg_hint" style="color:var(--muted);font-size:.75rem;margin-top:10px;display:none">Premier lancement : choisis ton identifiant et connecte-toi avec le mot de passe <b>roxwood</b> — ton compte Direction sera créé.</p>
+    <p id="lg_hint" style="color:var(--muted);font-size:.75rem;margin-top:10px;display:none">Premier lancement : le premier connecté (Discord ou identifiant + mdp <b>roxwood</b>) devient le compte Direction.</p>
     <button type="submit">Se connecter</button>
     <div id="loginErr">Mot de passe incorrect.</div>
   </form>
@@ -512,7 +518,46 @@ function enter(){
     rerender();
   }, 50);
 }
-function logout(){ sessionStorage.removeItem('orx_auth'); sessionStorage.removeItem('orx_user'); location.reload(); }
+function logout(){
+  sessionStorage.removeItem('orx_auth'); sessionStorage.removeItem('orx_user');
+  const fin=()=>location.replace(location.pathname); // retire aussi les tokens OAuth de l'URL
+  if(SYNC.cli){ SYNC.cli.auth.signOut().then(fin).catch(fin); } else fin();
+}
+
+/* ---- Connexion via Discord (OAuth Supabase) ---- */
+async function loginDiscord(){
+  if(!SYNC.cli) return alert('Connexion Discord indisponible : Supabase injoignable. Utilise l\'identifiant en secours.');
+  await SYNC.cli.auth.signInWithOAuth({provider:'discord',options:{redirectTo:location.origin+location.pathname}});
+}
+async function checkDiscordAuth(){
+  if(!SYNC.cli) return;
+  try{
+    const {data:{session}}=await SYNC.cli.auth.getSession();
+    if(!session) return;
+    const m=session.user.user_metadata||{};
+    const pseudo=m.full_name||m.name||m.preferred_username||'inconnu';
+    const did=m.provider_id||session.user.id;
+    let u=(S.users||[]).find(x=>x.did===did)
+        ||(S.users||[]).find(x=>String(x.user).toLowerCase()===String(pseudo).toLowerCase());
+    if(!u&&!(S.users&&S.users.length)){
+      // premier lancement : le premier connecté Discord devient Direction
+      u={id:Date.now(),user:pseudo,did,role:'direction'};
+      S.users=[u]; save();
+      sendLog('👤 Premier compte créé', `**${pseudo}** (Direction) via Discord`, 0x5865F2);
+    }
+    if(u){
+      if(!u.did){ u.did=did; save(); } // liaison définitive au premier login
+      sessionStorage.setItem('orx_auth','1');
+      sessionStorage.setItem('orx_user',u.user);
+      enter();
+    } else {
+      const d=document.getElementById('lg_denied');
+      if(d){ d.style.display='block';
+        d.innerHTML=`⛔ <b>${esc(pseudo)}</b> n'a pas encore d'accès.<br>Demande à la direction d'ajouter le compte « <b>${esc(pseudo)}</b> » dans Paramètres → Comptes d'accès, puis reviens. <a href="#" onclick="logout();return false" style="color:#ffb0b0;text-decoration:underline">Changer de compte Discord</a>`;
+      }
+    }
+  }catch(e){ /* session illisible : on reste sur l'écran de connexion */ }
+}
 // connexion auto différée : attend que tout le script soit chargé avant d'entrer
 if(sessionStorage.getItem('orx_auth')==='1') setTimeout(enter,0);
 
@@ -1606,7 +1651,7 @@ function params(){
           <select class="field" id="nu_role">${Object.entries(ROLES).map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select>
         </div>
         <button class="btn btn-gold" style="width:100%;margin-top:10px" onclick="addUser()">＋ Créer le compte</button>
-        <p style="color:var(--muted);font-size:.76rem;margin-top:10px">Pour l'instant tous les comptes voient tout — les restrictions par rôle viendront ensuite.</p>
+        <p style="color:var(--muted);font-size:.76rem;margin-top:10px">Pour la connexion Discord : crée le compte avec l'identifiant = <b>pseudo Discord exact</b> de la personne (le mot de passe sert de secours). À sa première connexion Discord, le compte est lié définitivement à son ID. Restrictions par rôle à venir.</p>
       </div>
       <div class="panel" style="margin-bottom:18px">
         <h3>📊 Publication sur le site</h3>
@@ -1836,7 +1881,7 @@ new MutationObserver(()=>animateCounters()).observe(document.getElementById('mai
   const majHint=()=>{ if(hint) hint.style.display=(S.users&&S.users.length)?'none':'block'; };
   majHint();
   initSync();
-  sbPull().then(majHint);
+  sbPull().then(()=>{ majHint(); checkDiscordAuth(); });
 })();
 </script>
 </body>
