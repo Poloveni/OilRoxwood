@@ -422,6 +422,10 @@ function initSync(){
   if(SYNC.on||!SB_URL||!SB_KEY||typeof supabase==='undefined') return;
   SYNC.cli=supabase.createClient(SB_URL,SB_KEY);
   SYNC.on=true;
+  // dès que la session Discord est établie (même après l'échange du code), on tente l'entrée
+  SYNC.cli.auth.onAuthStateChange((event,session)=>{
+    if(session && sessionStorage.getItem('orx_auth')!=='1') checkDiscordAuth();
+  });
   SYNC.cli.channel('etat-sync')
     .on('postgres_changes',{event:'*',schema:'public',table:'oilroxwood_etat',filter:'id=eq.1'},p=>{
       const d=p.new&&p.new.data;
@@ -550,7 +554,9 @@ async function loginDiscord(){
 }
 async function checkDiscordAuth(){
   if(!SYNC.cli) return;
+  if(sessionStorage.getItem('orx_auth')==='1') return; // déjà connecté
   try{
+    if(!SYNC.ready) await sbPull(); // s'assure d'avoir la liste des comptes partagée avant de décider
     const {data:{session}}=await SYNC.cli.auth.getSession();
     if(!session) return;
     const m=session.user.user_metadata||{};
