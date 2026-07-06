@@ -415,6 +415,7 @@ async function doLogin(e){
 function enter(){
   document.getElementById('login').style.display='none';
   document.getElementById('app').style.display='block';
+  S.settings.semaine=isoWeek(); save(); // semaine calendaire (S27, S28…)
   show('overview');
   // synchronise l'effectif avec la feuille tablette à chaque connexion
   setTimeout(()=>{ ensureSheets().then(()=>{ const r=syncRunners(true); if(r&&(r.added||r.removed||r.updated)) rerender(); }); }, 100);
@@ -439,6 +440,13 @@ function sendLog(title, desc, color){
       footer:{text:`Semaine ${S.settings.semaine} · Dashboard admin`},
       timestamp:new Date().toISOString()}]
   })}).catch(()=>{});
+}
+function isoWeek(d=new Date()){
+  d=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  const day=d.getUTCDay()||7;
+  d.setUTCDate(d.getUTCDate()+4-day);
+  const y0=new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil(((d-y0)/86400000+1)/7);
 }
 function grade(r){ return GRADES[r.grade]; }
 function gTitle(r){ return r.poste||grade(r).nom; } // rang réel (Patron, Commercial…) ou grade raffineur
@@ -674,7 +682,7 @@ function closeWeek(){
   sendLog(`🗓️ Clôture de la semaine ${w.num}`,
     `**Production totale : ${fmt(w.total)} barils** (CA ${money(w.total*S.settings.prix)})\n**Primes versées : ${money(primes)}**\n\n${podium||'_Aucun run cette semaine_'}${promus.length?`\n\n📈 Promotions : ${promus.map(n=>'**'+n+'**').join(', ')}`:''}`, 0xe8a020);
   S.runners.forEach(r=>{ r.barils=0; r.runs=[]; });
-  S.settings.semaine++;
+  S.settings.semaine=isoWeek();
   save(); rerender();
   toast(`🗓️ Semaine clôturée — ${money(primes)} de primes${promus.length?` · promus : ${promus.join(', ')}`:''}`);
 }
