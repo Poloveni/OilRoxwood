@@ -151,6 +151,21 @@
   .sheet .calc{font-weight:700;text-align:right;padding:6px 8px;white-space:nowrap}
   .sheet tfoot td{font-weight:800;color:var(--accent);border-top:2px solid var(--line);padding:10px 8px;text-align:right}
   .sheet tfoot td:first-child{text-align:left}
+  /* combo clients (autocomplete) */
+  .combo{position:relative}
+  .combo-list{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:80;display:none;
+    background:linear-gradient(165deg,rgba(25,34,52,.97),rgba(15,22,35,.99));backdrop-filter:blur(14px);
+    border:1px solid rgba(255,45,149,.28);border-radius:12px;max-height:300px;overflow:auto;
+    box-shadow:0 22px 55px rgba(0,0,0,.55), 0 0 26px rgba(139,92,246,.18)}
+  .combo-list.open{display:block;animation:fadeUp .18s cubic-bezier(.2,.7,.3,1)}
+  .combo-item{padding:11px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;
+    font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.04);transition:background .12s}
+  .combo-item:last-child{border-bottom:none}
+  .combo-item small{color:var(--muted);font-size:.75rem;white-space:nowrap}
+  .combo-item:hover,.combo-item.sel{background:linear-gradient(90deg,rgba(255,45,149,.16),rgba(139,92,246,.07))}
+  .combo-item .match{color:var(--accent);font-weight:800}
+  .combo-count{position:sticky;top:0;background:rgba(15,22,35,.98);padding:8px 16px;font-size:.72rem;color:var(--muted);
+    letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06)}
   /* facture imprimable */
   #printZone{display:none}
   @media print{
@@ -931,8 +946,12 @@ function fNew(){
     </div>
     <div class="panel" style="grid-column:span 2"><h3>Client</h3>
       <div class="f-row"><label class="f-lbl">Nom (base de ${S.fact.clients.length} clients)</label>
-        <input class="field" list="dlClients" value="${esc(FD.client)}" placeholder="Tape pour chercher…" onchange="FD.client=this.value;fNew()">
-        <datalist id="dlClients">${S.fact.clients.map(x=>`<option value="${esc(x.nom)}">`).join('')}</datalist></div>
+        <div class="combo">
+          <input class="field" id="cliInput" value="${esc(FD.client)}" placeholder="🔍 Tape pour chercher…" autocomplete="off"
+            oninput="cliFilter(this.value)" onfocus="cliFilter(this.value)" onkeydown="cliKey(event)"
+            onblur="setTimeout(()=>{const l=document.getElementById('cliList');if(l)l.classList.remove('open');},160);if(FD.client!==this.value){FD.client=this.value;setTimeout(fNew,170);}">
+          <div class="combo-list" id="cliList"></div>
+        </div></div>
       ${c?`<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)">
         <span class="chip">📍 <b>${esc(c.adresse||'—')}</b></span>
         <span class="chip">📞 <b>${esc(c.tel||'—')}</b></span>
@@ -962,6 +981,44 @@ function updL(i,k,v){
   if(k==='ref'){ const l=FD.lignes[i]; l.ref=v==='_libre'?'':v; delete l.desc; delete l.pu; if(v==='Prestation Evenementiel')l.tva=0; }
   else FD.lignes[i][k]=v;
   fNew();
+}
+/* ---- autocomplete clients ---- */
+let cliIdx=-1, cliMatches=[];
+function hlMatch(nom,q){
+  if(!q) return esc(nom);
+  const i=nom.toLowerCase().indexOf(q);
+  if(i<0) return esc(nom);
+  return esc(nom.slice(0,i))+'<span class="match">'+esc(nom.slice(i,i+q.length))+'</span>'+esc(nom.slice(i+q.length));
+}
+function cliFilter(q){
+  const list=document.getElementById('cliList');
+  if(!list) return;
+  const qq=q.trim().toLowerCase();
+  cliMatches=S.fact.clients
+    .filter(c=>!qq||c.nom.toLowerCase().includes(qq)||String(c.adresse||'').toLowerCase().includes(qq))
+    .slice(0,80);
+  cliIdx=-1;
+  list.innerHTML=`<div class="combo-count">${cliMatches.length} client(s)${qq?' pour « '+esc(q.trim())+' »':''}</div>`+
+    (cliMatches.map((c,i)=>`<div class="combo-item" onmousedown="cliPick(${i})">
+      <span>${hlMatch(c.nom,qq)}</span><small>📍 ${esc(c.adresse||'—')}</small></div>`).join('')
+    ||'<div class="combo-item" style="cursor:default"><small>Aucun résultat — le nom saisi sera un client hors base</small></div>');
+  list.classList.add('open');
+}
+function cliPick(i){ if(cliMatches[i]){ FD.client=cliMatches[i].nom; fNew(); } }
+function cliKey(e){
+  const list=document.getElementById('cliList');
+  if(!list||!list.classList.contains('open')) return;
+  const items=[...list.querySelectorAll('.combo-item')];
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    cliIdx=Math.max(0,Math.min(cliMatches.length-1,cliIdx+(e.key==='ArrowDown'?1:-1)));
+    items.forEach((el,i)=>el.classList.toggle('sel',i===cliIdx));
+    if(items[cliIdx]) items[cliIdx].scrollIntoView({block:'nearest'});
+  }else if(e.key==='Enter'){
+    e.preventDefault();
+    if(cliIdx>-1) cliPick(cliIdx);
+    else{ FD.client=e.target.value; fNew(); }
+  }else if(e.key==='Escape'){ list.classList.remove('open'); }
 }
 function delL(i){ FD.lignes.splice(i,1); if(!FD.lignes.length)FD.lignes.push({ref:'CMD',qte:0,tva:0.05}); fNew(); }
 function addCliFromDraft(){ S.fact.clients.push({nom:FD.client,adresse:'',tel:'',rib:''}); S.fact.clients.sort((a,b)=>a.nom.localeCompare(b.nom)); save(); fNew(); toast('✅ Client ajouté — complète adresse/RIB dans la Base clients'); }
