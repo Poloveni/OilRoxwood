@@ -376,6 +376,13 @@ const DEFAULT_HASH = null; // défini au premier login avec le mdp par défaut
 
 /* ================== ÉTAT ================== */
 let S = load();
+// Réinitialisation unique du mot de passe (juillet 2026) : retour à « roxwood ».
+// Chaque navigateur peut ensuite définir le sien dans Paramètres.
+if(!localStorage.getItem('orx_pwfix1')){
+  S.passHash=null;
+  localStorage.setItem(LS_KEY,JSON.stringify(S));
+  localStorage.setItem('orx_pwfix1','1');
+}
 function defaults(){
   return {
     passHash:null,
