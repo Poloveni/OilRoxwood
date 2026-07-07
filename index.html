@@ -38,6 +38,19 @@
   }
   html.dark body{background:var(--paper)}
   html.dark .card,html.dark .step,html.dark .org-card{box-shadow:0 8px 26px rgba(0,0,0,.28)}
+  /* bouton Espace membre — style néon GTA6 */
+  .nav-membre{
+    position:relative;background:linear-gradient(135deg,#ff2d95,#8b5cf6 60%,#22d7ee);
+    color:#fff!important;padding:8px 18px;border-radius:8px;font-weight:800;letter-spacing:.6px;
+    box-shadow:0 0 14px rgba(255,45,149,.45), 0 0 30px rgba(139,92,246,.25);
+    transition:transform .2s, box-shadow .25s, filter .2s;
+  }
+  .nav-membre:hover{
+    transform:translateY(-2px);filter:brightness(1.1);color:#fff!important;
+    box-shadow:0 0 22px rgba(255,45,149,.75), 0 0 46px rgba(139,92,246,.45);
+  }
+  @keyframes membrePulse{0%,100%{box-shadow:0 0 14px rgba(255,45,149,.45),0 0 30px rgba(139,92,246,.25)}50%{box-shadow:0 0 20px rgba(255,45,149,.65),0 0 40px rgba(34,215,238,.35)}}
+  .nav-membre{animation:membrePulse 3.5s ease-in-out infinite}
   .theme-btn{background:none;border:1px solid rgba(255,255,255,.25);color:#cfd6df;border-radius:8px;
     padding:5px 11px;cursor:pointer;font-size:1.05rem;line-height:1;transition:border-color .2s,transform .2s}
   .theme-btn:hover{border-color:var(--accent);transform:rotate(15deg)}
@@ -226,6 +239,7 @@
     <a href="#recrutement">Recrutement</a>
     <a href="#contact">Contact</a>
     <a href="#recrutement" class="nav-cta">Postuler</a>
+    <a href="admin.html" class="nav-membre">🎮 Espace membre</a>
     <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Mode clair / sombre">🌙</button>
   </div>
 </nav>
@@ -501,7 +515,7 @@
 </section>
 
 <footer>
-  <b>OIL ROXWOOD</b> · Entreprise RP sur FlashbackFA · Site non officiel, aucun lien avec une entreprise réelle — © 2026 · <a href="equipe.html" style="color:#6d7989">Espace employé</a> · <a href="admin.html" style="color:#6d7989">Admin</a>
+  <b>OIL ROXWOOD</b> · Entreprise RP sur FlashbackFA · Site non officiel, aucun lien avec une entreprise réelle — © 2026 · <a href="equipe.html" style="color:#6d7989">Espace employé</a> · <a href="admin.html" style="color:#6d7989">Espace membre</a>
 </footer>
 
 <script>
