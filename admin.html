@@ -670,7 +670,9 @@ function caps(){
   if(!S.settings.caps) S.settings.caps={empSal:85000,empPrime:42500,patSal:90000,patPrime:45000};
   return S.settings.caps;
 }
+const PRIMES_OFF=true; // ⏸️ primes désactivées temporairement — repasser à false pour tout réactiver
 function primeProj(r){
+  if(PRIMES_OFF) return 0;
   if(!quotaOK(r)) return 0;
   const cap = r.poste && /patron/i.test(r.poste) ? caps().patPrime : caps().empPrime;
   return Math.min(r.barils * grade(r).mult, cap); // barils × multiplicateur du grade, plafonné
@@ -749,7 +751,7 @@ function overview(){
 function top3html(sorted){
   const t=sorted.slice(0,3);
   if(!t.length) return '<div class="empty">Aucune donnée</div>';
-  const p=(r,i)=>r?`<div class="pod pod${i}"><div style="font-size:1.3rem">${['🥇','🥈','🥉'][i-1]}</div><div class="name">${esc(r.nom)}</div><div class="amt">${fmt(r.barils)} barils · prime ${money(S.settings.top[i-1])}</div></div>`:'<div class="pod" style="min-height:60px"></div>';
+  const p=(r,i)=>r?`<div class="pod pod${i}"><div style="font-size:1.3rem">${['🥇','🥈','🥉'][i-1]}</div><div class="name">${esc(r.nom)}</div><div class="amt">${fmt(r.barils)} barils${PRIMES_OFF?'':' · prime '+money(S.settings.top[i-1])}</div></div>`:'<div class="pod" style="min-height:60px"></div>';
   return `<div class="podium">${p(t[1],2)}${p(t[0],1)}${p(t[2],3)}</div>`;
 }
 
@@ -924,7 +926,7 @@ async function semaine(){
   const rang=new Map(byB.map((r,i)=>[r.id,i]));
   const items=S.runners.map(r=>{
     const g=grade(r), okk=quotaOK(r), i=rang.get(r.id);
-    const sal=salaireDe(r), pr=okk?primeProj(r)+(i<3&&r.barils>0?S.settings.top[i]:0):0;
+    const sal=salaireDe(r), pr=okk?primeProj(r)+(!PRIMES_OFF&&i<3&&r.barils>0?S.settings.top[i]:0):0;
     return {r,g,okk,i,sal,pr,tot:sal+pr};
   });
   const K=semTri.k, D=semTri.d;
@@ -941,7 +943,7 @@ async function semaine(){
   });
   const fl=k=>semTri.k===k?(semTri.d>0?' ▲':' ▼'):'';
   const R=items.map(x=>x.r);
-  const totalPrimes = R.reduce((a,r)=>a+primeProj(r),0) + S.settings.top.slice(0,Math.min(3,R.length)).reduce((a,b)=>a+b,0);
+  const totalPrimes = PRIMES_OFF ? 0 : R.reduce((a,r)=>a+primeProj(r),0) + S.settings.top.slice(0,Math.min(3,R.length)).reduce((a,b)=>a+b,0);
   $('#main').innerHTML = `
   <div class="topbar">
     <div><h2>Semaine ${S.settings.semaine} — Primes</h2><div class="sub">${weekRange()} · prime = barils × multiplicateur (plafond ${fmt(caps().empPrime)} $ · dir. ${fmt(caps().patPrime)} $)${(()=>{const n=commerciauxActifs().length,b=bidonsVendusSem();return n?` · 🛢 commerciaux : ${fmt(b)} bidons ÷ ${n} actif(s) = ${fmt(Math.round(b/n))} × ${S.settings.prixBidonCom??45} $ = ${money(Math.round(b/n)*(S.settings.prixBidonCom??45))} chacun`:''})()}</div></div>
@@ -990,7 +992,7 @@ function closeWeek(){
   let primes=0, promus=[];
   sorted.forEach((r,i)=>{
     if(quotaOK(r)) primes+=primeProj(r);
-    if(i<3 && r.barils>0) primes+=S.settings.top[i];
+    if(!PRIMES_OFF && i<3 && r.barils>0) primes+=S.settings.top[i];
   });
   S.runners.forEach(r=>{ if(eligible(r)){ r.grade++; promus.push(r.nom); } });
   S.weeks.push({num:S.settings.semaine, date:new Date().toLocaleDateString('fr-FR'), total:sorted.reduce((a,r)=>a+r.barils,0), primes, winner:sorted[0]?.barils>0?sorted[0].nom:null});
@@ -1659,7 +1661,7 @@ function bilanData(){
     const prodCom=run?salaireProdCom(run):0;
     const base=salFixeDe(r.rang)+prodCom+rec; // additif, comme la feuille Excel d'origine
     const sal=Math.min(base, isPatron(r)?C.patSal:C.empSal);
-    const topB=run&&rangTop.get(run.id)<3&&run.barils>0?S.settings.top[rangTop.get(run.id)]:0;
+    const topB=(!PRIMES_OFF&&run&&rangTop.get(run.id)<3&&run.barils>0)?S.settings.top[rangTop.get(run.id)]:0;
     const prime=run?Math.min(primeProj(run)+topB,isPatron(r)?C.patPrime:C.empPrime):0;
     return {nom:r.nom,rang:r.rang,run:nn(r.runs),facture:nn(r.factures),vente:nn(r.ventes),
       ca:nn(r.runs)+nn(r.factures)+nn(r.ventes),sal,prime};
