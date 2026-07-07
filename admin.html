@@ -475,9 +475,9 @@ async function sbPull(){
 function sbQueue(){ if(!SYNC.on||!SYNC.ready) return; clearTimeout(SYNC.t); SYNC.t=setTimeout(sbPushNow,250); }
 // filet de sécurité : si on quitte la page avec un envoi en attente, on tente de l'expédier
 addEventListener('beforeunload',()=>{ if(SYNC.t){ clearTimeout(SYNC.t); SYNC.t=null; sbPushNow(); } });
-async function sbPushNow(){
+async function sbPushNow(force){
   if(!SYNC.on) return;
-  if(isMembre()) return; // les membres ne modifient jamais l'état partagé
+  if(!force&&isMembre()) return; // les membres ne modifient jamais l'état partagé (sauf envoi forcé : demandes d'accès)
   try{
     const d=JSON.parse(JSON.stringify(S)); d._cid=SYNC.cid;
     delete d.passHash; // jamais synchronisé : chaque navigateur garde le sien
@@ -605,7 +605,7 @@ async function checkDiscordAuth(){
       if(!S.pending) S.pending=[];
       if(!S.pending.find(x=>x.did===did)){
         S.pending.push({id:Date.now(),user:pseudo,did,date:new Date().toLocaleDateString('fr-FR')});
-        save(); await sbPushNow();
+        save(); await sbPushNow(true); // envoi forcé : la demande doit partir même sans compte
         sendLog('🔔 Demande d\'accès au dashboard', `**${pseudo}** attend une validation — Paramètres → Comptes d'accès → ✓`, 0xe8a020, '<@186397473374208000>');
       }
       const d=document.getElementById('lg_denied');
