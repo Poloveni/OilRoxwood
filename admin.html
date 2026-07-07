@@ -1328,7 +1328,7 @@ function fNew(){
   </div>
   <div style="display:flex;gap:12px">
     <button class="btn btn-gold" onclick="saveFact()">💾 Enregistrer la facture</button>
-    <button class="btn btn-ghost" onclick="printFact(draftAsFact())">🖨️ Imprimer / PDF</button>
+    <button class="btn btn-ghost" onclick="printSmart()">🖨️ Imprimer / PDF</button>
     <button class="btn btn-ghost" onclick="newDraft();fNew()">↺ Réinitialiser</button>
   </div>`;
 }
@@ -1385,6 +1385,16 @@ function cliKey(e){
 }
 function delL(i){ FD.lignes.splice(i,1); if(!FD.lignes.length)FD.lignes.push({ref:'CMD',qte:0,tva:0.05}); fNew(); }
 function addCliFromDraft(){ S.fact.clients.push({nom:FD.client,adresse:'',tel:'',rib:''}); S.fact.clients.sort((a,b)=>a.nom.localeCompare(b.nom)); save(); fNew(); toast('✅ Client ajouté — complète adresse/RIB dans la Base clients'); }
+function printSmart(){
+  const d=draftAsFact();
+  const vide=!d.client && !d.lignes.some(l=>nn(l.qte)>0||l.ht>0);
+  if(!vide) return printFact(d);
+  if(S.fact.factures.length){
+    toast('🖨️ Brouillon vide — impression de la dernière facture enregistrée (n°'+S.fact.factures[0].num+')');
+    return printFact(S.fact.factures[0]);
+  }
+  toast('⚠️ Facture vide — renseigne le client et au moins une ligne avant d\'imprimer');
+}
 function draftAsFact(){
   const t=factTotaux();
   return {num:FD.num,date:FD.date,client:FD.client,emetteur:FD.emetteur,
