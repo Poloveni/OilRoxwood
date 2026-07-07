@@ -830,31 +830,16 @@ function saveRunner(id){
   if(id){
     const r=S.runners.find(x=>x.id===id);
     Object.assign(r,{nom,discord:dc,grade:gr,poste});
-    syncRhGrade(r); // répercute tout changement de grade sur la feuille RH
   } else {
     S.runners.push({id:Date.now(),nom,discord:dc,grade:gr,poste,barils:0,total:0,runs:[]});
     sendLog('👥 Nouvelle recrue', `**${nom}** (@${dc}) rejoint l'entreprise — ${poste||GRADES[gr].nom}`, 0x3ddc84);
   }
   save(); closeModal(); rerender(); toast('✅ Runner enregistré');
 }
-/* ---- Répercussion d'un changement de grade sur la feuille RH ---- */
-function normNom(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim(); }
-function syncRhGrade(r){
-  // Met à jour le grade de la ligne correspondante dans la feuille RH.
-  // Correspondance : d'abord par pseudo Discord, sinon par nom (accents/casse ignorés).
-  if(!r || !S.sheets || !S.sheets.rh) return false;
-  const cible = gTitle(r); // 'Raffineur', 'Raffineur Confirmé'… (ou le poste)
-  const row = S.sheets.rh.find(x =>
-    (r.discord && normNom(x.discord) && normNom(x.discord) === normNom(r.discord)) ||
-    (normNom(x.nom) && normNom(x.nom) === normNom(r.nom))
-  );
-  if(row && row.grade !== cible){ row.grade = cible; return true; }
-  return false;
-}
 function promote(id){
   if(isMembre()) return toast('👀 Consultation seule pour les membres');
   const r=S.runners.find(x=>x.id===id);
-  if(r.grade<3){ r.grade++; const rhMaj=syncRhGrade(r); save(); rerender(); sendLog('🎉 Montée de grade', `**${r.nom}** passe **${GRADES[r.grade].nom}** !`, 0xe8a020); toast(`🎉 ${r.nom} passe ${GRADES[r.grade].nom} !${rhMaj?' · feuille RH mise à jour':''}`); }
+  if(r.grade<3){ r.grade++; save(); rerender(); sendLog('🎉 Montée de grade', `**${r.nom}** passe **${GRADES[r.grade].nom}** !`, 0xe8a020); toast(`🎉 ${r.nom} passe ${GRADES[r.grade].nom} !`); }
 }
 function delRunner(id){
   if(isMembre()) return toast('👀 Consultation seule pour les membres');
@@ -1011,7 +996,7 @@ function closeWeek(){
     if(quotaOK(r)) primes+=primeProj(r);
     if(!PRIMES_OFF && i<3 && r.barils>0) primes+=S.settings.top[i];
   });
-  S.runners.forEach(r=>{ if(eligible(r)){ r.grade++; promus.push(r.nom); syncRhGrade(r); } });
+  S.runners.forEach(r=>{ if(eligible(r)){ r.grade++; promus.push(r.nom); } });
   S.weeks.push({num:S.settings.semaine, date:new Date().toLocaleDateString('fr-FR'), total:sorted.reduce((a,r)=>a+r.barils,0), primes, winner:sorted[0]?.barils>0?sorted[0].nom:null});
   const w=S.weeks[S.weeks.length-1];
   const podium=sorted.slice(0,3).filter(r=>r.barils>0).map((r,i)=>`${['🥇','🥈','🥉'][i]} **${r.nom}** — ${fmt(r.barils)} barils (+${money(S.settings.top[i])})`).join('\n');
