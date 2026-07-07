@@ -1361,6 +1361,10 @@ function fNew(){
     <table class="sheet"><thead><tr><th>Référence</th><th>Description</th><th style="text-align:right">Qté</th><th style="text-align:right">PU HT</th><th style="text-align:right">Total HT</th><th>TVA</th><th style="text-align:right">Total TTC</th><th></th></tr></thead>
     <tbody>${lignes}</tbody></table>
     <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="FD.lignes.push({ref:'CMD',qte:0,tva:0.05});fNew()">＋ Ajouter une ligne</button>
+    <div style="margin-top:12px;padding:10px 14px;border-radius:9px;background:rgba(34,215,238,.06);border:1px solid rgba(34,215,238,.2);font-size:.8rem;color:var(--muted)">
+      ℹ️ <b style="color:var(--neon-c)">Légende TVA / mode de paiement :</b>
+      &nbsp;0 % = Virement&nbsp;·&nbsp;2 % = Cayo&nbsp;·&nbsp;4 % = Nord&nbsp;·&nbsp;5 % = LS
+    </div>
     ${t.off?`<div class="chip" style="margin-left:10px">🎁 Bidons offerts auto : <b>${t.off}</b> (10 offerts / 100 achetés)</div>`:''}
   </div>
   <div class="grid g4" style="margin-bottom:16px">
