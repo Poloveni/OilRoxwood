@@ -1480,10 +1480,34 @@ function printFact(f){
   const totHT=nn(f.ht)||lignes.reduce((a,l)=>a+nn(l.ht),0);
   const totTTC=nn(f.ttc)||lignes.reduce((a,l)=>a+nn(l.ttc),0);
   const poids=nn(f.poids)||lignes.reduce((a,l)=>a+nn(l.qte),0)*2;
-  document.getElementById('printZone').innerHTML=`<div class="inv">
+  const INV_CSS=`
+    body{font-family:'Segoe UI',system-ui,sans-serif;color:#111;background:#fff;margin:0}
+    .inv{max-width:760px;margin:0 auto;padding:40px}
+    .inv-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #e8a020;padding-bottom:18px}
+    h1{font-size:1.6rem;color:#1b2739;margin:0}
+    h1 b{color:#c4841a}
+    .co{font-size:.82rem;color:#444;line-height:1.6}
+    .inv-num{text-align:right;font-size:.9rem}
+    .inv-num .n{font-size:1.3rem;font-weight:800;color:#c4841a}
+    .inv-client{margin:24px 0;display:flex;justify-content:flex-end}
+    .inv-client div{background:#f5f6f8;border-radius:8px;padding:14px 20px;font-size:.88rem;line-height:1.7;min-width:240px}
+    table{width:100%;border-collapse:collapse;font-size:.85rem;margin:10px 0 20px}
+    th{background:#1b2739;color:#fff;padding:9px 10px;text-align:left;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    td{padding:8px 10px;border-bottom:1px solid #e3e5e9;color:#222}
+    .tots{display:flex;justify-content:flex-end}
+    .tots table{width:auto;min-width:300px}
+    .tots td{border:none;padding:5px 10px}
+    .tots tr:last-child td{border-top:2px solid #1b2739;font-weight:800;font-size:1rem;color:#c4841a}
+    .foot{margin-top:34px;display:flex;justify-content:space-between;font-size:.78rem;color:#555}
+    .sig{text-align:center}
+    .sig .script{font-family:'Segoe Script','Brush Script MT','Lucida Handwriting',cursive;font-size:1.6rem;color:#1b2739;display:inline-block;transform:rotate(-3deg);margin-top:14px}
+    .sig .line{margin-top:6px;border-top:1px solid #999;padding-top:6px;min-width:190px}
+    .legal{margin-top:26px;padding-top:12px;border-top:1px solid #e3e5e9;font-size:.68rem;color:#8a94a3;text-align:center}
+    @media print{ @page{margin:12mm} }`;
+  const INV_HTML=`<div class="inv">
     <div class="inv-head">
       <div style="display:flex;gap:16px;align-items:center">
-        <img src="assets/logo.png" style="width:80px;height:80px;object-fit:contain">
+        <img src="${new URL('assets/logo.png',location.href)}" style="width:80px;height:80px;object-fit:contain">
         <div><h1>OIL <b>ROXWOOD</b></h1>
         <div class="co">${SOCIETE.lieu}<br>Téléphone : ${SOCIETE.tel} · RIB : ${SOCIETE.rib}</div></div>
       </div>
@@ -1509,13 +1533,16 @@ function printFact(f){
     </div>
     <div class="legal">OIL ROXWOOD · ${SOCIETE.lieu} · Téléphone ${SOCIETE.tel} · RIB ${SOCIETE.rib} — Merci de votre confiance 🛢</div>
   </div>`;
-  console.log('[OilRoxwood] zone d\'impression remplie :', document.getElementById('printZone').innerHTML.length, 'caractères ·', lignes.length, 'ligne(s) à imprimer');
+  // fenêtre dédiée, style isolé : aucune interférence possible avec le thème du dashboard
+  const w=window.open('','_blank','width=860,height=1000');
+  if(!w){ alert('Autorise les pop-ups pour ce site afin d\'imprimer les factures.'); return; }
+  w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Facture n°${f.num} — Oil Roxwood</title><style>${INV_CSS}</style></head><body>${INV_HTML}<script>window.onload=()=>setTimeout(()=>window.print(),300);<\/script></body></html>`);
+  w.document.close();
+  console.log('[OilRoxwood] facture ouverte dans une fenêtre dédiée ·', lignes.length, 'ligne(s)');
   }catch(e){
     alert('Erreur pendant la préparation de la facture : '+e.message);
     console.error('[OilRoxwood] printFact', e);
-    return;
   }
-  window.print();
 }
 
 /* ================== RELANCES COMMERCIALES ================== */
