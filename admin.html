@@ -471,6 +471,7 @@ function sbQueue(){ if(!SYNC.on||!SYNC.ready) return; clearTimeout(SYNC.t); SYNC
 addEventListener('beforeunload',()=>{ if(SYNC.t){ clearTimeout(SYNC.t); SYNC.t=null; sbPushNow(); } });
 async function sbPushNow(){
   if(!SYNC.on) return;
+  if(isMembre()) return; // les membres ne modifient jamais l'état partagé
   try{
     const d=JSON.parse(JSON.stringify(S)); d._cid=SYNC.cid;
     delete d.passHash; // jamais synchronisé : chaque navigateur garde le sien
@@ -492,8 +493,13 @@ const PERMS={
   rh:       ['overview','effectif','semaine','feuilles','dlogs'],
   comptable:['overview','feuilles','factures','bilan'],
   commercial:['overview','factures','relances','feuilles'],
-  membre:   ['overview']
+  membre:   ['effectif'] // lecture seule : uniquement l'effectif
 };
+function isMembre(){
+  if(!S.users||!S.users.length) return false; // phase d'installation
+  const cu=currentUser();
+  return !cu || cu.role==='membre';
+}
 function allowedViews(){
   if(!S.users||!S.users.length) return PERMS.direction; // phase d'installation : tout ouvert
   const cu=currentUser();
@@ -550,7 +556,7 @@ function enter(){
   setTimeout(async()=>{
     initSync();
     await ensureSheets();
-    const r=syncRunners(true);
+    const r=isMembre()?null:syncRunners(true);
     S.settings.semaine=isoWeek();
     rerender();
   }, 50);
@@ -763,11 +769,11 @@ function effectif(){
   if(search) R=R.filter(r=>(r.nom+' '+r.discord).toLowerCase().includes(search.toLowerCase()));
   $('#main').innerHTML = `
   <div class="topbar">
-    <div><h2>Effectif</h2><div class="sub">${S.runners.length} runner(s) · ${S.runners.filter(eligible).length} montée(s) de grade en attente · synchronisé avec la feuille Tablette</div></div>
-    <div style="display:flex;gap:10px">
+    <div><h2>Effectif</h2><div class="sub">${S.runners.length} runner(s)${isMembre()?' · consultation':` · ${S.runners.filter(eligible).length} montée(s) de grade en attente · synchronisé avec la feuille Tablette`}</div></div>
+    ${isMembre()?'':`<div style="display:flex;gap:10px">
       <button class="btn btn-ghost" onclick="ensureSheets().then(()=>{syncRunners(false);effectif();})">🔄 Sync tablette</button>
       <button class="btn btn-gold" onclick="openRunnerModal()">＋ Ajouter un runner</button>
-    </div>
+    </div>`}
   </div>
   <div class="panel" style="margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
     <input class="field" style="max-width:220px" placeholder="🔍 Rechercher…" value="${esc(search)}" oninput="search=this.value;effectif()">
@@ -779,7 +785,7 @@ function effectif(){
   </div>
   <div class="panel" style="padding:8px 16px">
     ${R.length?`<table>
-      <thead><tr><th>Runner</th><th>Grade</th><th>Quota semaine</th><th>Total barils</th><th style="text-align:right">Actions</th></tr></thead>
+      <thead><tr><th>Runner</th><th>Grade</th><th>Quota semaine</th><th>Total barils</th>${isMembre()?'':'<th style="text-align:right">Actions</th>'}</tr></thead>
       <tbody>${R.map(rowRunner).join('')}</tbody>
     </table>`:'<div class="empty">Aucun runner trouvé</div>'}
   </div>`;
@@ -791,15 +797,16 @@ function rowRunner(r){
     <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span>${r.absent?'<div style="font-size:.7rem;color:var(--red);font-weight:700;margin-top:3px">🌴 Congé / absence</div>':''}${!r.poste&&eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(grade(r).montee)} barils)</span>`:''}</td>
     <td><div class="prog"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></div><div class="pct">${fmt(r.barils)} / ${fmt(g.quota)} (${pc}%)</div></td>
     <td>${fmt(r.total)}</td>
-    <td style="text-align:right;white-space:nowrap">
+    ${isMembre()?'':`<td style="text-align:right;white-space:nowrap">
       ${eligible(r)?`<button class="btn btn-sm btn-gold" onclick="promote(${r.id})" title="Monter de grade">▲</button>`:''}
       <button class="btn btn-sm btn-ghost" onclick="toggleAbsent(${r.id})" title="${r.absent?'Marquer de retour':'Mettre en congé / absence'}">${r.absent?'💼':'🌴'}</button>
       <button class="btn btn-sm btn-ghost" onclick="openRunnerModal(${r.id})">✎</button>
       <button class="btn btn-sm btn-red" onclick="delRunner(${r.id})">✕</button>
-    </td>
+    </td>`}
   </tr>`;
 }
 function openRunnerModal(id){
+  if(isMembre()) return toast('👀 Consultation seule pour les membres');
   const r = S.runners.find(x=>x.id===id) || {nom:'',discord:'',grade:0};
   openModal(`
     <h3>${id?'Modifier':'Nouveau'} runner</h3>
@@ -831,10 +838,12 @@ function saveRunner(id){
   save(); closeModal(); rerender(); toast('✅ Runner enregistré');
 }
 function promote(id){
+  if(isMembre()) return toast('👀 Consultation seule pour les membres');
   const r=S.runners.find(x=>x.id===id);
   if(r.grade<3){ r.grade++; save(); rerender(); sendLog('🎉 Montée de grade', `**${r.nom}** passe **${GRADES[r.grade].nom}** !`, 0xe8a020); toast(`🎉 ${r.nom} passe ${GRADES[r.grade].nom} !`); }
 }
 function delRunner(id){
+  if(isMembre()) return toast('👀 Consultation seule pour les membres');
   const r=S.runners.find(x=>x.id===id);
   if(confirm(`Supprimer ${r.nom} de l'effectif ?`)){ S.runners=S.runners.filter(x=>x.id!==id); save(); rerender(); sendLog('🚪 Départ', `**${r.nom}** quitte l'effectif`, 0xff5c5c); toast('Runner supprimé'); }
 }
@@ -891,6 +900,7 @@ function salaireProdCom(r){
   return Math.round(bidonsVendusSem()/n)*(S.settings.prixBidonCom??45);
 }
 function toggleAbsent(id){
+  if(isMembre()) return toast('👀 Consultation seule pour les membres');
   const r=S.runners.find(x=>x.id===id); if(!r) return;
   r.absent=!r.absent;
   save(); sbPushNow(); rerender();
