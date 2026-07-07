@@ -648,7 +648,8 @@ function weekRange(){
   const f=d=>d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
   return `du ${f(mon)} au ${f(sun)}`;
 }
-function grade(r){ return GRADES[r.grade]; }
+const DIR_GRADE={nom:'Direction',quota:0,mult:2.5,montee:null,cls:'bg3'}; // postes : quota 0, ×2.5, pas de montée
+function grade(r){ return r.poste?DIR_GRADE:GRADES[r.grade]; }
 function gTitle(r){ return r.poste||grade(r).nom; } // rang réel (Patron, Commercial…) ou grade raffineur
 function gCls(r){ return r.poste?(/patron/i.test(r.poste)?'bg3':'bg2'):grade(r).cls; }
 function quotaOK(r){ return r.barils >= grade(r).quota; }
@@ -672,7 +673,7 @@ function primeProj(r){
   const cap = r.poste && /patron/i.test(r.poste) ? caps().patPrime : caps().empPrime;
   return Math.min(r.barils * grade(r).mult, cap); // barils × multiplicateur du grade, plafonné
 }
-function eligible(r){ return r.grade < 3 && r.barils >= grade(r).montee; } // montée basée sur les barils de la semaine
+function eligible(r){ return !r.poste && r.grade < 3 && r.barils >= grade(r).montee; } // montée hebdo, jamais pour la direction
 let charts = [];
 function destroyCharts(){ charts.forEach(c=>c.destroy()); charts=[]; }
 function mkChart(id, cfg){
@@ -726,7 +727,7 @@ function overview(){
   <div class="panel" style="margin-top:18px;padding:8px 16px">
     <h3 style="padding:12px 0 4px">📋 Production de la semaine — toute l'équipe</h3>
     ${R.length?`<table><thead><tr><th>Nom</th><th>Barils vendus</th><th style="min-width:180px">Quota</th></tr></thead><tbody>
-    ${sorted.map(r=>{const pc=Math.min(100,Math.round(r.barils/grade(r).quota*100));return `<tr>
+    ${sorted.map(r=>{const q=grade(r).quota,pc=q?Math.min(100,Math.round(r.barils/q*100)):100;return `<tr>
       <td><b>${esc(r.nom)}</b></td>
       <td>${fmt(r.barils)}</td>
       <td><div class="prog" style="max-width:150px"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></div><div class="pct">${pc}% du quota</div></td>
@@ -783,7 +784,7 @@ function effectif(){
   </div>`;
 }
 function rowRunner(r){
-  const g=grade(r), pc=Math.min(100,Math.round(r.barils/g.quota*100));
+  const g=grade(r), pc=g.quota?Math.min(100,Math.round(r.barils/g.quota*100)):100;
   return `<tr>
     <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
     <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span>${r.absent?'<div style="font-size:.7rem;color:var(--red);font-weight:700;margin-top:3px">🌴 Congé / absence</div>':''}${!r.poste&&eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(grade(r).montee)} barils)</span>`:''}</td>
@@ -896,12 +897,9 @@ function toggleAbsent(id){
   sendLog(r.absent?'🌴 Absence':'💼 Retour', `**${r.nom}** ${r.absent?'passe en congé/absence':'est de retour'}`, r.absent?0xe8a020:0x3ddc84);
 }
 function salaireDe(r){
-  const SAL=(S.sheets&&S.sheets.salaires)||[];
-  const s=SAL.find(x=>String(x.nom||'').toLowerCase().trim()===r.nom.toLowerCase().trim())||{};
-  // recrutements : saisis directement sur le site, réservés à la direction (4 000 $/recrue par défaut)
+  // 100 % automatique et additif : salaire fixe du poste + production bidons (commerciaux) + recrues (direction)
   const rec=r.poste?nn(r.recrues)*prixRecrue():0;
-  // production bidons automatique (remplace la colonne Excel) : ventes semaine ÷ commerciaux actifs × 45 $
-  const base=Math.max(salaireProdCom(r)+nn(s.poste)+nn(s.remboursement)+rec, salFixeDe(r.poste||''));
+  const base=salFixeDe(r.poste||'')+salaireProdCom(r)+rec;
   const C=caps();
   return Math.min(base, r.poste&&/patron/i.test(r.poste)?C.patSal:C.empSal);
 }
@@ -912,9 +910,31 @@ function setRecrues(id,v){
   save(); semaine();
   toast(`👥 ${r.nom} : ${r.recrues} recrue(s) → ${money(r.recrues*prixRecrue())}`);
 }
+let semTri={k:'rang',d:1};
+function semSort(k){ semTri=(semTri.k===k)?{k,d:-semTri.d}:{k,d:(k==='nom'||k==='grade')?1:-1}; semaine(); }
 async function semaine(){
   await ensureSheets();
-  const R=[...S.runners].sort((a,b)=>b.barils-a.barils);
+  const byB=[...S.runners].sort((a,b)=>b.barils-a.barils);
+  const rang=new Map(byB.map((r,i)=>[r.id,i]));
+  const items=S.runners.map(r=>{
+    const g=grade(r), okk=quotaOK(r), i=rang.get(r.id);
+    const sal=salaireDe(r), pr=okk?primeProj(r)+(i<3&&r.barils>0?S.settings.top[i]:0):0;
+    return {r,g,okk,i,sal,pr,tot:sal+pr};
+  });
+  const K=semTri.k, D=semTri.d;
+  items.sort((a,b)=>{
+    let va,vb;
+    if(K==='nom'){va=a.r.nom;vb=b.r.nom}
+    else if(K==='grade'){va=gTitle(a.r);vb=gTitle(b.r)}
+    else if(K==='barils'){va=a.r.barils;vb=b.r.barils}
+    else if(K==='prime'){va=a.pr;vb=b.pr}
+    else if(K==='salaire'){va=a.sal;vb=b.sal}
+    else if(K==='total'){va=a.tot;vb=b.tot}
+    else {va=a.i;vb=b.i}
+    return (typeof va==='string'?va.localeCompare(vb):(va-vb))*D;
+  });
+  const fl=k=>semTri.k===k?(semTri.d>0?' ▲':' ▼'):'';
+  const R=items.map(x=>x.r);
   const totalPrimes = R.reduce((a,r)=>a+primeProj(r),0) + S.settings.top.slice(0,Math.min(3,R.length)).reduce((a,b)=>a+b,0);
   $('#main').innerHTML = `
   <div class="topbar">
@@ -922,9 +942,19 @@ async function semaine(){
     <button class="btn btn-gold" onclick="closeWeek()">🗓️ Clôturer la semaine (lundi)</button>
   </div>
   <div class="panel" style="margin-bottom:18px;padding:8px 16px">
-    ${R.length?`<table><thead><tr><th>#</th><th>Runner</th><th>Grade</th><th>Barils</th><th>Quota</th><th>Multiplicateur</th><th>Prime projetée</th><th>Recrues<br><small style="text-transform:none;letter-spacing:0">(direction · ${money(prixRecrue())}/recrue)</small></th><th>Salaire</th><th>Total</th></tr></thead><tbody>
-    ${R.map((r,i)=>{const g=grade(r),okk=quotaOK(r),sal=salaireDe(r),pr=okk?primeProj(r)+(i<3?S.settings.top[i]:0):0;return `<tr>
-      <td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td>
+    ${items.length?`<table><thead><tr>
+      <th onclick="semSort('rang')" style="cursor:pointer" title="Trier">#${fl('rang')}</th>
+      <th onclick="semSort('nom')" style="cursor:pointer" title="Trier">Runner${fl('nom')}</th>
+      <th onclick="semSort('grade')" style="cursor:pointer" title="Trier">Grade${fl('grade')}</th>
+      <th onclick="semSort('barils')" style="cursor:pointer" title="Trier">Barils${fl('barils')}</th>
+      <th>Quota</th><th>Multiplicateur</th>
+      <th onclick="semSort('prime')" style="cursor:pointer" title="Trier">Prime projetée${fl('prime')}</th>
+      <th>Recrues<br><small style="text-transform:none;letter-spacing:0">(direction · ${money(prixRecrue())}/recrue)</small></th>
+      <th onclick="semSort('salaire')" style="cursor:pointer" title="Trier">Salaire${fl('salaire')}</th>
+      <th onclick="semSort('total')" style="cursor:pointer" title="Trier">Total${fl('total')}</th>
+    </tr></thead><tbody>
+    ${items.map(it=>{const {r,g,okk,i,sal,pr}=it;return `<tr>
+      <td>${i<3&&r.barils>0?['🥇','🥈','🥉'][i]:i+1}</td>
       <td><b>${esc(r.nom)}</b></td>
       <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span></td>
       <td>${fmt(r.barils)}</td>
@@ -980,7 +1010,7 @@ async function publishStats(){
     effectif:S.runners.length,
     clientsServis:(S.fact&&S.fact.factures.length)||0,
     top3:sorted.slice(0,3).filter(r=>r.barils>0).map(r=>({nom:r.nom,barils:r.barils})),
-    runners:S.runners.map(r=>({nom:r.nom,grade:r.grade,poste:r.poste||null,barils:r.barils,total:r.total,quota:GRADES[r.grade].quota,prime:primeProj(r)}))
+    runners:S.runners.map(r=>({nom:r.nom,grade:r.grade,poste:r.poste||null,barils:r.barils,total:r.total,quota:grade(r).quota,prime:primeProj(r)}))
   };
   const api='https://api.github.com/repos/Poloveni/OilRoxwood/contents/data/stats-public.json';
   const hdr={Authorization:'Bearer '+token,Accept:'application/vnd.github+json'};
@@ -1006,7 +1036,7 @@ const SHEETS_DEF = {
     {k:'_total',l:'Total',t:'calc',f:r=>nn(r.factures)+nn(r.runs)+nn(r.ventes)},
     {k:'part',l:'Part employé',t:'num'},{k:'heures',l:'Heures service',t:'text'}],
     tot:['factures','runs','ventes','_total','part'], nouveau:{nom:'',rang:'Intérimaire',factures:0,runs:0,ventes:0,part:0,heures:''}},
-  eligibilite:{ico:'✅',label:'Éligibilité',cols:[
+  eligibilite:{ico:'✅',label:'Éligibilité',drag:true,cols:[
     {k:'nom',l:'Nom employé',t:'text'},{k:'menus',l:'Menus',t:'bool'},{k:'boissons',l:'Boissons',t:'bool'},
     {k:'bidons',l:'Bidons',t:'bool'},{k:'date',l:'Date de prise',t:'date'},{k:'don',l:'Don',t:'text'},{k:'permis',l:'Contrôle permis',t:'text'}],
     tot:[], nouveau:{nom:'',menus:false,boissons:false,bidons:false,date:'',don:'',permis:''}},
@@ -1014,15 +1044,7 @@ const SHEETS_DEF = {
     {k:'date',l:'Date',t:'date'},{k:'client',l:'Client',t:'client'},
     {k:'quantite',l:'Quantité',t:'num'},{k:'qui',l:'Qui ?',t:'text'}],
     tot:['quantite'], nouveau:{date:'',client:'',quantite:0,qui:''}},
-  salaires:{ico:'💰',label:'Budget & salaires',cols:[
-    {k:'nom',l:'Nom employé',t:'text'},{k:'prodBidons',l:'Prod. bidons',t:'num'},{k:'poste',l:'Salaire de poste',t:'num'},
-    {k:'run',l:'Salaire de run',t:'num'},{k:'remboursement',l:'Remboursement',t:'num'},{k:'recrutement',l:'Recrutement',t:'num'},
-    {k:'_sal',l:'Salaires',t:'calc',f:r=>Math.min(nn(r.prodBidons)+nn(r.poste)+nn(r.remboursement)+nn(r.recrutement),caps().empSal)},
-    {k:'_prime',l:'Primes',t:'calc',f:r=>Math.min(nn(r.run),caps().empPrime)},
-    {k:'_tot',l:'Total',t:'calc',f:r=>Math.min(nn(r.prodBidons)+nn(r.poste)+nn(r.remboursement)+nn(r.recrutement),caps().empSal)+Math.min(nn(r.run),caps().empPrime)}],
-    tot:['_sal','_prime','_tot'], nouveau:{nom:'',prodBidons:0,poste:0,run:0,remboursement:0,recrutement:0},
-    note:'Plafonds appliqués automatiquement — modifiables dans 🏦 Bilan compta'},
-  rh:{ico:'🗂️',label:'RH',cols:[
+  rh:{ico:'🗂️',label:'RH',drag:true,cols:[
     {k:'nom',l:'Employé',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
     {k:'rib',l:'RIB',t:'text'},{k:'idU',l:'ID unique',t:'text'},{k:'arrivee',l:'Arrivée',t:'date'},
     {k:'discord',l:'Discord',t:'text'},{k:'avert',l:'Avert.',t:'text'},{k:'contrat',l:'Contrat signé',t:'bool'},
@@ -1049,7 +1071,8 @@ async function feuilles(){
   const def=SHEETS_DEF[curSheet], rows=S.sheets[curSheet];
   const q=sheetSearch.toLowerCase();
   const idx=rows.map((r,i)=>i).filter(i=>!q||Object.values(rows[i]).join(' ').toLowerCase().includes(q));
-  const head=def.cols.map(c=>`<th ${c.t==='num'||c.t==='calc'?'style="text-align:right"':''}>${c.l}</th>`).join('');
+  const dragOk=def.drag&&!q; // glisser-déposer désactivé pendant une recherche
+  const head=(dragOk?'<th style="width:26px"></th>':'')+def.cols.map(c=>`<th ${c.t==='num'||c.t==='calc'?'style="text-align:right"':''}>${c.l}</th>`).join('');
   const body=idx.map(i=>{
     const r=rows[i];
     const tds=def.cols.map(c=>{
@@ -1061,9 +1084,10 @@ async function feuilles(){
         return `<td><input type="date" value="${d}" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`; }
       return `<td><input type="text" value="${esc(r[c.k])}" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`;
     }).join('');
-    return `<tr>${tds}<td style="text-align:right"><button class="btn btn-sm btn-red" onclick="rowDel(${i})">✕</button></td></tr>`;
+    const handle=dragOk?`<td draggable="true" style="cursor:grab;color:var(--muted);text-align:center" title="Glisser pour déplacer la ligne" ondragstart="dragI=${i}">⠿</td>`:'';
+    return `<tr ${dragOk?`ondragover="event.preventDefault()" ondrop="dropRow(${i})"`:''}>${handle}${tds}<td style="text-align:right"><button class="btn btn-sm btn-red" onclick="rowDel(${i})">✕</button></td></tr>`;
   }).join('');
-  const foot=def.tot.length?`<tfoot><tr><td>Total (${idx.length} lignes)</td>${def.cols.slice(1).map(c=>{
+  const foot=def.tot.length?`<tfoot><tr>${dragOk?'<td></td>':''}<td>Total (${idx.length} lignes)</td>${def.cols.slice(1).map(c=>{
     if(!def.tot.includes(c.k)) return '<td></td>';
     const s=idx.reduce((a,i)=>a+(c.t==='calc'?c.f(rows[i]):nn(rows[i][c.k])),0);
     return `<td>${fmt(Math.round(s))}</td>`;
@@ -1082,9 +1106,17 @@ async function feuilles(){
   ${def.note?`<div class="warn" style="border-color:rgba(232,160,32,.35);background:rgba(232,160,32,.07);color:var(--accent)">ℹ️ ${def.note}</div>`:''}
   <div class="panel" style="padding:10px 16px;overflow-x:auto">
     <input class="field" style="max-width:240px;margin:6px 0 10px" placeholder="🔍 Rechercher…" value="${esc(sheetSearch)}" oninput="sheetSearch=this.value;feuilles()">
-    <table class="sheet"><thead><tr>${head}<th></th></tr></thead><tbody>${body||`<tr><td colspan="${def.cols.length+1}"><div class="empty">Aucune ligne</div></td></tr>`}</tbody>${foot}</table>
+    <table class="sheet"><thead><tr>${head}<th></th></tr></thead><tbody>${body||`<tr><td colspan="${def.cols.length+2}"><div class="empty">Aucune ligne</div></td></tr>`}</tbody>${foot}</table>
   </div>
   <datalist id="dlSheetClients">${((S.fact&&S.fact.clients)||[]).map(c=>`<option value="${esc(c.nom)}">`).join('')}</datalist>`;
+}
+let dragI=null;
+function dropRow(j){
+  if(dragI===null||dragI===j){ dragI=null; return; }
+  const arr=S.sheets[curSheet];
+  const [m]=arr.splice(dragI,1);
+  arr.splice(j,0,m);
+  dragI=null; save(); feuilles();
 }
 function cellEdit(i,k,val){ S.sheets[curSheet][i][k]=val; save(); if(curSheet==='tablette') syncRunners(false); feuilles(); }
 function rowAdd(){ S.sheets[curSheet].unshift(JSON.parse(JSON.stringify(SHEETS_DEF[curSheet].nouveau))); save(); feuilles(); }
@@ -1542,20 +1574,21 @@ function annuleRelance(i){
 
 /* ================== BILAN COMPTABLE ================== */
 function bilanData(){
-  const T=S.sheets.tablette||[], SAL=S.sheets.salaires||[], CPT=S.sheets.compta||[];
+  const T=S.sheets.tablette||[], CPT=S.sheets.compta||[];
+  const byB=[...S.runners].sort((a,b)=>b.barils-a.barils);
+  const rangTop=new Map(byB.map((r,i)=>[r.id,i]));
   const low=s=>String(s||'').toLowerCase().trim();
   const isPatron=r=>/patron/i.test(r.rang||'');
   const lignes=T.filter(r=>r.nom&&!low(r.nom).startsWith('nom')).map(r=>{
-    const s=SAL.find(x=>low(x.nom)===low(r.nom))||{};
     const C=caps();
-    // recrutements saisis sur le site (direction uniquement) — la colonne Excel n'est plus utilisée
+    // tout est automatique : prod. bidons, recrues, salaire fixe, prime hebdo + TOP 3
     const run=S.runners.find(x=>x.nom.toLowerCase()===low(r.nom));
     const rec=(run&&run.poste)?nn(run.recrues)*prixRecrue():0;
     const prodCom=run?salaireProdCom(run):0;
-    // salaire calculé, avec plancher = salaire fixe du poste (Paramètres), puis plafond
-    const base=Math.max(prodCom+nn(s.poste)+nn(s.remboursement)+rec, salFixeDe(r.rang));
+    const base=salFixeDe(r.rang)+prodCom+rec; // additif, comme la feuille Excel d'origine
     const sal=Math.min(base, isPatron(r)?C.patSal:C.empSal);
-    const prime=Math.min(nn(s.run),isPatron(r)?C.patPrime:C.empPrime);
+    const topB=run&&rangTop.get(run.id)<3&&run.barils>0?S.settings.top[rangTop.get(run.id)]:0;
+    const prime=run?Math.min(primeProj(run)+topB,isPatron(r)?C.patPrime:C.empPrime):0;
     return {nom:r.nom,rang:r.rang,run:nn(r.runs),facture:nn(r.factures),vente:nn(r.ventes),
       ca:nn(r.runs)+nn(r.factures)+nn(r.ventes),sal,prime};
   });
@@ -1856,6 +1889,7 @@ function params(){
     <h3>📐 Règles de grades (rappel)</h3>
     <table><thead><tr><th>Grade</th><th>Quota hebdo</th><th>Multiplicateur prime</th><th>Montée de grade</th></tr></thead><tbody>
     ${GRADES.map(g=>`<tr><td><span class="badge ${g.cls}">${g.nom}</span></td><td>${fmt(g.quota)} barils</td><td>×${g.mult}</td><td>${g.montee?fmt(g.montee)+' barils réalisés':'grade max'}</td></tr>`).join('')}
+    <tr><td><span class="badge bg3">Direction &amp; postes</span> <small style="color:var(--muted)">Patron, RH, commerciaux…</small></td><td>0 barils (aucun quota)</td><td>×${DIR_GRADE.mult}</td><td>—</td></tr>
     </tbody></table>
   </div>`;
 }

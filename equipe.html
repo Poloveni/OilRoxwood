@@ -80,7 +80,7 @@ document.getElementById('q').addEventListener('input',function(){
         ||DATA.runners.find(x=>x.nom.toLowerCase().includes(q));
   if(!r){ out.innerHTML='<div class="empty">Aucun runner trouvé à ce nom. Vérifie l\'orthographe ou vois avec les RH.</div>'; return; }
   const g=r.poste?{nom:r.poste,cls:/patron/i.test(r.poste)?'bg3':'bg2',montee:GRADES[r.grade].montee}:(GRADES[r.grade]||GRADES[0]);
-  const pc=Math.min(100,Math.round(r.barils/r.quota*100));
+  const pc=r.quota?Math.min(100,Math.round(r.barils/r.quota*100)):100;
   const sorted=[...DATA.runners].sort((a,b)=>b.barils-a.barils);
   const pos=sorted.findIndex(x=>x.nom===r.nom)+1;
   const next=GRADES[r.grade+1];
