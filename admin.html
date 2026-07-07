@@ -1777,6 +1777,105 @@ function bilanCopy(){
     .catch(()=>toast('⚠️ Copie refusée par le navigateur — réessaie après un clic sur la page'));
 }
 
+/* ================== ACHATS DE FER (Direction) ================== */
+async function fer(){
+  S.fer=S.fer||[];
+  const rows=[...S.fer].sort((a,b)=>String(b.t).localeCompare(String(a.t)));
+  const grp=fn=>{const m={};rows.forEach(r=>{const k=fn(r);m[k]=m[k]||{quantite:0,montant:0,n:0};m[k].quantite+=nn(r.quantite);m[k].montant+=nn(r.montant);m[k].n++;});return m;};
+  const parJour=grp(r=>String(r.t).slice(0,10));
+  const parEmp=grp(r=>r.nom||'?');
+  const totQ=rows.reduce((a,r)=>a+nn(r.quantite),0), totM=rows.reduce((a,r)=>a+nn(r.montant),0);
+  $('#main').innerHTML=`
+  <div class="topbar">
+    <div><h2>Achats de Fer</h2><div class="sub">Réservé à la Direction · alimenté par le salon Discord (bot) ou par collage</div></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="ferPasteModal()">📋 Coller des logs</button>
+      <button class="btn btn-gold" onclick="ferImportSalon()">↻ Importer depuis le salon</button>
+    </div>
+  </div>
+  <div class="grid g3" style="margin-bottom:18px">
+    <div class="panel kpi"><div class="lbl">Fer acheté</div><div class="val">${fmt(totQ)}</div><div class="delta">${rows.length} achat(s) enregistrés</div></div>
+    <div class="panel kpi"><div class="lbl">Montant total</div><div class="val gold">${money(totM)}</div></div>
+    <div class="panel kpi"><div class="lbl">Prix moyen</div><div class="val">${totQ?money(totM/totQ):'—'}</div><div class="delta">par unité de fer</div></div>
+  </div>
+  <div class="grid g2" style="margin-bottom:18px">
+    <div class="panel" style="padding:8px 16px;overflow-x:auto">
+      <h3 style="padding:12px 0 4px">📅 Total par jour</h3>
+      ${Object.keys(parJour).length?`<table><thead><tr><th>Date</th><th>Achats</th><th>Quantité</th><th>Montant</th></tr></thead><tbody>
+      ${Object.entries(parJour).sort((a,b)=>b[0].localeCompare(a[0])).map(([j,v])=>`<tr><td><b>${frDate(j)}</b></td><td>${v.n}</td><td>${fmt(v.quantite)}</td><td class="gold">${money(v.montant)}</td></tr>`).join('')}
+      </tbody></table>`:'<div class="empty">Aucune donnée</div>'}
+    </div>
+    <div class="panel" style="padding:8px 16px;overflow-x:auto">
+      <h3 style="padding:12px 0 4px">👤 Total par employé</h3>
+      ${Object.keys(parEmp).length?`<table><thead><tr><th>Employé</th><th>Achats</th><th>Quantité</th><th>Montant</th></tr></thead><tbody>
+      ${Object.entries(parEmp).sort((a,b)=>b[1].quantite-a[1].quantite).map(([n,v])=>`<tr><td><b>${esc(n)}</b></td><td>${v.n}</td><td>${fmt(v.quantite)}</td><td class="gold">${money(v.montant)}</td></tr>`).join('')}
+      </tbody></table>`:'<div class="empty">Aucune donnée</div>'}
+    </div>
+  </div>
+  <div class="panel" style="padding:8px 16px;overflow-x:auto">
+    <h3 style="padding:12px 0 4px">📜 Journal des achats (${rows.length})</h3>
+    ${rows.length?`<table><thead><tr><th>Date</th><th>Employé</th><th>Quantité</th><th>Montant</th><th style="text-align:right"></th></tr></thead><tbody>
+    ${rows.slice(0,80).map(r=>`<tr>
+      <td style="white-space:nowrap">${frDate(String(r.t).slice(0,10))} <span style="color:var(--muted);font-size:.75rem">${esc(String(r.t).slice(11,16))}</span></td>
+      <td><b>${esc(r.nom)}</b></td><td>${fmt(r.quantite)}</td><td class="gold">${money(r.montant)}</td>
+      <td style="text-align:right"><button class="btn btn-sm btn-red" onclick="ferDel('${r.id}')">✕</button></td>
+    </tr>`).join('')}
+    </tbody></table>`:'<div class="empty">Aucun achat — importe depuis le salon ou colle des logs 📋</div>'}
+  </div>`;
+}
+async function ferImportSalon(){
+  try{
+    const r=await fetch('data/fer-logs.json?ts='+Date.now(),{cache:'no-store'});
+    const d=await r.json();
+    if(!d||!d.maj||!d.achats||!d.achats.length)
+      return toast('📡 Rien à importer — le bot n\'a pas encore alimenté data/fer-logs.json (voir SETUP-BOT.md + secret DISCORD_FER_CHANNEL_ID)');
+    let n=0;
+    d.achats.forEach(a=>{
+      if(!S.fer.find(x=>x.id===a.id)){
+        S.fer.push({id:a.id,t:a.t,nom:a.nom,quantite:nn(a.quantite),montant:nn(a.montant)});
+        n++;
+      }
+    });
+    save(); sbPushNow(); fer();
+    toast(n?`↻ ${n} achat(s) de fer importés du salon`:'✓ Déjà à jour — aucun nouvel achat');
+  }catch(e){ toast('📡 data/fer-logs.json introuvable — le bot n\'est pas encore configuré'); }
+}
+function ferPasteModal(){
+  openModal(`<h3>📋 Coller les logs d'achats de Fer</h3>
+  <p style="color:var(--muted);font-size:.82rem;margin-bottom:12px">Colle les messages copiés du salon Discord (un achat par ligne).
+  Le site détecte le nom, la quantité de fer, le montant en $ et la date (jj/mm/aaaa si présente, sinon aujourd'hui).</p>
+  <textarea class="field" id="ferZone" style="min-height:200px;font-size:.78rem" placeholder="Ex : 07/07/2026 14:32 — Bobby Rousseau a acheté x300 Fer pour 15 000 $"></textarea>
+  <button class="btn btn-gold" style="width:100%;margin-top:14px" onclick="ferApplyPaste()">Importer</button>`);
+}
+function ferParseLine(l){
+  l=l.trim(); if(!l) return null;
+  const dm=l.match(/(\d{2})\/(\d{2})\/(\d{4})(?:[ ,à]+(\d{2}[:h]\d{2}))?/);
+  const t=dm?`${dm[3]}-${dm[2]}-${dm[1]} ${(dm[4]||'').replace('h',':')}`.trim():new Date().toISOString().slice(0,16).replace('T',' ');
+  const mq=l.match(/x\s*(\d[\d\s]*)|(\d[\d\s]*)\s*(?:x\s*)?fer/i);
+  const quantite=mq?+String(mq[1]||mq[2]||'').replace(/[^\d]/g,''):0;
+  const mm=l.match(/(\d[\d\s.,]*)\s*\$/);
+  const montant=mm?Math.round(parseFloat(mm[1].replace(/[^\d,.]/g,'').replace(',','.')))||0:0;
+  let nom=(l.match(/\*\*([^*]+)\*\*/)||[])[1];
+  if(!nom){ const mn=l.match(/([A-ZÀ-Ý][\wà-ÿ'-]+(?:\s+[A-ZÀ-Ý][\wà-ÿ'-]+)+)/); nom=mn?mn[1].trim():''; }
+  if(!quantite&&!montant) return null;
+  return {id:'p'+Date.now()+Math.random().toString(36).slice(2,7),t,nom:nom||'?',quantite,montant};
+}
+function ferApplyPaste(){
+  const lines=$('#ferZone').value.split(/\r?\n/);
+  let n=0;
+  lines.forEach(l=>{ const a=ferParseLine(l); if(a){ S.fer.push(a); n++; } });
+  if(!n) return toast('⚠️ Aucune ligne reconnue — vérifie qu\'il y a une quantité de fer ou un montant $');
+  save(); sbPushNow(); closeModal(); fer();
+  toast(`📋 ${n} achat(s) de fer importés`);
+  sendLog('🔩 Achats de Fer importés', `**${n} ligne(s)** ajoutées par ${currentUser()?currentUser().user:'?'}`, 0x8b5cf6);
+}
+function ferDel(id){
+  if(confirm('Supprimer cet achat ?')){
+    S.fer=S.fer.filter(x=>x.id!==id);
+    save(); sbPushNow(); fer();
+  }
+}
+
 /* ================== LOGS DISCORD ================== */
 const TYPE_ICON={vente:'💵',recolte:'⛏️',raffinage:'🏭',depot:'📦',retrait:'📤',autre:'📄'};
 async function dlogs(){
