@@ -1755,14 +1755,14 @@ function bxDel(i){ if(confirm('Supprimer cette ligne manuelle ?')){ S.bilanExtra
 function bilanCopy(){
   const B=bilanData();
   const rows=B.lignes.filter(l=>l.manuel||l.ca>0||l.sal>0||l.prime>0);
-  const $n=v=>Math.round(v)+'$';
+  const $n=v=>String(Math.round(v)); // nombres bruts, sans « $ » : le GDoc peut calculer dessus
   const L=[['Nom du salarié','Grade','RUN','FACTURE','VENTE','CA TOTAL RÉALISÉ','Salaire','Prime'].join('\t')];
   rows.forEach(l=>L.push([l.nom,l.rang,$n(l.run),$n(l.facture),$n(l.vente),$n(l.ca),$n(l.sal),$n(l.prime)].join('\t')));
   L.push('');
   L.push(['CA Brut',$n(B.caBrut)].join('\t'));
   L.push(['Dépenses déductibles',$n(B.depenses)].join('\t'));
   L.push(['Bénéfice',$n(B.benefice)].join('\t'));
-  L.push(['Taux d\'imposition',Math.round(B.taux*100)+'%'].join('\t'));
+  L.push(['Taux d\'imposition',String(B.taux)].join('\t'));
   L.push(['Montant des impôts',$n(B.impots)].join('\t'));
   L.push(['Bénéfice après impôt',$n(B.apresImpot)].join('\t'));
   L.push(['Montant total des primes',$n(B.totalPrimes)].join('\t'));
