@@ -162,6 +162,24 @@
   .cli-chip{white-space:nowrap;background:var(--paper);border:1px solid var(--line);border-radius:99px;padding:8px 20px;font-size:.88rem;font-weight:600;color:var(--muted)}
   .cli-chip b{color:var(--accent-dark)}
 
+  /* ---------- SIMULATEUR ---------- */
+  .simu{margin-top:46px;background:linear-gradient(150deg,rgba(255,45,149,.08),rgba(139,92,246,.06));border:1px solid rgba(139,92,246,.3);border-radius:var(--radius);padding:32px;text-align:center;box-shadow:0 0 30px rgba(255,45,149,.08)}
+  .simu h3{font-size:1.25rem;background:linear-gradient(90deg,#ff2d95,#8b5cf6,#22d7ee);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .simu-sub{color:var(--muted);font-size:.9rem;margin:6px 0 22px}
+  .simu-grades{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+  .simu-grades button{padding:7px 16px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s}
+  .simu-grades button.on{background:linear-gradient(135deg,#ff2d95,#8b5cf6);color:#fff;border-color:transparent;box-shadow:0 0 16px rgba(255,45,149,.4)}
+  .simu input[type=range]{width:100%;max-width:520px;accent-color:#ff2d95;height:6px;cursor:pointer}
+  .simu-baril{margin:14px 0 24px;color:var(--ink)}
+  .simu-baril b{font-size:1.9rem;background:linear-gradient(90deg,#ff2d95,#22d7ee);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .simu-out{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  .simu-card{background:rgba(0,0,0,.15);border:1px solid var(--line);border-radius:12px;padding:18px 30px;min-width:200px}
+  .simu-card span{display:block;font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  .simu-card strong{font-size:1.9rem;color:var(--accent)}
+  .simu-card-total strong{background:linear-gradient(90deg,#ff2d95,#8b5cf6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .simu-note{color:var(--muted);font-size:.82rem;margin-top:18px;min-height:1.2em}
+  html.dark .simu-card{background:rgba(255,255,255,.03)}
+
   /* ---------- GRADES ---------- */
   #grades{background:var(--dk);color:#fff}
   #grades .sec-kicker{color:var(--accent)}
@@ -426,6 +444,19 @@
     </div>
     <p class="note">💡 Les primes ne sont pas fixes — le montant indiqué est un minimum. Elles sont versées tous les lundis.</p>
     <p class="note" style="color:#e05c5c">⚠️ Une limite de 24 000 pétroles est indiquée.</p>
+
+    <div class="simu">
+      <h3>🧮 Simule ta paie de la semaine</h3>
+      <p class="simu-sub">Combien de barils penses-tu livrer cette semaine ?</p>
+      <div class="simu-grades" id="simuGrades"></div>
+      <input type="range" id="simuRange" min="0" max="24000" step="100" value="8000">
+      <div class="simu-baril"><b id="simuBarils">8 000</b> barils livrés</div>
+      <div class="simu-out">
+        <div class="simu-card"><span>Prime estimée</span><strong id="simuPrime">—</strong></div>
+        <div class="simu-card simu-card-total"><span>Multiplicateur</span><strong id="simuMult">—</strong></div>
+      </div>
+      <p class="simu-note" id="simuNote"></p>
+    </div>
   </div>
 </section>
 
@@ -515,7 +546,7 @@
 </section>
 
 <footer>
-  <b>OIL ROXWOOD</b> · Entreprise RP sur FlashbackFA · Site non officiel, aucun lien avec une entreprise réelle — © 2026 · <a href="equipe.html" style="color:#6d7989">Espace employé</a> · <a href="admin.html" style="color:#6d7989">Espace membre</a>
+  <b>OIL ROXWOOD</b> · Entreprise RP sur FlashbackFA · Site non officiel, aucun lien avec une entreprise réelle — © 2026 · <a href="equipe.html" style="color:#6d7989">Espace employé</a> · <a href="tv.html" style="color:#6d7989">TV du dépôt</a> · <a href="admin.html" style="color:#6d7989">Espace membre</a>
 </footer>
 
 <script>
@@ -532,6 +563,45 @@
   }
   document.getElementById('themeBtn').textContent =
     document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+
+  /* ===== Simulateur de paie ===== */
+  (function(){
+    const GR=[
+      {nom:'Intérimaire',quota:3000,mult:1},
+      {nom:'Raffineur',quota:3000,mult:1.5},
+      {nom:'Confirmé',quota:5000,mult:2},
+      {nom:'Expert',quota:6500,mult:2.5},
+    ];
+    const CAP=42500;
+    let gi=3;
+    const F=n=>Math.round(n).toLocaleString('fr-FR');
+    const g=document.getElementById('simuGrades'),
+          rg=document.getElementById('simuRange'),
+          bEl=document.getElementById('simuBarils'),
+          pEl=document.getElementById('simuPrime'),
+          mEl=document.getElementById('simuMult'),
+          nEl=document.getElementById('simuNote');
+    if(!g) return;
+    g.innerHTML=GR.map((x,i)=>`<button data-i="${i}" class="${i===gi?'on':''}">${x.nom}</button>`).join('');
+    function calc(){
+      const b=+rg.value, gr=GR[gi];
+      bEl.textContent=F(b);
+      mEl.textContent='×'+gr.mult;
+      if(b<gr.quota){
+        pEl.textContent='0 $';
+        nEl.innerHTML=`❌ Quota non atteint — il te faut <b>${F(gr.quota)}</b> barils minimum en ${gr.nom} pour toucher ta prime.`;
+      } else {
+        const brut=b*gr.mult, prime=Math.min(brut,CAP);
+        pEl.textContent=F(prime)+' $';
+        nEl.innerHTML=prime>=CAP
+          ? `🔝 Plafond atteint (${F(CAP)} $) — tu cartonnes ! ${brut>CAP?'('+F(brut)+' $ avant plafond)':''}`
+          : `✅ ${F(b)} barils × ${gr.mult} = <b>${F(prime)} $</b> de prime cette semaine.`;
+      }
+    }
+    g.querySelectorAll('button').forEach(b=>b.onclick=()=>{gi=+b.dataset.i;g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));calc();});
+    rg.addEventListener('input',calc);
+    calc();
+  })();
 
   /* ===== Mur des clients : boucle infinie ===== */
   (function(){ const t=document.getElementById('cliTrack'); if(t) t.innerHTML+=t.innerHTML; })();

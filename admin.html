@@ -335,7 +335,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version C-2</small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-3</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -353,10 +353,12 @@
     <button class="nav-item" data-view="effectif">👥 <span class="txt">Effectif</span></button>
     <button class="nav-item" data-view="runs">🚛 <span class="txt">Runs</span></button>
     <button class="nav-item" data-view="semaine">💰 <span class="txt">Semaine &amp; Primes</span></button>
+    <button class="nav-item" data-view="cloture">🗓️ <span class="txt">Clôture du lundi</span></button>
     <button class="nav-item" data-view="feuilles">📋 <span class="txt">Feuilles</span></button>
     <button class="nav-item" data-view="factures">🧾 <span class="txt">Factures</span></button>
     <button class="nav-item" data-view="relances">📞 <span class="txt">Relances</span></button>
     <button class="nav-item" data-view="bilan">🏦 <span class="txt">Bilan compta</span></button>
+    <button class="nav-item" data-view="retention">📉 <span class="txt">Rétention RH</span></button>
     <button class="nav-item" data-view="fer">🔩 <span class="txt">Achats Fer</span></button>
     <button class="nav-item" data-view="dlogs">📡 <span class="txt">Logs Discord</span></button>
     <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
@@ -367,6 +369,9 @@
   <main id="main"></main>
 </div>
 
+<div id="verBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:2000;background:linear-gradient(90deg,#ff2d95,#8b5cf6);color:#fff;text-align:center;padding:10px;font-weight:700;font-size:.9rem;box-shadow:0 4px 20px rgba(0,0,0,.4)">
+  ⚠️ Une nouvelle version du dashboard est disponible — <a href="#" onclick="location.reload(true);return false" style="color:#fff;text-decoration:underline">recharger maintenant (Ctrl+F5)</a>
+</div>
 <div id="printZone"></div>
 <div id="modalBg" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalBox"></div></div>
 <div id="toast"></div>
@@ -504,8 +509,8 @@ async function sha(t){
 const ROLES={direction:'Direction',rh:'RH',comptable:'Comptable',commercial:'Commercial',membre:'Membre'};
 /* Onglets visibles par rôle — la Direction voit tout, un Membre ne voit que la vue d'ensemble */
 const PERMS={
-  direction:['overview','effectif','runs','semaine','feuilles','factures','relances','bilan','fer','dlogs','params'],
-  rh:       ['overview','effectif','semaine','feuilles','dlogs'],
+  direction:['overview','effectif','runs','semaine','cloture','feuilles','factures','relances','bilan','retention','fer','dlogs','params'],
+  rh:       ['overview','effectif','semaine','feuilles','retention','dlogs'],
   comptable:['overview','feuilles','factures','bilan'],
   commercial:['overview','factures','relances','feuilles'],
   membre:   ['effectif'] // lecture seule : uniquement l'effectif
@@ -553,6 +558,18 @@ function logout(){
   sessionStorage.removeItem('orx_auth'); sessionStorage.removeItem('orx_user');
   const fin=()=>location.replace(location.pathname); // retire aussi les tokens OAuth de l'URL
   if(SYNC.cli){ SYNC.cli.auth.signOut().then(fin).catch(fin); } else fin();
+}
+
+/* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
+const APP_VERSION='C-3';
+function checkVersion(){
+  const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
+    const b=document.getElementById('verBanner');
+    if(d&&d.v&&d.v!==APP_VERSION){ if(b) b.style.display='block'; }
+    else if(b) b.style.display='none';
+  }).catch(()=>{});
+  test();
+  setInterval(test, 5*60*1000); // re-vérifie toutes les 5 min
 }
 
 /* ---- Accès de secours (si Discord/OAuth en panne) ----
@@ -715,7 +732,7 @@ function show(v){
   VIEW=v;
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
-  ({overview,effectif,runs,semaine,feuilles,factures,relances,bilan,fer,dlogs,params})[v]();
+  ({overview,effectif,runs,semaine,cloture,feuilles,factures,relances,bilan,retention,fer,dlogs,params})[v]();
 }
 function rerender(){ show(VIEW); }
 
@@ -1842,6 +1859,98 @@ function bilanCopy(){
     .catch(()=>toast('⚠️ Copie refusée par le navigateur — réessaie après un clic sur la page'));
 }
 
+/* ================== RÉTENTION RH ================== */
+async function retention(){
+  await ensureSheets();
+  const RH=(S.sheets.rh||[]).filter(x=>x.nom&&String(x.nom).trim());
+  const HE=(S.sheets.histEmp||[]).filter(x=>x.nom&&String(x.nom).trim());
+  const jours=(a,b)=>{const t1=Date.parse(a),t2=Date.parse(b);return(isNaN(t1)||isNaN(t2))?null:Math.round((t2-t1)/86400000);};
+  const now=new Date().toISOString().slice(0,10);
+  // ancienneté des actifs
+  const anc=RH.map(x=>jours(x.arrivee,now)).filter(d=>d!==null&&d>=0);
+  const ancMoy=anc.length?Math.round(anc.reduce((a,b)=>a+b,0)/anc.length):0;
+  const actifsCount=RH.filter(x=>String(x.actif??'').toString().toLowerCase()!=='false'&&x.actif!==false).length||RH.length;
+  // départs : par motif + durée de vie si dates dispo
+  const motifs={};
+  HE.forEach(x=>{const m=(x.motif||'—').trim()||'—';motifs[m]=(motifs[m]||0)+1;});
+  const dureesVie=HE.map(x=>jours(x.arrivee,x.depart)).filter(d=>d!==null&&d>=0);
+  const vieMoy=dureesVie.length?Math.round(dureesVie.reduce((a,b)=>a+b,0)/dureesVie.length):null;
+  const totalPasses=RH.length+HE.length;
+  const tauxDepart=totalPasses?Math.round(HE.length/totalPasses*100):0;
+  // survie : combien de départs en moins de 7 jours
+  const flash=dureesVie.filter(d=>d<7).length;
+  $('#main').innerHTML=`
+  <div class="topbar"><div><h2>Rétention RH</h2><div class="sub">Analyse de l'effectif et des départs — pour repérer où fuit le recrutement</div></div></div>
+  <div class="grid g4" style="margin-bottom:18px">
+    <div class="panel kpi"><div class="lbl">Effectif actif</div><div class="val">${RH.length}</div><div class="delta">${HE.length} anciens enregistrés</div></div>
+    <div class="panel kpi"><div class="lbl">Ancienneté moyenne</div><div class="val">${ancMoy} <span style="font-size:1rem">j</span></div><div class="delta">des employés actuels</div></div>
+    <div class="panel kpi"><div class="lbl">Taux de départ</div><div class="val ${tauxDepart>50?'down':''}">${tauxDepart} %</div><div class="delta">sur ${totalPasses} passages</div></div>
+    <div class="panel kpi"><div class="lbl">Durée de vie moy.</div><div class="val">${vieMoy!==null?vieMoy+' j':'—'}</div><div class="delta">${dureesVie.length?'avant départ':'dates de départ manquantes'}</div></div>
+  </div>
+  ${flash?`<div class="warn">⚠️ <b>${flash} départ(s) en moins de 7 jours</b> — signe d'un problème d'accueil ou de recrutement trop large. À creuser côté RH.</div>`:''}
+  <div class="grid g2">
+    <div class="panel"><h3>Motifs de départ</h3>
+      ${Object.keys(motifs).length?'<canvas id="cMotifs" height="220"></canvas>':'<div class="empty">Aucun historique de départ disponible</div>'}</div>
+    <div class="panel" style="padding:8px 16px;overflow-x:auto"><h3>👥 Ancienneté de l'effectif actuel</h3>
+      ${RH.length?`<table><thead><tr><th>Employé</th><th>Grade</th><th>Arrivée</th><th>Ancienneté</th></tr></thead><tbody>
+      ${RH.map(x=>({x,a:jours(x.arrivee,now)})).sort((p,q)=>(q.a??-1)-(p.a??-1)).slice(0,30).map(({x,a})=>`<tr>
+        <td><b>${esc(x.nom)}</b></td><td style="color:var(--muted);font-size:.8rem">${esc(x.grade||'')}</td>
+        <td>${x.arrivee?frDate(x.arrivee):'—'}</td><td>${a!==null?`<b class="${a<7?'down':a>90?'up':''}">${a} j</b>`:'—'}</td></tr>`).join('')}
+      </tbody></table>`:'<div class="empty">Feuille RH vide</div>'}</div>
+  </div>`;
+  if(Object.keys(motifs).length){
+    const e=Object.entries(motifs).sort((a,b)=>b[1]-a[1]);
+    mkChart('cMotifs',{type:'bar',data:{labels:e.map(x=>x[0]),datasets:[{data:e.map(x=>x[1]),backgroundColor:['#ff2d95','#8b5cf6','#22d7ee','#e8a020','#5aa0ff'],borderRadius:6}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
+  }
+}
+
+/* ================== CLÔTURE GUIDÉE DU LUNDI ================== */
+let CL_STEP=(sessionStorage.getItem('orx_clstep'))|0;
+function clSet(n){ CL_STEP=n; sessionStorage.setItem('orx_clstep',n); cloture(); }
+async function cloture(){
+  await ensureSheets();
+  const totB=S.runners.reduce((a,r)=>a+r.barils,0);
+  const steps=[
+    {t:'Coller la tablette de la semaine',d:'Ouvre Feuilles → Tablette → 📋 Coller depuis Excel (mode ♻️ Remplacer). L\'effectif et les quotas se calent automatiquement.',
+     btn:'📋 Ouvrir la Tablette',act:"show('feuilles');curSheet='tablette';setTimeout(()=>openPasteModal(),200)"},
+    {t:'Vérifier l\'effectif et les primes',d:'Contrôle les barils, grades et primes projetées avant de figer. Corrige si besoin.',
+     btn:'💰 Voir Semaine & Primes',act:"show('semaine')"},
+    {t:'Clôturer la semaine',d:'Fige les primes + TOP 3, applique les montées de grade, remet les compteurs à zéro. '+fmt(totB)+' barils en cours.',
+     btn:'🗓️ Clôturer maintenant',act:"closeWeek();clSet(3)",danger:true},
+    {t:'Copier le bilan pour le GDoc',d:'Récupère le détail par employé en un Ctrl+V pour ta comptabilité.',
+     btn:'📋 Copier le bilan',act:"show('bilan');setTimeout(()=>bilanCopy(),300)"},
+    {t:'Réinitialiser les ventes de la semaine',d:'Vide la feuille Ventes de la semaine pour repartir propre.',
+     btn:'♻️ Vider les ventes',act:"show('feuilles');curSheet='ventesSem';setTimeout(()=>sheetReset(),200)"},
+  ];
+  $('#main').innerHTML=`
+  <div class="topbar"><div><h2>Clôture du lundi</h2><div class="sub">${weekRange()} · suis les étapes dans l'ordre — coche au fur et à mesure</div></div>
+    <button class="btn btn-ghost" onclick="clSet(0)">↺ Recommencer</button></div>
+  <div class="panel" style="max-width:720px">
+    ${steps.map((s,i)=>{
+      const done=i<CL_STEP, cur=i===CL_STEP;
+      return `<div style="display:flex;gap:16px;padding:18px 4px;border-bottom:${i<steps.length-1?'1px solid var(--line)':'none'};opacity:${done||cur?1:.45}">
+        <div style="flex-shrink:0;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;
+          background:${done?'var(--green)':cur?'linear-gradient(135deg,var(--neon-p),var(--neon-v))':'var(--panel-2)'};color:${done||cur?'#fff':'var(--muted)'}">
+          ${done?'✓':i+1}</div>
+        <div style="flex:1">
+          <div style="font-weight:700;${done?'text-decoration:line-through;color:var(--muted)':''}">${s.t}</div>
+          <div style="color:var(--muted);font-size:.85rem;margin:4px 0 10px">${s.d}</div>
+          ${cur?`<div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-sm ${s.danger?'btn-gold':'btn-gold'}" onclick="${s.act}">${s.btn}</button>
+            <button class="btn btn-sm btn-ghost" onclick="clSet(${i+1})">✓ Étape faite</button>
+          </div>`:''}
+        </div>
+      </div>`;
+    }).join('')}
+    ${CL_STEP>=steps.length?`<div style="text-align:center;padding:24px">
+      <div style="font-size:2.4rem">🎉</div>
+      <div style="font-weight:800;font-size:1.1rem;margin:8px 0">Semaine clôturée !</div>
+      <div style="color:var(--muted);font-size:.88rem">Tout est prêt pour la nouvelle semaine. Bon jeu ! 🛢</div>
+      <button class="btn btn-ghost" style="margin-top:14px" onclick="clSet(0)">Nouvelle clôture</button>
+    </div>`:''}
+  </div>`;
+}
+
 /* ================== ACHATS DE FER (Direction) ================== */
 async function fer(){
   S.fer=S.fer||[];
@@ -2313,6 +2422,7 @@ new MutationObserver(()=>animateCounters()).observe(document.getElementById('mai
   const majHint=()=>{ if(hint) hint.style.display=(S.users&&S.users.length)?'none':'block'; };
   majHint();
   checkRescue();
+  checkVersion();
   initSync();
   sbPull().then(()=>{ majHint(); checkDiscordAuth(); });
 })();
