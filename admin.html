@@ -1708,7 +1708,19 @@ function bilanData(){
   const rangTop=new Map(byB.map((r,i)=>[r.id,i]));
   const low=s=>String(s||'').toLowerCase().trim();
   const isPatron=r=>/patron/i.test(r.rang||'');
-  const lignes=T.filter(r=>r.nom&&!low(r.nom).startsWith('nom')&&!low(r.nom).startsWith('total')).map(r=>{
+  // base = fiche RH (tout le personnel, même sans service) + éventuels présents uniquement dans la tablette
+  const RH=(S.sheets.rh||[]).filter(x=>x.nom&&String(x.nom).trim());
+  const vus=new Set();
+  const roster=[];
+  RH.forEach(x=>{
+    const nom=String(x.nom).trim(); vus.add(low(nom));
+    const t=T.find(r=>low(r.nom)===low(nom));
+    roster.push({nom, rang:(t&&t.rang)||x.grade||'', runs:t?t.runs:0, factures:t?t.factures:0, ventes:t?t.ventes:0});
+  });
+  T.filter(r=>r.nom&&!low(r.nom).startsWith('nom')&&!low(r.nom).startsWith('total')).forEach(r=>{
+    if(!vus.has(low(r.nom))) roster.push({nom:r.nom, rang:r.rang, runs:r.runs, factures:r.factures, ventes:r.ventes});
+  });
+  const lignes=roster.map(r=>{
     const C=caps();
     // tout est automatique : prod. bidons, recrues, salaire fixe, prime hebdo + TOP 3
     const run=S.runners.find(x=>x.nom.toLowerCase()===low(r.nom));
@@ -1744,7 +1756,7 @@ async function bilan(){
   $('#main').innerHTML='<div class="panel"><div class="empty">Calcul du bilan…</div></div>';
   await ensureSheets();
   const B=bilanData();
-  const actifs=B.lignes.filter(l=>!l.manuel&&(l.ca>0||l.sal>0||l.prime>0)).sort((a,b)=>b.ca-a.ca);
+  const actifs=B.lignes.filter(l=>!l.manuel).sort((a,b)=>b.ca-a.ca||a.nom.localeCompare(b.nom));
   $('#main').innerHTML=`
   <div class="topbar">
     <div><h2>Bilan comptable</h2><div class="sub">Calculé en direct depuis les feuilles Tablette, Budget & salaires et Compta</div></div>
@@ -1778,7 +1790,7 @@ async function bilan(){
     <div class="panel"><h3>TOP contributeurs au CA</h3><canvas id="cTopCA" height="230"></canvas></div>
   </div>
   <div class="panel" style="padding:8px 16px;overflow-x:auto">
-    <h3 style="padding:12px 0 4px">Détail par employé (${actifs.length} actifs sur ${B.lignes.length})
+    <h3 style="padding:12px 0 4px">Détail par employé (${actifs.length} — fiche RH complète, 0 si pas de service)
       <span style="display:flex;gap:8px">
         <button class="btn btn-sm btn-ghost" onclick="bilanCopy()">📋 Copier pour GDoc</button>
         <button class="btn btn-sm btn-gold" onclick="bxAdd()">＋ Ligne manuelle</button>
@@ -1820,7 +1832,7 @@ function bxDel(i){ if(confirm('Supprimer cette ligne manuelle ?')){ S.bilanExtra
 /* ---- export prêt à coller dans le GDoc de compta ---- */
 function bilanCopy(){
   const B=bilanData();
-  const rows=B.lignes.filter(l=>l.manuel||l.ca>0||l.sal>0||l.prime>0);
+  const rows=[...B.lignes].sort((a,b)=>(a.manuel?1:0)-(b.manuel?1:0)||b.ca-a.ca||a.nom.localeCompare(b.nom)); // tout le personnel, 0 compris
   const $n=v=>String(Math.round(v)); // nombres bruts, sans « $ » : le GDoc peut calculer dessus
   const L=[['Nom du salarié','Grade','RUN','FACTURE','VENTE','CA TOTAL RÉALISÉ','Salaire','Prime'].join('\t')];
   rows.forEach(l=>L.push([l.nom,l.rang,$n(l.run),$n(l.facture),$n(l.vente),$n(l.ca),$n(l.sal),$n(l.prime)].join('\t')));
