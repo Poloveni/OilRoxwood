@@ -679,7 +679,8 @@ function primeProj(r){
   const cap = r.poste && /patron/i.test(r.poste) ? caps().patPrime : caps().empPrime;
   return Math.min(r.barils * grade(r).mult, cap); // barils × multiplicateur du grade, plafonné
 }
-function eligible(r){ return !r.poste && r.grade < 3 && r.barils >= grade(r).montee; } // montée hebdo, jamais pour la direction
+function seuilMontee(r){ const next=GRADES[r.grade+1]; return next?next.montee:null; } // seuil = montée du grade VISÉ
+function eligible(r){ const s=seuilMontee(r); return !r.poste && s!==null && r.barils >= s; } // montée hebdo, jamais pour la direction
 let charts = [];
 function destroyCharts(){ charts.forEach(c=>c.destroy()); charts=[]; }
 function mkChart(id, cfg){
@@ -793,7 +794,7 @@ function rowRunner(r){
   const g=grade(r), pc=g.quota?Math.min(100,Math.round(r.barils/g.quota*100)):100;
   return `<tr>
     <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
-    <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span>${r.absent?'<div style="font-size:.7rem;color:var(--red);font-weight:700;margin-top:3px">🌴 Congé / absence</div>':''}${!r.poste&&eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(grade(r).montee)} barils)</span>`:''}</td>
+    <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span>${r.absent?'<div style="font-size:.7rem;color:var(--red);font-weight:700;margin-top:3px">🌴 Congé / absence</div>':''}${!r.poste&&eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(seuilMontee(r))} barils atteints)</span>`:''}</td>
     <td><div class="prog"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></div><div class="pct">${fmt(r.barils)} / ${fmt(g.quota)} (${pc}%)</div></td>
     <td>${fmt(r.total)}</td>
     ${isMembre()?'':`<td style="text-align:right;white-space:nowrap">
@@ -1097,11 +1098,19 @@ const SHEETS_DEF = {
     note:'Dépenses déductibles et retraits du compte entreprise'},
 };
 const nn = x => +x||0;
+/* feuilles interdites par rôle (en plus des restrictions de vues) */
+const SHEET_DENY={ commercial:['rh','blacklist','compta'] };
+function sheetAllowed(k){
+  const cu=currentUser();
+  const deny=cu&&SHEET_DENY[cu.role];
+  return !deny||!deny.includes(k);
+}
 let curSheet='tablette', sheetSearch='';
 async function feuilles(){
   if(!S.sheets) $('#main').innerHTML='<div class="panel"><div class="empty">Chargement des feuilles…</div></div>';
   await ensureSheets();
   await ensureFact(); // base clients pour la colonne Client des ventes
+  if(!sheetAllowed(curSheet)) curSheet=Object.keys(SHEETS_DEF).find(sheetAllowed)||'tablette';
   const def=SHEETS_DEF[curSheet], rows=S.sheets[curSheet];
   const q=sheetSearch.toLowerCase();
   const idx=rows.map((r,i)=>i).filter(i=>!q||Object.values(rows[i]).join(' ').toLowerCase().includes(q));
@@ -1136,7 +1145,7 @@ async function feuilles(){
       <button class="btn btn-gold" onclick="rowAdd()">＋ Ligne</button>
     </div>
   </div>
-  <div class="tabs">${Object.entries(SHEETS_DEF).map(([k,d])=>`<button class="tab ${k===curSheet?'on':''}" onclick="curSheet='${k}';sheetSearch='';feuilles()">${d.ico} ${d.label} <span style="opacity:.6">(${S.sheets[k].length})</span></button>`).join('')}</div>
+  <div class="tabs">${Object.entries(SHEETS_DEF).filter(([k])=>sheetAllowed(k)).map(([k,d])=>`<button class="tab ${k===curSheet?'on':''}" onclick="curSheet='${k}';sheetSearch='';feuilles()">${d.ico} ${d.label} <span style="opacity:.6">(${S.sheets[k].length})</span></button>`).join('')}</div>
   ${def.note?`<div class="warn" style="border-color:rgba(232,160,32,.35);background:rgba(232,160,32,.07);color:var(--accent)">ℹ️ ${def.note}</div>`:''}
   <div class="panel" style="padding:10px 16px;overflow-x:auto">
     <input class="field" style="max-width:240px;margin:6px 0 10px" placeholder="🔍 Rechercher…" value="${esc(sheetSearch)}" oninput="sheetSearch=this.value;feuilles()">
@@ -2069,7 +2078,7 @@ function params(){
   <div class="panel" style="margin-top:18px">
     <h3>📐 Règles de grades (rappel)</h3>
     <table><thead><tr><th>Grade</th><th>Quota hebdo</th><th>Multiplicateur prime</th><th>Montée de grade</th></tr></thead><tbody>
-    ${GRADES.map(g=>`<tr><td><span class="badge ${g.cls}">${g.nom}</span></td><td>${fmt(g.quota)} barils</td><td>×${g.mult}</td><td>${g.montee?fmt(g.montee)+' barils réalisés':'grade max'}</td></tr>`).join('')}
+    ${GRADES.map((g,i)=>`<tr><td><span class="badge ${g.cls}">${g.nom}</span></td><td>${fmt(g.quota)} barils</td><td>×${g.mult}</td><td>${i>0?fmt(g.montee)+' barils/sem. pour y accéder':'grade d\'entrée'}</td></tr>`).join('')}
     <tr><td><span class="badge bg3">Direction &amp; postes</span> <small style="color:var(--muted)">Patron, RH, commerciaux…</small></td><td>0 barils (aucun quota)</td><td>×${DIR_GRADE.mult}</td><td>—</td></tr>
     </tbody></table>
   </div>`;
