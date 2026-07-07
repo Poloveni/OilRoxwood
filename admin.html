@@ -1471,7 +1471,9 @@ function filtreBase(q){
 }
 /* ---- impression ---- */
 function printFact(f){
+  try{
   console.log('[OilRoxwood] impression facture', JSON.parse(JSON.stringify(f)));
+  console.log('[OilRoxwood] lignes de la facture :', JSON.parse(JSON.stringify(f.lignes||'AUCUNE')));
   const c=cli(f.client)||{adresse:'',tel:'',rib:''};
   let lignes=(f.lignes||[]).filter(l=>nn(l.qte)>0||nn(l.ht)>0);
   if(!lignes.length) lignes=(f.lignes||[]); // ne jamais imprimer un tableau vide si des lignes existent
@@ -1507,6 +1509,12 @@ function printFact(f){
     </div>
     <div class="legal">OIL ROXWOOD · ${SOCIETE.lieu} · Téléphone ${SOCIETE.tel} · RIB ${SOCIETE.rib} — Merci de votre confiance 🛢</div>
   </div>`;
+  console.log('[OilRoxwood] zone d\'impression remplie :', document.getElementById('printZone').innerHTML.length, 'caractères ·', lignes.length, 'ligne(s) à imprimer');
+  }catch(e){
+    alert('Erreur pendant la préparation de la facture : '+e.message);
+    console.error('[OilRoxwood] printFact', e);
+    return;
+  }
   window.print();
 }
 
