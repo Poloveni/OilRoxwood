@@ -830,16 +830,35 @@ function saveRunner(id){
   if(id){
     const r=S.runners.find(x=>x.id===id);
     Object.assign(r,{nom,discord:dc,grade:gr,poste});
+    syncRhGrade(r); // répercute le grade/poste sur la feuille RH
   } else {
     S.runners.push({id:Date.now(),nom,discord:dc,grade:gr,poste,barils:0,total:0,runs:[]});
     sendLog('👥 Nouvelle recrue', `**${nom}** (@${dc}) rejoint l'entreprise — ${poste||GRADES[gr].nom}`, 0x3ddc84);
   }
   save(); closeModal(); rerender(); toast('✅ Runner enregistré');
 }
+/* ---- Répercussion automatique des grades sur la feuille RH ---- */
+function normNom(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim(); }
+function syncRhGrade(r){
+  // met à jour la colonne Grade de la feuille RH (correspondance par Discord, sinon par nom)
+  if(!r||!S.sheets||!S.sheets.rh) return false;
+  const cible=gTitle(r);
+  const row=S.sheets.rh.find(x=>
+    (r.discord&&normNom(x.discord)&&normNom(x.discord)===normNom(r.discord))||
+    (normNom(x.nom)&&normNom(x.nom)===normNom(r.nom)));
+  if(row&&row.grade!==cible){ row.grade=cible; return true; }
+  return false;
+}
 function promote(id){
   if(isMembre()) return toast('👀 Consultation seule pour les membres');
   const r=S.runners.find(x=>x.id===id);
-  if(r.grade<3){ r.grade++; save(); rerender(); sendLog('🎉 Montée de grade', `**${r.nom}** passe **${GRADES[r.grade].nom}** !`, 0xe8a020); toast(`🎉 ${r.nom} passe ${GRADES[r.grade].nom} !`); }
+  if(r.grade<3){
+    r.grade++;
+    const rhMaj=syncRhGrade(r);
+    save(); rerender();
+    sendLog('🎉 Montée de grade', `**${r.nom}** passe **${GRADES[r.grade].nom}** !${rhMaj?' (feuille RH mise à jour)':''}`, 0xe8a020);
+    toast(`🎉 ${r.nom} passe ${GRADES[r.grade].nom} !${rhMaj?' · feuille RH mise à jour':''}`);
+  }
 }
 function delRunner(id){
   if(isMembre()) return toast('👀 Consultation seule pour les membres');
@@ -996,7 +1015,7 @@ function closeWeek(){
     if(quotaOK(r)) primes+=primeProj(r);
     if(!PRIMES_OFF && i<3 && r.barils>0) primes+=S.settings.top[i];
   });
-  S.runners.forEach(r=>{ if(eligible(r)){ r.grade++; promus.push(r.nom); } });
+  S.runners.forEach(r=>{ if(eligible(r)){ r.grade++; promus.push(r.nom); syncRhGrade(r); } });
   S.weeks.push({num:S.settings.semaine, date:new Date().toLocaleDateString('fr-FR'), total:sorted.reduce((a,r)=>a+r.barils,0), primes, winner:sorted[0]?.barils>0?sorted[0].nom:null});
   const w=S.weeks[S.weeks.length-1];
   const podium=sorted.slice(0,3).filter(r=>r.barils>0).map((r,i)=>`${['🥇','🥈','🥉'][i]} **${r.nom}** — ${fmt(r.barils)} barils (+${money(S.settings.top[i])})`).join('\n');
@@ -1150,7 +1169,7 @@ function syncRunners(silent){
     // barils de la semaine = colonne Runs de la Tablette ($ ÷ 5)
     const barilsSem=Math.round(nn(row.runs)/5);
     let r=S.runners.find(x=>x.nom.toLowerCase()===nom.toLowerCase());
-    if(r){ if(r.grade!==g&&r.src==='tablette'){ r.grade=g; updated++; } r.src='tablette'; r.poste=poste; }
+    if(r){ if(r.grade!==g&&r.src==='tablette'){ r.grade=g; updated++; syncRhGrade(r); } r.src='tablette'; r.poste=poste; }
     else{
       r={id:Date.now()+Math.floor(Math.random()*1e6),nom,discord:'',grade:g,
         barils:0,total:0,runs:[],src:'tablette',poste};
