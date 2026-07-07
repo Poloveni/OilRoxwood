@@ -575,9 +575,10 @@ async function checkRescue(){
 /* ---- Connexion via Discord (OAuth Supabase) ---- */
 async function loginDiscord(){
   if(!SYNC.cli) return alert('Connexion Discord indisponible : Supabase injoignable. Utilise l\'identifiant en secours.');
+  // pas de prompt:'none' : il bloquait silencieusement les comptes n'ayant JAMAIS autorisé l'appli.
+  // Discord saute de lui-même l'écran d'autorisation pour les comptes déjà approuvés.
   await SYNC.cli.auth.signInWithOAuth({provider:'discord',options:{
-    redirectTo:location.origin+location.pathname,
-    queryParams:{prompt:'none'} // saute l'écran d'autorisation si l'appli est déjà approuvée
+    redirectTo:location.origin+location.pathname
   }});
 }
 async function checkDiscordAuth(){
@@ -611,14 +612,22 @@ async function checkDiscordAuth(){
       enter();
     } else {
       // inconnu → demande d'accès dans une table dédiée (fiable, temps réel, hors état partagé)
+      let errDem=null;
       try{
-        const {error}=await SYNC.cli.from('oilroxwood_demandes').upsert({did, pseudo});
-        if(!error) sendLog('🔔 Demande d\'accès au dashboard', `**${pseudo}** attend une validation — Paramètres → Comptes d'accès → ✓`, 0xe8a020, '<@186397473374208000>');
-      }catch(e){ console.error('[OilRoxwood] envoi demande', e); }
+        const r=await SYNC.cli.from('oilroxwood_demandes').upsert({did, pseudo});
+        errDem=r.error||null;
+      }catch(e){ errDem=e; }
+      console.log('[OilRoxwood] demande d\'accès', pseudo, did, errDem?('ERREUR: '+(errDem.message||errDem)):'enregistrée ✓');
+      if(!errDem) sendLog('🔔 Demande d\'accès au dashboard', `**${pseudo}** attend une validation — Paramètres → Comptes d'accès → ✓`, 0xe8a020, '<@186397473374208000>');
       const d=document.getElementById('lg_denied');
       if(d){ d.style.display='block';
-        d.style.background='rgba(232,160,32,.08)'; d.style.borderColor='rgba(232,160,32,.35)'; d.style.color='var(--accent-2)';
-        d.innerHTML=`⏳ Demande d'accès envoyée pour <b>${esc(pseudo)}</b>.<br>Dès que la direction valide, cette page se connectera <b>automatiquement</b> — laisse-la ouverte. <a href="#" onclick="logout();return false" style="color:inherit;text-decoration:underline">Changer de compte</a>`;
+        if(errDem){
+          d.style.background='rgba(255,92,92,.1)'; d.style.borderColor='rgba(255,92,92,.35)'; d.style.color='#ffb0b0';
+          d.innerHTML=`⚠️ Impossible d'enregistrer la demande de <b>${esc(pseudo)}</b>.<br>Erreur : <code>${esc(errDem.message||String(errDem))}</code><br>Transmets ce message à la direction (table <b>oilroxwood_demandes</b> manquante côté Supabase ?).`;
+        } else {
+          d.style.background='rgba(232,160,32,.08)'; d.style.borderColor='rgba(232,160,32,.35)'; d.style.color='var(--accent-2)';
+          d.innerHTML=`⏳ Demande d'accès envoyée pour <b>${esc(pseudo)}</b>.<br>Dès que la direction valide, cette page se connectera <b>automatiquement</b> — laisse-la ouverte. <a href="#" onclick="logout();return false" style="color:inherit;text-decoration:underline">Changer de compte</a>`;
+        }
       }
     }
   }catch(e){ /* session illisible : on reste sur l'écran de connexion */ }
