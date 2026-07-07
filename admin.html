@@ -939,7 +939,7 @@ function setRecrues(id,v){
   save(); semaine();
   toast(`👥 ${r.nom} : ${r.recrues} recrue(s) → ${money(r.recrues*prixRecrue())}`);
 }
-let semTri={k:'rang',d:1};
+let semTri={k:'rang',d:1}, semSearch='';
 function semSort(k){ semTri=(semTri.k===k)?{k,d:-semTri.d}:{k,d:(k==='nom'||k==='grade')?1:-1}; semaine(); }
 async function semaine(){
   await ensureSheets();
@@ -963,6 +963,8 @@ async function semaine(){
     return (typeof va==='string'?va.localeCompare(vb):(va-vb))*D;
   });
   const fl=k=>semTri.k===k?(semTri.d>0?' ▲':' ▼'):'';
+  const q=semSearch.trim().toLowerCase();
+  const visibles=q?items.filter(it=>it.r.nom.toLowerCase().includes(q)||gTitle(it.r).toLowerCase().includes(q)):items;
   const R=items.map(x=>x.r);
   const totalPrimes = PRIMES_OFF ? 0 : R.reduce((a,r)=>a+primeProj(r),0) + S.settings.top.slice(0,Math.min(3,R.length)).reduce((a,b)=>a+b,0);
   $('#main').innerHTML = `
@@ -971,7 +973,8 @@ async function semaine(){
     <button class="btn btn-gold" onclick="closeWeek()">🗓️ Clôturer la semaine (lundi)</button>
   </div>
   <div class="panel" style="margin-bottom:18px;padding:8px 16px">
-    ${items.length?`<table><thead><tr>
+    <input class="field" id="semSearchInput" style="max-width:260px;margin:8px 0 4px" placeholder="🔍 Rechercher un employé…" value="${esc(semSearch)}" oninput="semSearch=this.value;semaine()">
+    ${visibles.length?`<table><thead><tr>
       <th onclick="semSort('rang')" style="cursor:pointer" title="Trier">#${fl('rang')}</th>
       <th onclick="semSort('nom')" style="cursor:pointer" title="Trier">Runner${fl('nom')}</th>
       <th onclick="semSort('grade')" style="cursor:pointer" title="Trier">Grade${fl('grade')}</th>
@@ -982,7 +985,7 @@ async function semaine(){
       <th onclick="semSort('salaire')" style="cursor:pointer" title="Trier">Salaire${fl('salaire')}</th>
       <th onclick="semSort('total')" style="cursor:pointer" title="Trier">Total${fl('total')}</th>
     </tr></thead><tbody>
-    ${items.map(it=>{const {r,g,okk,i,sal,pr}=it;return `<tr>
+    ${visibles.map(it=>{const {r,g,okk,i,sal,pr}=it;return `<tr>
       <td>${i<3&&r.barils>0?['🥇','🥈','🥉'][i]:i+1}</td>
       <td><b>${esc(r.nom)}</b></td>
       <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span></td>
@@ -994,7 +997,7 @@ async function semaine(){
       <td>${sal?money(sal):'—'}</td>
       <td style="font-weight:700">${sal+pr?money(sal+pr):'—'}</td>
     </tr>`}).join('')}
-    </tbody></table>`:'<div class="empty">Aucun runner</div>'}
+    </tbody></table>`:`<div class="empty">${q?'Aucun employé ne correspond à « '+esc(semSearch)+' »':'Aucun runner'}</div>`}
   </div>
   <div class="grid g2">
     <div class="panel kpi"><div class="lbl">Total primes projetées</div><div class="val gold">${money(totalPrimes)}</div><div class="delta">si tous les quotas restent en l'état</div></div>
@@ -1005,6 +1008,8 @@ async function semaine(){
       </tbody></table>`:'<div class="empty">Aucune clôture pour le moment</div>'}
     </div>
   </div>`;
+  // garde le focus dans la barre de recherche pendant la frappe
+  if(q){ const el=document.getElementById('semSearchInput'); if(el){ el.focus(); el.setSelectionRange(el.value.length,el.value.length); } }
 }
 function closeWeek(){
   if(!S.runners.length) return toast('Aucun runner à clôturer');
