@@ -441,6 +441,15 @@ function initSync(){
       else checkDiscordAuth(); // en attente de validation : entre automatiquement dès que la direction valide
     })
     .subscribe(st=>{ if(st==='SUBSCRIBED') syncDot(true,'Temps réel actif'); });
+  // notification en direct des demandes d'accès (table dédiée)
+  SYNC.cli.channel('demandes-sync')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'oilroxwood_demandes'},p=>{
+      if(sessionStorage.getItem('orx_auth')==='1'&&!isMembre()){
+        toast('🔔 Nouvelle demande d\'accès : '+esc((p.new&&p.new.pseudo)||'?'));
+        if(VIEW==='params') params();
+      }
+    })
+    .subscribe();
 }
 async function sbPull(){
   if(!SYNC.on) return;
@@ -601,13 +610,11 @@ async function checkDiscordAuth(){
       sessionStorage.setItem('orx_user',u.user);
       enter();
     } else {
-      // inconnu → demande d'accès automatique, la direction n'a plus qu'à cliquer ✓
-      if(!S.pending) S.pending=[];
-      if(!S.pending.find(x=>x.did===did)){
-        S.pending.push({id:Date.now(),user:pseudo,did,date:new Date().toLocaleDateString('fr-FR')});
-        save(); await sbPushNow(true); // envoi forcé : la demande doit partir même sans compte
-        sendLog('🔔 Demande d\'accès au dashboard', `**${pseudo}** attend une validation — Paramètres → Comptes d'accès → ✓`, 0xe8a020, '<@186397473374208000>');
-      }
+      // inconnu → demande d'accès dans une table dédiée (fiable, temps réel, hors état partagé)
+      try{
+        const {error}=await SYNC.cli.from('oilroxwood_demandes').upsert({did, pseudo});
+        if(!error) sendLog('🔔 Demande d\'accès au dashboard', `**${pseudo}** attend une validation — Paramètres → Comptes d'accès → ✓`, 0xe8a020, '<@186397473374208000>');
+      }catch(e){ console.error('[OilRoxwood] envoi demande', e); }
       const d=document.getElementById('lg_denied');
       if(d){ d.style.display='block';
         d.style.background='rgba(232,160,32,.08)'; d.style.borderColor='rgba(232,160,32,.35)'; d.style.color='var(--accent-2)';
@@ -1988,7 +1995,12 @@ function importAll(){
 }
 
 /* ================== PARAMÈTRES ================== */
-function params(){
+async function params(){
+  // demandes d'accès en attente (table dédiée Supabase)
+  let DEM=[];
+  try{
+    if(SYNC.cli){ const {data}=await SYNC.cli.from('oilroxwood_demandes').select('*').order('date'); DEM=data||[]; }
+  }catch(e){}
   $('#main').innerHTML = `
   <div class="topbar"><div><h2>Paramètres</h2><div class="sub">Configuration de l'entreprise et des données</div></div></div>
   <div class="grid g2">
@@ -2024,13 +2036,13 @@ function params(){
     <div>
       <div class="panel" style="margin-bottom:18px">
         <h3>👤 Comptes d'accès (${(S.users||[]).length})${(()=>{const c=currentUser();return c?` — connecté : ${esc(c.user)}`:''})()}</h3>
-        ${(S.pending&&S.pending.length)?`<div class="warn" style="border-color:rgba(232,160,32,.35);background:rgba(232,160,32,.07);color:var(--accent-2)">
-          🔔 <b>${S.pending.length} demande(s) d'accès en attente</b>
-          ${S.pending.map(p=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px">
-            <span>👤 <b>${esc(p.user)}</b> <small style="opacity:.7">· ${esc(p.date||'')}</small></span>
+        ${DEM.length?`<div class="warn" style="border-color:rgba(232,160,32,.35);background:rgba(232,160,32,.07);color:var(--accent-2)">
+          🔔 <b>${DEM.length} demande(s) d'accès en attente</b>
+          ${DEM.map(p=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px">
+            <span>👤 <b>${esc(p.pseudo)}</b> <small style="opacity:.7">· ${frDate(String(p.date||'').slice(0,10))}</small></span>
             <span style="white-space:nowrap">
-              <button class="btn btn-sm btn-gold" onclick="approvePending(${p.id})">✓ Valider</button>
-              <button class="btn btn-sm btn-red" onclick="refusePending(${p.id})">✕</button>
+              <button class="btn btn-sm btn-gold" onclick="approvePending('${esc(p.did)}','${esc(p.pseudo)}')">✓ Valider</button>
+              <button class="btn btn-sm btn-red" onclick="refusePending('${esc(p.did)}','${esc(p.pseudo)}')">✕</button>
             </span>
           </div>`).join('')}
         </div>`:''}
@@ -2123,19 +2135,18 @@ function setUserRole(id,r){
   if(u.role==='direction'&&r!=='direction'&&dirs.length<=1){ params(); return toast('⚠️ Il faut garder au moins un compte Direction'); }
   u.role=r; save(); toast('👤 '+u.user+' → '+ROLES[r]);
 }
-async function approvePending(id){
-  const p=(S.pending||[]).find(x=>x.id===id); if(!p) return;
-  if(!S.users.find(x=>x.did===p.did))
-    S.users.push({id:Date.now(),user:p.user,did:p.did,role:'membre'});
-  S.pending=S.pending.filter(x=>x.id!==id);
-  save(); await sbPushNow(); params();
-  toast('✅ '+p.user+' validé — il entre automatiquement (rôle Membre, modifiable ci-dessous)');
-  sendLog('✅ Accès validé', `**${p.user}** a maintenant accès au dashboard (Membre)`, 0x3ddc84);
+async function approvePending(did,pseudo){
+  if(!S.users.find(x=>x.did===did))
+    S.users.push({id:Date.now(),user:pseudo,did,role:'membre'});
+  save(); await sbPushNow();
+  try{ await SYNC.cli.from('oilroxwood_demandes').delete().eq('did',did); }catch(e){}
+  params();
+  toast('✅ '+pseudo+' validé — il entre automatiquement (rôle Membre, modifiable ci-dessous)');
+  sendLog('✅ Accès validé', `**${pseudo}** a maintenant accès au dashboard (Membre)`, 0x3ddc84);
 }
-async function refusePending(id){
-  const p=(S.pending||[]).find(x=>x.id===id); if(!p) return;
-  S.pending=S.pending.filter(x=>x.id!==id);
-  save(); await sbPushNow(); params(); toast('Demande de '+p.user+' refusée');
+async function refusePending(did,pseudo){
+  try{ await SYNC.cli.from('oilroxwood_demandes').delete().eq('did',did); }catch(e){}
+  params(); toast('Demande de '+pseudo+' refusée');
 }
 function delUser(id){
   const u=S.users.find(x=>x.id===id); if(!u) return;
