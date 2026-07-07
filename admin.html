@@ -191,7 +191,9 @@
   .inv .tots tr:last-child td{border-top:2px solid #1b2739;font-weight:800;font-size:1rem;color:#c4841a}
   .inv .foot{margin-top:34px;display:flex;justify-content:space-between;font-size:.78rem;color:#555}
   .inv .sig{text-align:center}
-  .inv .sig .line{margin-top:34px;border-top:1px solid #999;padding-top:6px;min-width:170px}
+  .inv .sig .line{margin-top:6px;border-top:1px solid #999;padding-top:6px;min-width:190px}
+  .inv .sig .script{font-family:'Segoe Script','Brush Script MT','Lucida Handwriting',cursive;font-size:1.6rem;color:#1b2739;display:inline-block;transform:rotate(-3deg);margin-top:14px}
+  .inv .legal{margin-top:26px;padding-top:12px;border-top:1px solid #e3e5e9;font-size:.68rem;color:#8a94a3;text-align:center}
   .promo-flag{font-size:.7rem;color:var(--green);font-weight:700;display:block;margin-top:3px}
 
   /* ================== UI PREMIUM ================== */
@@ -486,7 +488,7 @@ const ROLES={direction:'Direction',rh:'RH',comptable:'Comptable',commercial:'Com
 /* Onglets visibles par rôle — la Direction voit tout, un Membre ne voit que la vue d'ensemble */
 const PERMS={
   direction:['overview','effectif','runs','semaine','feuilles','factures','relances','bilan','dlogs','params'],
-  rh:       ['overview','effectif','runs','semaine','feuilles','dlogs'],
+  rh:       ['overview','effectif','semaine','feuilles','dlogs'],
   comptable:['overview','feuilles','factures','bilan'],
   commercial:['overview','factures','relances','feuilles'],
   membre:   ['overview']
@@ -720,6 +722,16 @@ function overview(){
   <div class="grid g2">
     <div class="panel"><h3>Historique des semaines</h3>${S.weeks.length?'<canvas id="cWeeks" height="220"></canvas>':'<div class="empty">Aucune semaine clôturée pour le moment</div>'}</div>
     <div class="panel"><h3>🏆 TOP 3 en direct</h3>${top3html(sorted)}</div>
+  </div>
+  <div class="panel" style="margin-top:18px;padding:8px 16px">
+    <h3 style="padding:12px 0 4px">📋 Production de la semaine — toute l'équipe</h3>
+    ${R.length?`<table><thead><tr><th>Nom</th><th>Barils vendus</th><th style="min-width:180px">Quota</th></tr></thead><tbody>
+    ${sorted.map(r=>{const pc=Math.min(100,Math.round(r.barils/grade(r).quota*100));return `<tr>
+      <td><b>${esc(r.nom)}</b></td>
+      <td>${fmt(r.barils)}</td>
+      <td><div class="prog" style="max-width:150px"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></div><div class="pct">${pc}% du quota</div></td>
+    </tr>`}).join('')}
+    </tbody></table>`:'<div class="empty">Aucun runner</div>'}
   </div>`;
   if(R.length){
     mkChart('cRunners',{type:'bar',data:{labels:sorted.map(r=>r.nom),datasets:[{data:sorted.map(r=>r.barils),backgroundColor:sorted.map((r,i)=>i===0?'#e8a020':i===1?'#a8b6c8':i===2?'#c07840':'rgba(90,160,255,.55)'),borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
@@ -1430,17 +1442,22 @@ function printFact(f){
     <div class="inv-client"><div><b>Facturé à :</b><br>${esc(f.client)}<br>${esc(c.adresse||'')}<br>${c.tel?'Tél : '+esc(c.tel):''} ${c.rib?'· RIB : '+esc(c.rib):''}</div></div>
     <table><thead><tr><th>Référence</th><th>Description</th><th style="text-align:right">Qté</th><th style="text-align:right">PU HT</th><th style="text-align:right">Total HT</th><th style="text-align:right">TVA</th><th style="text-align:right">Total TTC</th></tr></thead><tbody>
     ${lignes.map(l=>`<tr><td>${esc(l.ref||'—')}</td><td>${esc(l.desc)}</td><td style="text-align:right">${fmt(nn(l.qte))}</td><td style="text-align:right">${fmt(l.pu)} $</td><td style="text-align:right">${fmt(Math.round(l.ht))} $</td><td style="text-align:right">${(nn(l.tva)*100).toFixed(0)} %</td><td style="text-align:right">${fmt(Math.round(l.ttc))} $</td></tr>`).join('')}
-    ${f.offert?`<tr><td>OFFERT</td><td>Bidons d'essence offerts (10 / 100 achetés)</td><td style="text-align:right">${f.offert}</td><td style="text-align:right">0 $</td><td style="text-align:right">0 $</td><td style="text-align:right">—</td><td style="text-align:right">0 $</td></tr>`:''}
+    ${f.offert?`<tr><td>OFFERT</td><td>Bidons d'essence offerts</td><td style="text-align:right">${f.offert}</td><td style="text-align:right">0 $</td><td style="text-align:right">0 $</td><td style="text-align:right">—</td><td style="text-align:right">0 $</td></tr>`:''}
     </tbody></table>
     <div class="tots"><table>
       <tr><td>Total Hors Taxes</td><td style="text-align:right">${fmt(Math.round(f.ht))} $</td></tr>
-      ${f.poids?`<tr><td>Poids total</td><td style="text-align:right">${fmt(f.poids)} kg</td></tr>`:''}
+      <tr><td>Montant TVA</td><td style="text-align:right">${fmt(Math.round(f.ttc-f.ht))} $</td></tr>
+      ${f.poids?`<tr><td>Poids total de la livraison</td><td style="text-align:right">${fmt(f.poids)} kg</td></tr>`:''}
       <tr><td>Total TTC en Dollars</td><td style="text-align:right">${fmt(Math.round(f.ttc))} $</td></tr>
     </table></div>
     <div class="foot">
-      <div><b>Conditions de paiement</b><br>Paiement à réception de la facture.<br>Modes acceptés : virement bancaire, espèces.</div>
-      <div class="sig">Émis par<div class="line">${esc(f.emetteur||'')}</div></div>
+      <div><b>Conditions de paiement</b><br>Paiement à réception de la facture.<br>Modes acceptés : virement bancaire, espèces.<br><br>${f.emetteur?`Dossier suivi par : ${esc(f.emetteur)}`:''}</div>
+      <div class="sig">Pour Oil Roxwood,<br>La Direction
+        <div class="script">Stella Collins</div>
+        <div class="line">Stella Collins — Patron</div>
+      </div>
     </div>
+    <div class="legal">OIL ROXWOOD · ${SOCIETE.lieu} · Téléphone ${SOCIETE.tel} · RIB ${SOCIETE.rib} — Merci de votre confiance 🛢</div>
   </div>`;
   window.print();
 }
@@ -1542,6 +1559,11 @@ function bilanData(){
     return {nom:r.nom,rang:r.rang,run:nn(r.runs),facture:nn(r.factures),vente:nn(r.ventes),
       ca:nn(r.runs)+nn(r.factures)+nn(r.ventes),sal,prime};
   });
+  // lignes ajoutées à la main (hors tablette) — CA total calculé automatiquement
+  (S.bilanExtra||[]).forEach(x=>{
+    lignes.push({nom:x.nom||'—',rang:x.grade||'Manuel',run:nn(x.run),facture:nn(x.facture),vente:nn(x.vente),
+      ca:nn(x.run)+nn(x.facture)+nn(x.vente),sal:nn(x.salaire),prime:nn(x.prime),manuel:true});
+  });
   const caBrut=lignes.reduce((a,l)=>a+l.ca,0);
   const masseSal=lignes.reduce((a,l)=>a+l.sal,0);
   const totalPrimes=lignes.reduce((a,l)=>a+l.prime,0);
@@ -1560,7 +1582,7 @@ async function bilan(){
   $('#main').innerHTML='<div class="panel"><div class="empty">Calcul du bilan…</div></div>';
   await ensureSheets();
   const B=bilanData();
-  const actifs=B.lignes.filter(l=>l.ca>0||l.sal>0||l.prime>0).sort((a,b)=>b.ca-a.ca);
+  const actifs=B.lignes.filter(l=>!l.manuel&&(l.ca>0||l.sal>0||l.prime>0)).sort((a,b)=>b.ca-a.ca);
   $('#main').innerHTML=`
   <div class="topbar">
     <div><h2>Bilan comptable</h2><div class="sub">Calculé en direct depuis les feuilles Tablette, Budget & salaires et Compta</div></div>
@@ -1594,11 +1616,26 @@ async function bilan(){
     <div class="panel"><h3>TOP contributeurs au CA</h3><canvas id="cTopCA" height="230"></canvas></div>
   </div>
   <div class="panel" style="padding:8px 16px;overflow-x:auto">
-    <h3 style="padding:12px 0 4px">Détail par employé (${actifs.length} actifs sur ${B.lignes.length})</h3>
-    <table><thead><tr><th>Employé</th><th>Grade</th><th>Runs</th><th>Factures</th><th>Ventes</th><th>CA total</th><th>Salaire</th><th>Prime</th></tr></thead><tbody>
+    <h3 style="padding:12px 0 4px">Détail par employé (${actifs.length} actifs sur ${B.lignes.length})
+      <span style="display:flex;gap:8px">
+        <button class="btn btn-sm btn-ghost" onclick="bilanCopy()">📋 Copier pour GDoc</button>
+        <button class="btn btn-sm btn-gold" onclick="bxAdd()">＋ Ligne manuelle</button>
+      </span></h3>
+    <table><thead><tr><th>Employé</th><th>Grade</th><th>Runs</th><th>Factures</th><th>Ventes</th><th>CA total</th><th>Salaire</th><th>Prime</th><th></th></tr></thead><tbody>
     ${actifs.map(l=>`<tr><td><b>${esc(l.nom)}</b></td><td style="color:var(--muted);font-size:.8rem">${esc(l.rang)}</td>
       <td>${money(l.run)}</td><td>${money(l.facture)}</td><td>${money(l.vente)}</td>
-      <td class="gold" style="font-weight:700">${money(l.ca)}</td><td>${money(l.sal)}</td><td>${money(l.prime)}</td></tr>`).join('')}
+      <td class="gold" style="font-weight:700">${money(l.ca)}</td><td>${money(l.sal)}</td><td>${money(l.prime)}</td><td></td></tr>`).join('')}
+    ${(S.bilanExtra||[]).map((x,i)=>`<tr style="background:rgba(139,92,246,.06)">
+      <td><input class="field" style="padding:5px 8px;min-width:120px" value="${esc(x.nom)}" placeholder="Nom…" onchange="bxEdit(${i},'nom',this.value)"></td>
+      <td><input class="field" style="padding:5px 8px;max-width:130px" value="${esc(x.grade)}" placeholder="Grade…" onchange="bxEdit(${i},'grade',this.value)"></td>
+      <td><input class="field" type="number" style="padding:5px 8px;max-width:100px" value="${nn(x.run)}" onchange="bxEdit(${i},'run',+this.value||0)"></td>
+      <td><input class="field" type="number" style="padding:5px 8px;max-width:100px" value="${nn(x.facture)}" onchange="bxEdit(${i},'facture',+this.value||0)"></td>
+      <td><input class="field" type="number" style="padding:5px 8px;max-width:100px" value="${nn(x.vente)}" onchange="bxEdit(${i},'vente',+this.value||0)"></td>
+      <td class="gold" style="font-weight:700">${money(nn(x.run)+nn(x.facture)+nn(x.vente))}</td>
+      <td><input class="field" type="number" style="padding:5px 8px;max-width:100px" value="${nn(x.salaire)}" onchange="bxEdit(${i},'salaire',+this.value||0)"></td>
+      <td><input class="field" type="number" style="padding:5px 8px;max-width:100px" value="${nn(x.prime)}" onchange="bxEdit(${i},'prime',+this.value||0)"></td>
+      <td><button class="btn btn-sm btn-red" onclick="bxDel(${i})">✕</button></td>
+    </tr>`).join('')}
     </tbody></table>
     <p class="note">💡 Plafonds appliqués : employés ${fmt(caps().empSal)} $ / ${fmt(caps().empPrime)} $ · direction ${fmt(caps().patSal)} $ / ${fmt(caps().patPrime)} $ — modifiables en haut de page. Ajoute les dépenses et retraits dans Feuilles → 🏦 Compta.</p>
   </div>`;
@@ -1612,6 +1649,33 @@ async function bilan(){
   mkChart('cTopCA',{type:'bar',data:{labels:top.map(l=>l.nom),
     datasets:[{data:top.map(l=>l.ca),backgroundColor:top.map((_,i)=>i===0?'#e8a020':i===1?'#ff2d95':i===2?'#22d7ee':'rgba(90,160,255,.55)'),borderRadius:6}]},
     options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
+}
+
+/* ---- lignes manuelles du bilan ---- */
+function bxAdd(){ (S.bilanExtra=S.bilanExtra||[]).push({nom:'',grade:'',run:0,facture:0,vente:0,salaire:0,prime:0}); save(); bilan(); }
+function bxEdit(i,k,v){ S.bilanExtra[i][k]=v; save(); bilan(); }
+function bxDel(i){ if(confirm('Supprimer cette ligne manuelle ?')){ S.bilanExtra.splice(i,1); save(); bilan(); } }
+/* ---- export prêt à coller dans le GDoc de compta ---- */
+function bilanCopy(){
+  const B=bilanData();
+  const rows=B.lignes.filter(l=>l.manuel||l.ca>0||l.sal>0||l.prime>0);
+  const $n=v=>Math.round(v)+'$';
+  const L=[['Nom du salarié','Grade','RUN','FACTURE','VENTE','CA TOTAL RÉALISÉ','Salaire','Prime'].join('\t')];
+  rows.forEach(l=>L.push([l.nom,l.rang,$n(l.run),$n(l.facture),$n(l.vente),$n(l.ca),$n(l.sal),$n(l.prime)].join('\t')));
+  L.push('');
+  L.push(['CA Brut',$n(B.caBrut)].join('\t'));
+  L.push(['Dépenses déductibles',$n(B.depenses)].join('\t'));
+  L.push(['Bénéfice',$n(B.benefice)].join('\t'));
+  L.push(['Taux d\'imposition',Math.round(B.taux*100)+'%'].join('\t'));
+  L.push(['Montant des impôts',$n(B.impots)].join('\t'));
+  L.push(['Bénéfice après impôt',$n(B.apresImpot)].join('\t'));
+  L.push(['Montant total des primes',$n(B.totalPrimes)].join('\t'));
+  L.push(['Bénéfice après primes',$n(B.apresPrimes)].join('\t'));
+  L.push(['Retraits',$n(B.retraits)].join('\t'));
+  L.push(['Trésorerie nette',$n(B.net)].join('\t'));
+  navigator.clipboard.writeText(L.join('\n'))
+    .then(()=>toast('📋 Bilan copié — colle-le tel quel dans ton GDoc (les colonnes se placent toutes seules)'))
+    .catch(()=>toast('⚠️ Copie refusée par le navigateur — réessaie après un clic sur la page'));
 }
 
 /* ================== LOGS DISCORD ================== */
