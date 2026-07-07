@@ -426,10 +426,11 @@ function initSync(){
     if(session && sessionStorage.getItem('orx_auth')!=='1') checkDiscordAuth();
   });
   SYNC.cli.channel('etat-sync')
-    .on('postgres_changes',{event:'*',schema:'public',table:'oilroxwood_etat',filter:'id=eq.1'},p=>{
+    .on('postgres_changes',{event:'*',schema:'public',table:'oilroxwood_etat',filter:'id=eq.2'},p=>{
       const d=p.new&&p.new.data;
       if(!d||d._cid===SYNC.cid) return; // ignore l'écho de nos propres écritures
-      if(d._maj&&S._maj&&d._maj<S._maj) return; // jamais d'écrasement par un état plus ancien
+      const localReal=(S.runners&&S.runners.length)||(S.users&&S.users.length);
+      if(localReal&&S._maj&&(!d._maj||d._maj<S._maj)) return; // jamais d'écrasement par un état plus ancien ou non daté
       const monPass=S.passHash; // le mot de passe reste propre à chaque navigateur
       S=Object.assign(defaults(),d);
       S.passHash=monPass;
@@ -442,20 +443,28 @@ function initSync(){
 async function sbPull(){
   if(!SYNC.on) return;
   try{
-    const {data,error}=await SYNC.cli.from('oilroxwood_etat').select('data').eq('id',1).maybeSingle();
+    // emplacement v2 (id=2) : isolé des anciennes versions du code qui écrivaient sur id=1
+    let {data,error}=await SYNC.cli.from('oilroxwood_etat').select('data').eq('id',2).maybeSingle();
     if(error) throw error;
+    if(!data){
+      const old=await SYNC.cli.from('oilroxwood_etat').select('data').eq('id',1).maybeSingle();
+      if(old.data) data=old.data; // migration depuis l'ancien emplacement
+    }
     if(data&&data.data){
       const rem=data.data;
-      if(S._maj && rem._maj && rem._maj < S._maj){
-        // notre état local est plus récent (envoi perdu ?) : on le repousse au lieu de régresser
+      const localReal=(S.runners&&S.runners.length)||(S.users&&S.users.length);
+      if(localReal && S._maj && (!rem._maj || rem._maj < S._maj)){
+        // notre état local est plus récent : on le repousse au lieu de régresser
         SYNC.ready=true; await sbPushNow();
       } else {
         const monPass=S.passHash; // le mot de passe reste propre à chaque navigateur
         S=Object.assign(defaults(),rem);
         S.passHash=monPass;
         localStorage.setItem(LS_KEY,JSON.stringify(S));
+        SYNC.ready=true; await sbPushNow(); // garantit la présence horodatée sur l'emplacement v2
       }
     } else {
+      SYNC.ready=true;
       await sbPushNow(); // base vide : on y pousse l'état local (première installation)
     }
     SYNC.ready=true; syncDot(true,'Synchronisé');
@@ -470,7 +479,7 @@ async function sbPushNow(){
   try{
     const d=JSON.parse(JSON.stringify(S)); d._cid=SYNC.cid;
     delete d.passHash; // jamais synchronisé : chaque navigateur garde le sien
-    const {error}=await SYNC.cli.from('oilroxwood_etat').upsert({id:1,data:d,maj:new Date().toISOString()});
+    const {error}=await SYNC.cli.from('oilroxwood_etat').upsert({id:2,data:d,maj:new Date().toISOString()});
     if(error) throw error;
     syncDot(true,'Synchronisé · '+new Date().toLocaleTimeString('fr-FR'));
   }catch(e){ syncDot(false,'Échec d\'envoi — modifs gardées en local'); }
