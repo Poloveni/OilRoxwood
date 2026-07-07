@@ -332,7 +332,7 @@
 
 <!-- ============ LOGIN ============ -->
 <div id="login">
-  <form class="login-card" onsubmit="return doLogin(event)">
+  <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
     <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version C-2</small></p>
@@ -341,13 +341,8 @@
       Se connecter avec Discord
     </button>
     <div id="lg_denied" style="display:none;margin-top:12px;padding:10px 14px;border-radius:9px;background:rgba(255,92,92,.1);border:1px solid rgba(255,92,92,.3);color:#ffb0b0;font-size:.8rem"></div>
-    <div style="display:flex;align-items:center;gap:10px;margin:18px 0 12px;color:var(--muted);font-size:.72rem"><span style="flex:1;height:1px;background:var(--line)"></span>ou par identifiant<span style="flex:1;height:1px;background:var(--line)"></span></div>
-    <input type="text" id="lg_user" placeholder="Identifiant" autocomplete="username" style="margin-bottom:10px">
-    <input type="password" id="pw" placeholder="Mot de passe" autocomplete="current-password">
-    <p id="lg_hint" style="color:var(--muted);font-size:.75rem;margin-top:10px;display:none">Premier lancement : le premier connecté (Discord ou identifiant + mdp <b>roxwood</b>) devient le compte Direction.</p>
-    <button type="submit">Se connecter</button>
-    <div id="loginErr">Mot de passe incorrect.</div>
-  </form>
+    <p id="lg_hint" style="color:var(--muted);font-size:.75rem;margin-top:14px;display:none">Premier lancement : le premier connecté via Discord devient le compte Direction.</p>
+  </div>
 </div>
 
 <!-- ============ APP ============ -->
@@ -514,35 +509,6 @@ function applyPerms(){
 function currentUser(){
   const u=sessionStorage.getItem('orx_user');
   return (S.users||[]).find(x=>x.user.toLowerCase()===String(u||'').toLowerCase())||null;
-}
-async function doLogin(e){
-  e.preventDefault();
-  const nomI=(document.getElementById('lg_user').value||'').trim();
-  const pw=document.getElementById('pw').value;
-  if(!nomI){ document.getElementById('loginErr').textContent='Indique ton identifiant.'; document.getElementById('loginErr').style.display='block'; return false; }
-  const h=await sha(pw);
-  let u=null, ok=false;
-  if(!(S.users&&S.users.length)){
-    // premier lancement : le premier compte créé est Direction (mdp initial : roxwood)
-    if(pw==='roxwood'){
-      S.users=[{id:Date.now(),user:nomI,hash:h,role:'direction'}];
-      u=S.users[0]; ok=true; save();
-      sendLog('👤 Premier compte créé', `**${nomI}** (Direction) a initialisé l'authentification`, 0x3ddc84);
-    }
-  } else {
-    u=S.users.find(x=>x.user.toLowerCase()===nomI.toLowerCase());
-    ok=!!u && u.hash===h;
-  }
-  if(ok){
-    sessionStorage.setItem('orx_auth','1');
-    sessionStorage.setItem('orx_user',u.user);
-    enter();
-  } else {
-    document.getElementById('loginErr').textContent='Identifiant ou mot de passe incorrect.';
-    document.getElementById('loginErr').style.display='block';
-    document.getElementById('pw').value='';
-  }
-  return false;
 }
 function enter(){
   document.getElementById('login').style.display='none';
@@ -1882,13 +1848,7 @@ function params(){
     </div>
     <div>
       <div class="panel" style="margin-bottom:18px">
-        <h3>🔐 Mon compte${(()=>{const c=currentUser();return c?` — ${esc(c.user)} (${ROLES[c.role]||c.role})`:''})()}</h3>
-        <div class="f-row"><input class="field" id="p_pw1" type="password" placeholder="Nouveau mot de passe"></div>
-        <div class="f-row"><input class="field" id="p_pw2" type="password" placeholder="Confirmer"></div>
-        <button class="btn btn-ghost" style="width:100%" onclick="changePw()">Changer mon mot de passe</button>
-      </div>
-      <div class="panel" style="margin-bottom:18px">
-        <h3>👤 Comptes d'accès (${(S.users||[]).length})</h3>
+        <h3>👤 Comptes d'accès (${(S.users||[]).length})${(()=>{const c=currentUser();return c?` — connecté : ${esc(c.user)}`:''})()}</h3>
         ${(S.pending&&S.pending.length)?`<div class="warn" style="border-color:rgba(232,160,32,.35);background:rgba(232,160,32,.07);color:var(--accent-2)">
           🔔 <b>${S.pending.length} demande(s) d'accès en attente</b>
           ${S.pending.map(p=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px">
@@ -1905,17 +1865,15 @@ function params(){
           <td><select class="field" style="padding:5px 8px;max-width:160px" onchange="setUserRole(${u.id},this.value)">
             ${Object.entries(ROLES).map(([k,l])=>`<option value="${k}" ${u.role===k?'selected':''}>${l}</option>`).join('')}</select></td>
           <td style="text-align:right;white-space:nowrap">
-            <button class="btn btn-sm btn-ghost" onclick="resetUserPw(${u.id})" title="Réinitialiser le mot de passe">🔑</button>
             <button class="btn btn-sm btn-red" onclick="delUser(${u.id})">✕</button></td>
         </tr>`).join('')}
         </tbody></table>
-        <div class="grid g3" style="gap:8px">
-          <input class="field" id="nu_user" placeholder="Identifiant">
-          <input class="field" id="nu_pw" type="password" placeholder="Mot de passe">
+        <div class="grid g2" style="gap:8px">
+          <input class="field" id="nu_user" placeholder="Pseudo Discord exact">
           <select class="field" id="nu_role">${Object.entries(ROLES).map(([k,l])=>`<option value="${k}" ${k==='membre'?'selected':''}>${l}</option>`).join('')}</select>
         </div>
         <button class="btn btn-gold" style="width:100%;margin-top:10px" onclick="addUser()">＋ Créer le compte</button>
-        <p style="color:var(--muted);font-size:.76rem;margin-top:10px">Pour la connexion Discord : crée le compte avec l'identifiant = <b>pseudo Discord exact</b> de la personne (le mot de passe sert de secours). À sa première connexion Discord, le compte est lié définitivement à son ID. Restrictions par rôle à venir.</p>
+        <p style="color:var(--muted);font-size:.76rem;margin-top:10px">Connexion uniquement via Discord. Crée le compte avec le <b>pseudo Discord exact</b> de la personne — ou plus simple : laisse-la se connecter, sa demande apparaîtra ici et tu n'auras qu'à cliquer ✓. À la première connexion, le compte est lié définitivement à son ID Discord.</p>
       </div>
       <div class="panel" style="margin-bottom:18px">
         <h3>📊 Publication sur le site</h3>
@@ -1972,36 +1930,19 @@ function testWebhook(){
   sendLog('🧪 Test de connexion', 'Le dashboard Oil Roxwood est bien relié aux logs du compte entreprise ✅', 0x3ddc84);
   toast('📡 Message de test envoyé — vérifie le salon Discord');
 }
-async function changePw(){
-  const cu=currentUser();
-  if(!cu) return toast('⚠️ Session inconnue — reconnecte-toi');
-  const a=$('#p_pw1').value, b=$('#p_pw2').value;
-  if(a.length<4) return toast('⚠️ 4 caractères minimum');
-  if(a!==b) return toast('⚠️ Les mots de passe ne correspondent pas');
-  cu.hash=await sha(a); save(); toast('🔐 Mot de passe modifié pour '+cu.user);
-  $('#p_pw1').value=$('#p_pw2').value='';
-}
 async function addUser(){
-  const u=$('#nu_user').value.trim(), p=$('#nu_pw').value, r=$('#nu_role').value;
-  if(u.length<2) return toast('⚠️ Identifiant trop court');
-  if(p.length<4) return toast('⚠️ Mot de passe : 4 caractères minimum');
-  if(S.users.find(x=>x.user.toLowerCase()===u.toLowerCase())) return toast('⚠️ Cet identifiant existe déjà');
-  S.users.push({id:Date.now(),user:u,hash:await sha(p),role:r});
-  save(); params(); toast('✅ Compte '+u+' créé ('+ROLES[r]+')');
-  sendLog('👤 Nouveau compte dashboard', `**${u}** (${ROLES[r]}) créé par ${currentUser()?currentUser().user:'?'}`, 0x3ddc84);
+  const u=$('#nu_user').value.trim(), r=$('#nu_role').value;
+  if(u.length<2) return toast('⚠️ Pseudo trop court');
+  if(S.users.find(x=>x.user.toLowerCase()===u.toLowerCase())) return toast('⚠️ Ce pseudo existe déjà');
+  S.users.push({id:Date.now(),user:u,role:r});
+  save(); params(); toast('✅ Compte '+u+' créé ('+ROLES[r]+') — connexion via Discord');
+  sendLog('👤 Nouveau compte espace membre', `**${u}** (${ROLES[r]}) créé par ${currentUser()?currentUser().user:'?'}`, 0x3ddc84);
 }
 function setUserRole(id,r){
   const u=S.users.find(x=>x.id===id); if(!u) return;
   const dirs=S.users.filter(x=>x.role==='direction');
   if(u.role==='direction'&&r!=='direction'&&dirs.length<=1){ params(); return toast('⚠️ Il faut garder au moins un compte Direction'); }
   u.role=r; save(); toast('👤 '+u.user+' → '+ROLES[r]);
-}
-async function resetUserPw(id){
-  const u=S.users.find(x=>x.id===id); if(!u) return;
-  const p=prompt('Nouveau mot de passe pour '+u.user+' :');
-  if(!p) return;
-  if(p.length<4) return toast('⚠️ 4 caractères minimum');
-  u.hash=await sha(p); save(); toast('🔑 Mot de passe réinitialisé pour '+u.user);
 }
 async function approvePending(id){
   const p=(S.pending||[]).find(x=>x.id===id); if(!p) return;
