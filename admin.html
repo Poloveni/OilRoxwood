@@ -670,7 +670,7 @@ function caps(){
   if(!S.settings.caps) S.settings.caps={empSal:85000,empPrime:42500,patSal:90000,patPrime:45000};
   return S.settings.caps;
 }
-const PRIMES_OFF=true; // ⏸️ primes désactivées temporairement — repasser à false pour tout réactiver
+const PRIMES_OFF=false; // ▶️ primes actives (passer à true pour tout suspendre)
 function primeProj(r){
   if(PRIMES_OFF) return 0;
   if(!quotaOK(r)) return 0;
@@ -1956,7 +1956,10 @@ function saveParams(){
   S.settings.limite=+$('#p_lim').value||24000;
   S.settings.semaine=+$('#p_sem').value||1;
   S.settings.top=[+$('#p_t1').value||15000,+$('#p_t2').value||10000,+$('#p_t3').value||5000];
-  save(); toast('✅ Paramètres enregistrés');
+  save();
+  sbPushNow(); // envoi immédiat vers la base partagée, sans différé
+  params();    // réaffiche depuis l'état réel : ce que tu vois = ce qui est enregistré
+  toast(`✅ Paramètres enregistrés — TOP 3 : ${fmt(S.settings.top[0])} / ${fmt(S.settings.top[1])} / ${fmt(S.settings.top[2])} $`);
 }
 function saveWebhook(){
   S.settings.webhook=$('#p_wh').value.trim();
