@@ -172,6 +172,7 @@
   @media print{
     body>*{display:none!important}
     #printZone{display:block!important;position:absolute;top:0;left:0;width:100%;background:#fff;color:#111}
+    #printZone *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   }
   .inv{font-family:'Segoe UI',system-ui,sans-serif;max-width:760px;margin:0 auto;padding:40px;color:#111}
   .inv-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #e8a020;padding-bottom:18px}
@@ -1470,8 +1471,13 @@ function filtreBase(q){
 }
 /* ---- impression ---- */
 function printFact(f){
+  console.log('[OilRoxwood] impression facture', JSON.parse(JSON.stringify(f)));
   const c=cli(f.client)||{adresse:'',tel:'',rib:''};
-  const lignes=f.lignes.filter(l=>nn(l.qte)>0||l.ht>0);
+  let lignes=(f.lignes||[]).filter(l=>nn(l.qte)>0||nn(l.ht)>0);
+  if(!lignes.length) lignes=(f.lignes||[]); // ne jamais imprimer un tableau vide si des lignes existent
+  const totHT=nn(f.ht)||lignes.reduce((a,l)=>a+nn(l.ht),0);
+  const totTTC=nn(f.ttc)||lignes.reduce((a,l)=>a+nn(l.ttc),0);
+  const poids=nn(f.poids)||lignes.reduce((a,l)=>a+nn(l.qte),0)*2;
   document.getElementById('printZone').innerHTML=`<div class="inv">
     <div class="inv-head">
       <div style="display:flex;gap:16px;align-items:center">
@@ -1487,10 +1493,10 @@ function printFact(f){
     ${f.offert?`<tr><td>OFFERT</td><td>Bidons d'essence offerts</td><td style="text-align:right">${f.offert}</td><td style="text-align:right">0 $</td><td style="text-align:right">0 $</td><td style="text-align:right">—</td><td style="text-align:right">0 $</td></tr>`:''}
     </tbody></table>
     <div class="tots"><table>
-      <tr><td>Total Hors Taxes</td><td style="text-align:right">${fmt(Math.round(f.ht))} $</td></tr>
-      <tr><td>Montant TVA</td><td style="text-align:right">${fmt(Math.round(f.ttc-f.ht))} $</td></tr>
-      ${f.poids?`<tr><td>Poids total de la livraison</td><td style="text-align:right">${fmt(f.poids)} kg</td></tr>`:''}
-      <tr><td>Total TTC en Dollars</td><td style="text-align:right">${fmt(Math.round(f.ttc))} $</td></tr>
+      <tr><td>Total Hors Taxes</td><td style="text-align:right">${fmt(Math.round(totHT))} $</td></tr>
+      <tr><td>Montant TVA</td><td style="text-align:right">${fmt(Math.round(totTTC-totHT))} $</td></tr>
+      ${poids?`<tr><td>Poids total de la livraison</td><td style="text-align:right">${fmt(poids)} kg</td></tr>`:''}
+      <tr><td>Total TTC en Dollars</td><td style="text-align:right">${fmt(Math.round(totTTC))} $</td></tr>
     </table></div>
     <div class="foot">
       <div><b>Conditions de paiement</b><br>Paiement à réception de la facture.<br>Modes acceptés : virement bancaire, espèces.<br><br>${f.emetteur?`Dossier suivi par : ${esc(f.emetteur)}`:''}</div>
