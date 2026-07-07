@@ -491,11 +491,13 @@ const PERMS={
   membre:   ['effectif'] // lecture seule : uniquement l'effectif
 };
 function isMembre(){
+  if(sessionStorage.getItem('orx_user')==='SECOURS') return false; // clé de secours = Direction
   if(!S.users||!S.users.length) return false; // phase d'installation
   const cu=currentUser();
   return !cu || cu.role==='membre';
 }
 function allowedViews(){
+  if(sessionStorage.getItem('orx_user')==='SECOURS') return PERMS.direction; // clé de secours
   if(!S.users||!S.users.length) return PERMS.direction; // phase d'installation : tout ouvert
   const cu=currentUser();
   return cu ? (PERMS[cu.role]||PERMS.membre) : PERMS.membre; // session sans compte : minimum
@@ -531,6 +533,23 @@ function logout(){
   sessionStorage.removeItem('orx_auth'); sessionStorage.removeItem('orx_user');
   const fin=()=>location.replace(location.pathname); // retire aussi les tokens OAuth de l'URL
   if(SYNC.cli){ SYNC.cli.auth.signOut().then(fin).catch(fin); } else fin();
+}
+
+/* ---- Accès de secours (si Discord/OAuth en panne) ----
+   Ouvre admin.html#secours-CODE — seul le hash du code est stocké ici. */
+const RESCUE_HASH='0ecf807a5c0e88accd8b32385e48c314dccee42b147e5f055d88ae5f23b9cb5a';
+async function checkRescue(){
+  const m=location.hash.match(/^#secours-(.+)$/);
+  if(!m) return;
+  const h=await sha(m[1]);
+  history.replaceState(null,'',location.pathname); // retire le code de l'URL
+  if(h===RESCUE_HASH){
+    sessionStorage.setItem('orx_auth','1');
+    sessionStorage.setItem('orx_user','SECOURS');
+    enter();
+    toast('🛟 Accès de secours activé (Direction)');
+    sendLog('🛟 Accès de secours utilisé','La clé de secours vient de servir — pense à vérifier que c\'est normal',0xff5c5c);
+  }
 }
 
 /* ---- Connexion via Discord (OAuth Supabase) ---- */
@@ -2101,6 +2120,7 @@ new MutationObserver(()=>animateCounters()).observe(document.getElementById('mai
   const hint=document.getElementById('lg_hint');
   const majHint=()=>{ if(hint) hint.style.display=(S.users&&S.users.length)?'none':'block'; };
   majHint();
+  checkRescue();
   initSync();
   sbPull().then(()=>{ majHint(); checkDiscordAuth(); });
 })();
