@@ -1758,17 +1758,7 @@ function bilanCopy(){
   const $n=v=>String(Math.round(v)); // nombres bruts, sans « $ » : le GDoc peut calculer dessus
   const L=[['Nom du salarié','Grade','RUN','FACTURE','VENTE','CA TOTAL RÉALISÉ','Salaire','Prime'].join('\t')];
   rows.forEach(l=>L.push([l.nom,l.rang,$n(l.run),$n(l.facture),$n(l.vente),$n(l.ca),$n(l.sal),$n(l.prime)].join('\t')));
-  L.push('');
-  L.push(['CA Brut',$n(B.caBrut)].join('\t'));
-  L.push(['Dépenses déductibles',$n(B.depenses)].join('\t'));
-  L.push(['Bénéfice',$n(B.benefice)].join('\t'));
-  L.push(['Taux d\'imposition',String(B.taux)].join('\t'));
-  L.push(['Montant des impôts',$n(B.impots)].join('\t'));
-  L.push(['Bénéfice après impôt',$n(B.apresImpot)].join('\t'));
-  L.push(['Montant total des primes',$n(B.totalPrimes)].join('\t'));
-  L.push(['Bénéfice après primes',$n(B.apresPrimes)].join('\t'));
-  L.push(['Retraits',$n(B.retraits)].join('\t'));
-  L.push(['Trésorerie nette',$n(B.net)].join('\t'));
+  // uniquement le détail par employé : le récapitulatif (CA, impôts…) est calculé par le GDoc lui-même
   navigator.clipboard.writeText(L.join('\n'))
     .then(()=>toast('📋 Bilan copié — colle-le tel quel dans ton GDoc (les colonnes se placent toutes seules)'))
     .catch(()=>toast('⚠️ Copie refusée par le navigateur — réessaie après un clic sur la page'));
