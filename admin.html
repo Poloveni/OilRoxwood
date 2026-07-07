@@ -1950,12 +1950,13 @@ function params(){
   </div>`;
 }
 function saveParams(){
-  S.settings.prix=+$('#p_prix').value||5;
-  S.settings.prixRecrue=+$('#p_rec').value||4000;
-  S.settings.prixBidonCom=+$('#p_bid').value||45;
-  S.settings.limite=+$('#p_lim').value||24000;
-  S.settings.semaine=+$('#p_sem').value||1;
-  S.settings.top=[+$('#p_t1').value||15000,+$('#p_t2').value||10000,+$('#p_t3').value||5000];
+  const numOr=(v,d)=>{ const n=parseFloat(v); return isNaN(n)?d:n; }; // accepte 0 comme valeur valide
+  S.settings.prix=numOr($('#p_prix').value,5);
+  S.settings.prixRecrue=numOr($('#p_rec').value,4000);
+  S.settings.prixBidonCom=numOr($('#p_bid').value,45);
+  S.settings.limite=numOr($('#p_lim').value,24000);
+  S.settings.semaine=+$('#p_sem').value||isoWeek();
+  S.settings.top=[numOr($('#p_t1').value,15000),numOr($('#p_t2').value,10000),numOr($('#p_t3').value,5000)];
   save();
   sbPushNow(); // envoi immédiat vers la base partagée, sans différé
   params();    // réaffiche depuis l'état réel : ce que tu vois = ce qui est enregistré
