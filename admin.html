@@ -1581,7 +1581,7 @@ async function relances(){
   <div class="topbar">
     <div><h2>Relances commerciales</h2><div class="sub">${rows.length} client(s) à suivre · ${enCours} relance(s) en cours · mise à jour automatique à chaque facture</div></div>
     <div class="tabs" style="margin:0">
-      ${[30,60,90].map(j=>`<button class="tab ${REL_J===j?'on':''}" onclick="REL_J=${j};relances()">+${j} jours</button>`).join('')}
+      ${[0,30,60,90].map(j=>`<button class="tab ${REL_J===j?'on':''}" onclick="REL_J=${j};relances()">${j===0?'Tous':'+'+j+' jours'}</button>`).join('')}
     </div>
   </div>
   <div style="display:flex;gap:14px;margin-bottom:14px;font-size:.8rem;color:var(--muted)">
