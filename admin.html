@@ -1128,7 +1128,7 @@ function syncRunners(silent){
   const present=new Set();
   S.sheets.tablette.forEach(row=>{
     const nom=String(row.nom||'').trim();
-    if(!nom||norm(nom).startsWith('nom')||/^[\d.,\s]+$/.test(nom)) return; // ignore en-têtes et lignes parasites
+    if(!nom||norm(nom).startsWith('nom')||norm(nom).startsWith('total')||/^[\d.,\s]+$/.test(nom)) return; // ignore en-têtes, totaux et lignes parasites
     const known=MAP[norm(row.rang)];
     const g=known!==undefined?known:0; // hors grades raffineur : quota Intérimaire
     const rang=String(row.rang||'').trim();
@@ -1186,7 +1186,7 @@ function applyPaste(replace){
   const pn=s=>+String(s||'').replace(/[^\d,.-]/g,'').replace(',','.')||0;
   const rows=$('#pasteZone').value.split(/\r?\n/)
     .map(l=>l.split('\t').map(x=>x.trim()))
-    .filter(c=>c[0]&&!/^nom/i.test(c[0])&&!/^[\d.,\s]+$/.test(c[0]))
+    .filter(c=>c[0]&&!/^nom/i.test(c[0])&&!/^total/i.test(c[0])&&!/^[\d.,\s]+$/.test(c[0]))
     .map(c=>({
       nom:c[0], rang:c[1]||'',
       factures:pn(c[2]), runs:pn(c[3]), ventes:pn(c[4]),
@@ -1642,7 +1642,7 @@ function bilanData(){
   const rangTop=new Map(byB.map((r,i)=>[r.id,i]));
   const low=s=>String(s||'').toLowerCase().trim();
   const isPatron=r=>/patron/i.test(r.rang||'');
-  const lignes=T.filter(r=>r.nom&&!low(r.nom).startsWith('nom')).map(r=>{
+  const lignes=T.filter(r=>r.nom&&!low(r.nom).startsWith('nom')&&!low(r.nom).startsWith('total')).map(r=>{
     const C=caps();
     // tout est automatique : prod. bidons, recrues, salaire fixe, prime hebdo + TOP 3
     const run=S.runners.find(x=>x.nom.toLowerCase()===low(r.nom));
