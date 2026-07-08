@@ -1499,7 +1499,17 @@ function fNew(){
         <div class="f-row"><label class="f-lbl">N°</label><input class="field" type="number" value="${FD.num}" onchange="FD.num=+this.value||1;fNew()"></div>
         <div class="f-row"><label class="f-lbl">Date</label><input class="field" type="date" value="${FD.date}" onchange="FD.date=this.value"></div>
       </div>
-      <div class="f-row"><label class="f-lbl">Émetteur (employé)</label><input class="field" value="${esc(FD.emetteur)}" placeholder="Ex : Stella Collins" onchange="FD.emetteur=this.value"></div>
+      <div class="f-row"><label class="f-lbl">Émetteur(s) — direction & commerciaux</label>
+        <div class="combo">
+          <button type="button" id="emBtn" class="field" style="text-align:left;cursor:pointer" onclick="document.getElementById('emList').classList.toggle('open')">${esc(FD.emetteur||'Sélectionner…')} ▾</button>
+          <div class="combo-list" id="emList">
+            ${S.runners.filter(r=>r.poste).sort((a,b)=>a.nom.localeCompare(b.nom)).map(p=>{
+              const sel=(FD.emetteur||'').split(',').map(s=>s.trim());
+              return `<label class="combo-item" style="cursor:pointer"><span>${esc(p.nom)} <small style="color:var(--muted)">· ${esc(p.poste)}</small></span><input type="checkbox" style="accent-color:var(--accent)" ${sel.includes(p.nom)?'checked':''} onchange="emPick('${esc(p.nom)}',this.checked)"></label>`;
+            }).join('')||'<div class="combo-item"><small>Aucun poste de direction dans l\'effectif</small></div>'}
+          </div>
+        </div>
+      </div>
     </div>
     <div class="panel" style="grid-column:span 2"><h3>Client</h3>
       <div class="f-row"><label class="f-lbl">Nom (base de ${S.fact.clients.length} clients)</label>
@@ -1542,6 +1552,16 @@ function updL(i,k,v){
   if(k==='ref'){ const l=FD.lignes[i]; l.ref=v==='_libre'?'':v; delete l.desc; delete l.pu; if(v==='Prestation Evenementiel')l.tva=0; }
   else FD.lignes[i][k]=v;
   fNew();
+}
+/* ---- sélection multiple des émetteurs ---- */
+function emPick(nom,on){
+  const sel=(FD.emetteur||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const i=sel.indexOf(nom);
+  if(on&&i<0) sel.push(nom);
+  if(!on&&i>=0) sel.splice(i,1);
+  FD.emetteur=sel.join(', ');
+  const b=document.getElementById('emBtn');
+  if(b) b.textContent=(FD.emetteur||'Sélectionner…')+' ▾'; // maj sans re-render : la liste reste ouverte
 }
 /* ---- autocomplete clients ---- */
 let cliIdx=-1, cliMatches=[];
