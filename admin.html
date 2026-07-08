@@ -692,14 +692,17 @@ function weekRange(){
   return `du ${f(mon)} au ${f(sun)}`;
 }
 const DIR_GRADE={nom:'Direction',quota:0,mult:2.5,montee:null,cls:'bg3'}; // postes : quota 0, ×2.5, pas de montée
-function grade(r){ return r.poste?DIR_GRADE:GRADES[r.grade]; }
+const WM_GRADE={nom:'Web Master',quota:0,mult:2,montee:null,cls:'bg2'};   // sous-direction : quota 0, ×2 + prime fixe
+function estWebmaster(r){ return !!(r.poste&&/web\s*master/i.test(r.poste)); }
+function grade(r){ return estWebmaster(r)?WM_GRADE:(r.poste?DIR_GRADE:GRADES[r.grade]); }
 function gTitle(r){ return r.poste||grade(r).nom; } // rang réel (Patron, Commercial…) ou grade raffineur
 function gCls(r){ return r.poste?(/patron/i.test(r.poste)?'bg3':'bg2'):grade(r).cls; }
 function quotaOK(r){ return r.barils >= grade(r).quota; }
 function salairesPoste(){
   if(!S.settings.salPoste) S.settings.salPoste={
     'Patron':70000,'Co Patron':70000,'Comptable':50000,'RH':0,
-    'Responsable Commercial':0,'Commercial':0,'Graphiste':0};
+    'Responsable Commercial':0,'Commercial':0,'Graphiste':0,'Web Master':0};
+  if(S.settings.salPoste['Web Master']===undefined) S.settings.salPoste['Web Master']=0; // migration
   return S.settings.salPoste;
 }
 function salFixeDe(rang){
@@ -716,7 +719,8 @@ function primeProj(r){
   if(PRIMES_OFF) return 0;
   if(!quotaOK(r)) return 0;
   const cap = r.poste && /patron/i.test(r.poste) ? caps().patPrime : caps().empPrime;
-  return Math.min(r.barils * grade(r).mult, cap); // barils × multiplicateur du grade, plafonné
+  const fixe = estWebmaster(r) ? (S.settings.primeWebmaster??0) : 0; // prime fixe Web Master (Paramètres)
+  return Math.min(r.barils * grade(r).mult + fixe, cap);
 }
 function seuilMontee(r){ const next=GRADES[r.grade+1]; return next?next.montee:null; } // seuil = montée du grade VISÉ
 function eligible(r){ const s=seuilMontee(r); return !r.poste && s!==null && r.barils >= s; } // montée hebdo, jamais pour la direction
@@ -2255,6 +2259,7 @@ async function params(){
         <div class="f-row"><label class="f-lbl">Prix du pétrole ($/u)</label><input class="field" id="p_prix" type="number" value="${S.settings.prix}"></div>
         <div class="f-row"><label class="f-lbl">Salaire par recrue ($)</label><input class="field" id="p_rec" type="number" value="${prixRecrue()}"></div>
         <div class="f-row"><label class="f-lbl">$ par bidon produit (commerciaux)</label><input class="field" id="p_bid" type="number" value="${S.settings.prixBidonCom??45}"></div>
+        <div class="f-row"><label class="f-lbl">Prime fixe Web Master ($)</label><input class="field" id="p_wm" type="number" value="${S.settings.primeWebmaster??0}"></div>
         <div class="f-row"><label class="f-lbl">Limite pétroles</label><input class="field" id="p_lim" type="number" value="${S.settings.limite}"></div>
         <div class="f-row"><label class="f-lbl">N° de semaine</label><input class="field" id="p_sem" type="number" value="${S.settings.semaine}"></div>
       </div>
@@ -2341,6 +2346,7 @@ async function params(){
     <table><thead><tr><th>Grade</th><th>Quota hebdo</th><th>Multiplicateur prime</th><th>Montée de grade</th></tr></thead><tbody>
     ${GRADES.map((g,i)=>`<tr><td><span class="badge ${g.cls}">${g.nom}</span></td><td>${fmt(g.quota)} barils</td><td>×${g.mult}</td><td>${i>0?fmt(g.montee)+' barils/sem. pour y accéder':'grade d\'entrée'}</td></tr>`).join('')}
     <tr><td><span class="badge bg3">Direction &amp; postes</span> <small style="color:var(--muted)">Patron, RH, commerciaux…</small></td><td>0 barils (aucun quota)</td><td>×${DIR_GRADE.mult}</td><td>—</td></tr>
+    <tr><td><span class="badge bg2">Web Master</span> <small style="color:var(--muted)">sous-direction</small></td><td>0 barils (aucun quota)</td><td>×${WM_GRADE.mult} + prime fixe (Paramètres)</td><td>—</td></tr>
     </tbody></table>
   </div>`;
 }
@@ -2349,6 +2355,7 @@ function saveParams(){
   S.settings.prix=numOr($('#p_prix').value,5);
   S.settings.prixRecrue=numOr($('#p_rec').value,4000);
   S.settings.prixBidonCom=numOr($('#p_bid').value,45);
+  S.settings.primeWebmaster=numOr($('#p_wm').value,0);
   S.settings.limite=numOr($('#p_lim').value,24000);
   S.settings.semaine=+$('#p_sem').value||isoWeek();
   S.settings.top=[numOr($('#p_t1').value,15000),numOr($('#p_t2').value,10000),numOr($('#p_t3').value,5000)];
