@@ -18,6 +18,10 @@ git add -A
 git commit -m "%MSG%"
 
 echo.
+echo === Recuperation des commits des robots (sauvegardes, logs) ===
+git pull --rebase origin main
+
+echo.
 echo === Push vers GitHub ===
 git push
 
