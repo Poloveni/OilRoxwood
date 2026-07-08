@@ -1004,7 +1004,10 @@ async function semaine(){
   $('#main').innerHTML = `
   <div class="topbar">
     <div><h2>Semaine ${S.settings.semaine} — Primes</h2><div class="sub">${weekRange()} · prime = barils × multiplicateur (plafond ${fmt(caps().empPrime)} $ · dir. ${fmt(caps().patPrime)} $)${(()=>{const n=commerciauxActifs().length,b=bidonsVendusSem();return n?` · 🛢 commerciaux : ${fmt(b)} bidons ÷ ${n} actif(s) = ${fmt(Math.round(b/n))} × ${S.settings.prixBidonCom??45} $ = ${money(Math.round(b/n)*(S.settings.prixBidonCom??45))} chacun`:''})()}</div></div>
-    <button class="btn btn-gold" onclick="closeWeek()">🗓️ Clôturer la semaine (lundi)</button>
+    <div style="display:flex;gap:10px">
+      ${S.closeUndo?`<button class="btn btn-ghost" onclick="undoClose()" title="Annuler la dernière clôture">↩ Annuler la clôture</button>`:''}
+      <button class="btn btn-gold" onclick="closeWeek()">🗓️ Clôturer la semaine (lundi)</button>
+    </div>
   </div>
   <div class="panel" style="margin-bottom:18px;padding:8px 16px">
     <input class="field" id="semSearchInput" style="max-width:260px;margin:8px 0 4px" placeholder="🔍 Rechercher un employé…" value="${esc(semSearch)}" oninput="semSearch=this.value;semaine()">
@@ -1047,7 +1050,10 @@ async function semaine(){
 }
 function closeWeek(){
   if(!S.runners.length) return toast('Aucun runner à clôturer');
-  if(!confirm(`Clôturer la semaine ${S.settings.semaine} ?\n\n• Les primes sont figées (quota + TOP 3)\n• Les montées de grade éligibles sont appliquées\n• La feuille Éligibilité est regénérée (quotas réussis + direction)\n• Les compteurs hebdo repartent à zéro`)) return;
+  if(!confirm(`Clôturer la semaine ${S.settings.semaine} ?\n\n• Les primes sont figées (quota + TOP 3)\n• Les montées de grade éligibles sont appliquées\n• La feuille Éligibilité est regénérée (quotas réussis + direction)\n• Les compteurs hebdo repartent à zéro\n\n↩ Tu pourras ANNULER cette clôture juste après en cas d'oubli.`)) return;
+  // instantané complet AVANT clôture — permet d'annuler intégralement
+  S.closeUndo={ date:new Date().toISOString(), semaine:S.settings.semaine,
+    snap:JSON.stringify({runners:S.runners,weeks:S.weeks,settings:S.settings,sheets:S.sheets}) };
   const sorted=[...S.runners].sort((a,b)=>b.barils-a.barils);
   let primes=0, promus=[];
   sorted.forEach((r,i)=>{
@@ -1071,7 +1077,17 @@ function closeWeek(){
   S.runners.forEach(r=>{ r.barils=0; r.runs=[]; r.recrues=0; r.lastSync=0; });
   S.settings.semaine=isoWeek();
   save(); rerender();
-  toast(`🗓️ Semaine clôturée — ${money(primes)} de primes${promus.length?` · promus : ${promus.join(', ')}`:''} · éligibilité regénérée (${eligN} noms)`);
+  toast(`🗓️ Semaine clôturée — ${money(primes)} de primes${promus.length?` · promus : ${promus.join(', ')}`:''} · éligibilité regénérée (${eligN} noms). Annulation possible.`);
+}
+function undoClose(){
+  if(!S.closeUndo) return toast('Aucune clôture à annuler');
+  if(!confirm(`Annuler la clôture de la semaine ${S.closeUndo.semaine} ?\n\nTout revient exactement à l'état d'avant : barils, primes, grades, éligibilité, semaine.`)) return;
+  const snap=JSON.parse(S.closeUndo.snap);
+  S.runners=snap.runners; S.weeks=snap.weeks; S.settings=snap.settings; S.sheets=snap.sheets;
+  delete S.closeUndo;
+  save(); sbPushNow(); rerender();
+  toast('↩ Clôture annulée — tout est revenu à l\'état précédent');
+  sendLog('↩ Clôture annulée', `La clôture de la semaine ${snap.settings.semaine} a été annulée par ${currentUser()?currentUser().user:'?'}`, 0xff5c5c);
 }
 
 /* ================== PUBLICATION DES STATS PUBLIQUES ================== */
@@ -1956,7 +1972,13 @@ async function cloture(){
       <div style="color:var(--muted);font-size:.88rem">Tout est prêt pour la nouvelle semaine. Bon jeu ! 🛢</div>
       <button class="btn btn-ghost" style="margin-top:14px" onclick="clSet(0)">Nouvelle clôture</button>
     </div>`:''}
-  </div>`;
+  </div>
+  ${S.closeUndo?`<div class="panel" style="max-width:720px;margin-top:16px;border-color:rgba(255,92,92,.3)">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div><b>↩ Oubli ou erreur ?</b><div style="color:var(--muted);font-size:.83rem">Dernière clôture : semaine ${S.closeUndo.semaine} · ${new Date(S.closeUndo.date).toLocaleString('fr-FR')}. Tu peux tout restaurer à l'identique.</div></div>
+      <button class="btn btn-red" onclick="undoClose()">↩ Annuler la dernière clôture</button>
+    </div>
+  </div>`:''}`;
 }
 
 /* ================== ACHATS DE FER (Direction) ================== */
