@@ -63,7 +63,7 @@
   .nav-item.active{background:linear-gradient(135deg,rgba(232,160,32,.18),rgba(232,160,32,.06));color:var(--accent)}
   aside .spacer{flex:1}
   #logout{color:var(--red)}
-  main{margin-left:230px;padding:34px 38px;max-width:1250px}
+  main{margin-left:230px;padding:34px 38px;max-width:1600px}
   .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:14px}
   .topbar h2{font-size:1.5rem;letter-spacing:-.3px}
   .topbar .sub{color:var(--muted);font-size:.85rem;margin-top:2px}
@@ -1155,6 +1155,7 @@ const SHEETS_DEF = {
       const col=j<=2?'var(--green)':j<=6?'var(--accent)':'var(--red)';
       return `<span style="color:${col};font-weight:700">${j} j sans service</span>`;
     }}],
+    lite:['idU','nom','grade','dernierService','_actif'],
     tot:[], nouveau:{nom:'',grade:'Intérimaire',tel:'',rib:'',idU:'',arrivee:'',discord:'',avert:'',contrat:false,recrut:'',dernierService:'',flagOut:false}},
   blacklist:{ico:'⛔',label:'Blacklist',cols:[
     {k:'nom',l:'Nom',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
@@ -1176,20 +1177,21 @@ function sheetAllowed(k){
   const deny=cu&&SHEET_DENY[cu.role];
   return !deny||!deny.includes(k);
 }
-let curSheet='tablette', sheetSearch='';
+let curSheet='tablette', sheetSearch='', sheetFull=false;
 async function feuilles(){
   if(!S.sheets) $('#main').innerHTML='<div class="panel"><div class="empty">Chargement des feuilles…</div></div>';
   await ensureSheets();
   await ensureFact(); // base clients pour la colonne Client des ventes
   if(!sheetAllowed(curSheet)) curSheet=Object.keys(SHEETS_DEF).find(sheetAllowed)||'tablette';
   const def=SHEETS_DEF[curSheet], rows=S.sheets[curSheet];
+  const cols=(def.lite&&!sheetFull)?def.cols.filter(c=>def.lite.includes(c.k)):def.cols;
   const q=sheetSearch.toLowerCase();
   const idx=rows.map((r,i)=>i).filter(i=>!q||Object.values(rows[i]).join(' ').toLowerCase().includes(q));
   const dragOk=def.drag&&!q; // glisser-déposer désactivé pendant une recherche
-  const head=(dragOk?'<th style="width:26px"></th>':'')+def.cols.map(c=>`<th ${c.t==='num'||c.t==='calc'?'style="text-align:right"':''}>${c.l}</th>`).join('');
+  const head=(dragOk?'<th style="width:26px"></th>':'')+cols.map(c=>`<th ${c.t==='num'||c.t==='calc'?'style="text-align:right"':''}>${c.l}</th>`).join('');
   const body=idx.map(i=>{
     const r=rows[i];
-    const tds=def.cols.map(c=>{
+    const tds=cols.map(c=>{
       if(c.t==='calc') return `<td class="calc">${fmt(Math.round(c.f(r)))}</td>`;
       if(c.t==='bool') return `<td style="text-align:center"><input type="checkbox" ${r[c.k]?'checked':''} onchange="cellEdit(${i},'${c.k}',this.checked)"></td>`;
       if(c.t==='num')  return `<td><input type="number" value="${nn(r[c.k])}" onchange="cellEdit(${i},'${c.k}',+this.value||0)"></td>`;
@@ -1202,7 +1204,7 @@ async function feuilles(){
     const handle=dragOk?`<td draggable="true" style="cursor:grab;color:var(--muted);text-align:center" title="Glisser pour déplacer la ligne" ondragstart="dragI=${i}">⠿</td>`:'';
     return `<tr ${dragOk?`ondragover="event.preventDefault()" ondrop="dropRow(${i})"`:''}>${handle}${tds}<td style="text-align:right"><button class="btn btn-sm btn-red" onclick="rowDel(${i})">✕</button></td></tr>`;
   }).join('');
-  const foot=def.tot.length?`<tfoot><tr>${dragOk?'<td></td>':''}<td>Total (${idx.length} lignes)</td>${def.cols.slice(1).map(c=>{
+  const foot=def.tot.length?`<tfoot><tr>${dragOk?'<td></td>':''}<td>Total (${idx.length} lignes)</td>${cols.slice(1).map(c=>{
     if(!def.tot.includes(c.k)) return '<td></td>';
     const s=idx.reduce((a,i)=>a+(c.t==='calc'?c.f(rows[i]):nn(rows[i][c.k])),0);
     return `<td>${fmt(Math.round(s))}</td>`;
@@ -1213,6 +1215,7 @@ async function feuilles(){
     <div style="display:flex;gap:10px">
       ${curSheet==='tablette'?'<button class="btn btn-ghost" onclick="openPasteModal()">📋 Coller depuis Excel</button>':''}
       ${curSheet==='rh'?'<button class="btn btn-ghost" onclick="rhPasteModal()">🕒 Coller le pointage</button>':''}
+      ${def.lite?`<button class="btn btn-ghost" onclick="sheetFull=!sheetFull;feuilles()">${sheetFull?'👁 Colonnes essentielles':'👁 Toutes les colonnes'}</button>`:''}
       <button class="btn btn-ghost" onclick="sheetCsv()">⬇ CSV</button>
       <button class="btn btn-red" onclick="sheetReset()">♻️ Réinitialiser</button>
       <button class="btn btn-gold" onclick="rowAdd()">＋ Ligne</button>
@@ -1222,7 +1225,7 @@ async function feuilles(){
   ${def.note?`<div class="warn" style="border-color:rgba(232,160,32,.35);background:rgba(232,160,32,.07);color:var(--accent)">ℹ️ ${def.note}</div>`:''}
   <div class="panel" style="padding:10px 16px;overflow-x:auto">
     <input class="field" style="max-width:240px;margin:6px 0 10px" placeholder="🔍 Rechercher…" value="${esc(sheetSearch)}" oninput="sheetSearch=this.value;feuilles()">
-    <table class="sheet"><thead><tr>${head}<th></th></tr></thead><tbody>${body||`<tr><td colspan="${def.cols.length+2}"><div class="empty">Aucune ligne</div></td></tr>`}</tbody>${foot}</table>
+    <table class="sheet"><thead><tr>${head}<th></th></tr></thead><tbody>${body||`<tr><td colspan="${cols.length+2}"><div class="empty">Aucune ligne</div></td></tr>`}</tbody>${foot}</table>
   </div>
   <datalist id="dlSheetClients">${((S.fact&&S.fact.clients)||[]).map(c=>`<option value="${esc(c.nom)}">`).join('')}</datalist>`;
 }
