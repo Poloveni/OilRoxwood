@@ -40,13 +40,17 @@ for fb in rows:
            f"De : **{fb.get('auteur') or 'anonyme'}**\n"
            f"> {(fb.get('texte') or '')[:1500]}\n"
            f"→ à traiter dans l'onglet Suggestions / Bugs")
+    ok = False
     for uid in DEST_IDS:
         try:
             dm = bot_api("/users/@me/channels", {"recipient_id": uid})
             bot_api(f"/channels/{dm['id']}/messages", {"content": msg})
             sent += 1
+            ok = True
         except Exception as e:
             print(f"MP vers {uid} impossible : {e}")
+    if not ok:
+        break  # échec : on s'arrête ici, cette remarque sera retentée au prochain passage
     last = max(last, fb["id"])
 
 os.makedirs("data", exist_ok=True)
