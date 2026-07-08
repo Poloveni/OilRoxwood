@@ -365,6 +365,7 @@
     <button class="nav-item" data-view="bilan">🏦 <span class="txt">Bilan compta</span></button>
     <button class="nav-item" data-view="retention">📋 <span class="txt">Ancienneté RH</span></button>
     <button class="nav-item" data-view="fer">🔩 <span class="txt">Achats Fer</span></button>
+    <button class="nav-item" data-view="feedback">💡 <span class="txt">Suggestions / Bugs</span></button>
     <button class="nav-item" data-view="dlogs">📡 <span class="txt">Logs Discord</span></button>
     <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
     <div class="spacer"></div>
@@ -517,11 +518,11 @@ async function sha(t){
 const ROLES={direction:'Direction',rh:'RH',comptable:'Comptable',commercial:'Commercial',membre:'Membre'};
 /* Onglets visibles par rôle — la Direction voit tout, un Membre ne voit que la vue d'ensemble */
 const PERMS={
-  direction:['overview','effectif','runs','semaine','cloture','feuilles','factures','relances','bilan','retention','fer','dlogs','params'],
-  rh:       ['overview','effectif','semaine','feuilles','retention','dlogs'],
-  comptable:['overview','feuilles','factures','bilan'],
-  commercial:['overview','factures','relances','feuilles'],
-  membre:   ['effectif'] // lecture seule : uniquement l'effectif
+  direction:['overview','effectif','runs','semaine','cloture','feuilles','factures','relances','bilan','retention','fer','feedback','dlogs','params'],
+  rh:       ['overview','effectif','semaine','feuilles','retention','feedback','dlogs'],
+  comptable:['overview','feuilles','factures','bilan','feedback'],
+  commercial:['overview','factures','relances','feuilles','feedback'],
+  membre:   ['effectif','feedback'] // lecture seule + boîte à idées
 };
 function isMembre(){
   if(sessionStorage.getItem('orx_user')==='SECOURS') return false; // clé de secours = Direction
@@ -744,7 +745,7 @@ function show(v){
   VIEW=v;
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
-  ({overview,effectif,runs,semaine,cloture,feuilles,factures,relances,bilan,retention,fer,dlogs,params})[v]();
+  ({overview,effectif,runs,semaine,cloture,feuilles,factures,relances,bilan,retention,fer,feedback,dlogs,params})[v]();
 }
 function rerender(){ show(VIEW); }
 
@@ -2241,6 +2242,67 @@ function ferDel(id){
     S.fer=S.fer.filter(x=>x.id!==id);
     save(); sbPushNow(); fer();
   }
+}
+
+/* ================== SUGGESTIONS / BUGS ================== */
+async function feedback(){
+  $('#main').innerHTML='<div class="panel"><div class="empty">Chargement…</div></div>';
+  let FB=[];
+  try{
+    if(SYNC.cli){ const {data}=await SYNC.cli.from('oilroxwood_feedback').select('*').order('date',{ascending:false}); FB=data||[]; }
+  }catch(e){}
+  const dir=!isMembre()&&currentUser()&&currentUser().role==='direction';
+  const badge=f=>f.statut==='traite'
+    ?'<span class="badge" style="background:rgba(61,220,132,.14);color:var(--green)">✓ traité</span>'
+    :'<span class="badge bg0">ouvert</span>';
+  $('#main').innerHTML=`
+  <div class="topbar"><div><h2>Suggestions / Bugs</h2><div class="sub">La boîte à idées du site — visible par toute l'équipe, traitée par la direction</div></div></div>
+  <div class="grid g2" style="align-items:start">
+    <div class="panel">
+      <h3>✍️ Nouvelle remarque</h3>
+      <div class="f-row"><label class="f-lbl">Type</label>
+        <select class="field" id="fb_type"><option value="suggestion">💡 Suggestion</option><option value="bug">🐛 Bug</option></select></div>
+      <div class="f-row"><label class="f-lbl">Description</label>
+        <textarea class="field" id="fb_txt" style="min-height:120px" placeholder="Décris ton idée ou le problème rencontré (où, quand, comment le reproduire…)"></textarea></div>
+      <button class="btn btn-gold" style="width:100%" onclick="fbSend()">Envoyer</button>
+      <p style="color:var(--muted);font-size:.78rem;margin-top:10px">Ton pseudo est joint automatiquement. La direction est notifiée sur Discord.</p>
+    </div>
+    <div class="panel" style="padding:8px 16px">
+      <h3 style="padding:12px 0 4px">📬 Remarques (${FB.length})</h3>
+      ${FB.length?FB.map(f=>`<div style="padding:12px 4px;border-bottom:1px solid var(--line)">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span>${f.type==='bug'?'🐛':'💡'}</span>
+          <b>${esc(f.auteur||'anonyme')}</b>
+          <small style="color:var(--muted)">${f.date?frDate(String(f.date).slice(0,10)):''}</small>
+          ${badge(f)}
+          ${dir?`<span style="margin-left:auto;white-space:nowrap">
+            ${f.statut!=='traite'?`<button class="btn btn-sm btn-gold" onclick="fbDone(${f.id})">✓ Traité</button>`:''}
+            <button class="btn btn-sm btn-red" onclick="fbDel(${f.id})">✕</button></span>`:''}
+        </div>
+        <div style="margin-top:6px;font-size:.9rem;white-space:pre-wrap;${f.statut==='traite'?'color:var(--muted)':''}">${esc(f.texte)}</div>
+      </div>`).join(''):'<div class="empty">Aucune remarque pour l\'instant — sois le premier ! 💡</div>'}
+    </div>
+  </div>`;
+}
+async function fbSend(){
+  const type=$('#fb_type').value, txt=$('#fb_txt').value.trim();
+  if(txt.length<5) return toast('⚠️ Décris un peu plus ta remarque');
+  if(!SYNC.cli) return toast('⚠️ Connexion Supabase indisponible');
+  const auteur=(currentUser()&&currentUser().user)||'anonyme';
+  const {error}=await SYNC.cli.from('oilroxwood_feedback').insert({type,texte:txt,auteur});
+  if(error) return toast('⚠️ Envoi impossible : '+error.message);
+  sendLog(type==='bug'?'🐛 Bug signalé':'💡 Nouvelle suggestion', `**${auteur}** : ${txt.slice(0,300)}`, type==='bug'?0xff5c5c:0x22d7ee);
+  toast('✅ Merci ! Ta remarque est transmise à la direction');
+  feedback();
+}
+async function fbDone(id){
+  try{ await SYNC.cli.from('oilroxwood_feedback').update({statut:'traite'}).eq('id',id); }catch(e){}
+  feedback();
+}
+async function fbDel(id){
+  if(!confirm('Supprimer cette remarque ?')) return;
+  try{ await SYNC.cli.from('oilroxwood_feedback').delete().eq('id',id); }catch(e){}
+  feedback();
 }
 
 /* ================== LOGS DISCORD ================== */
