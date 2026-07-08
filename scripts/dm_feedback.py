@@ -31,7 +31,20 @@ def bot_api(path, payload):
         data=json.dumps(payload).encode(),
         headers={"Authorization": f"Bot {BOT}", "Content-Type": "application/json"},
         method="POST")
-    return json.loads(urllib.request.urlopen(r, timeout=30).read().decode())
+    try:
+        return json.loads(urllib.request.urlopen(r, timeout=30).read().decode())
+    except urllib.error.HTTPError as e:
+        body = e.read().decode(errors="replace")[:300]
+        raise Exception(f"{e.code} sur {path} → {body}")
+
+# Diagnostic : liste les serveurs où le bot est présent
+try:
+    g = urllib.request.Request("https://discord.com/api/v10/users/@me/guilds",
+                               headers={"Authorization": f"Bot {BOT}"})
+    guilds = json.loads(urllib.request.urlopen(g, timeout=30).read().decode())
+    print("Bot présent sur :", ", ".join(x["name"] for x in guilds) or "AUCUN serveur !")
+except Exception as e:
+    print(f"Diagnostic serveurs impossible : {e}")
 
 sent = 0
 for fb in rows:
