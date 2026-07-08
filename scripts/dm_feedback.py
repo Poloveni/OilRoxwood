@@ -25,11 +25,14 @@ req = urllib.request.Request(
     headers={"apikey": SB_KEY, "Authorization": f"Bearer {SB_KEY}"})
 rows = json.loads(urllib.request.urlopen(req, timeout=30).read().decode())
 
+UA = "DiscordBot (https://github.com/Poloveni/OilRoxwood, 1.0)"
+
 def bot_api(path, payload):
     r = urllib.request.Request(
         f"https://discord.com/api/v10{path}",
         data=json.dumps(payload).encode(),
-        headers={"Authorization": f"Bot {BOT}", "Content-Type": "application/json"},
+        headers={"Authorization": f"Bot {BOT}", "Content-Type": "application/json",
+                 "User-Agent": UA},
         method="POST")
     try:
         return json.loads(urllib.request.urlopen(r, timeout=30).read().decode())
@@ -40,7 +43,7 @@ def bot_api(path, payload):
 # Diagnostic : liste les serveurs où le bot est présent
 try:
     g = urllib.request.Request("https://discord.com/api/v10/users/@me/guilds",
-                               headers={"Authorization": f"Bot {BOT}"})
+                               headers={"Authorization": f"Bot {BOT}", "User-Agent": UA})
     guilds = json.loads(urllib.request.urlopen(g, timeout=30).read().decode())
     print("Bot présent sur :", ", ".join(x["name"] for x in guilds) or "AUCUN serveur !")
 except Exception as e:
