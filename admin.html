@@ -353,7 +353,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-5</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-6</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -587,7 +587,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-5';
+const APP_VERSION='C-6';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -1212,12 +1212,16 @@ const SHEETS_DEF = {
     {k:'discord',l:'Discord',t:'text'},{k:'avert',l:'Avert.',t:'text'},{k:'contrat',l:'Contrat signé',t:'bool'},
     {k:'recrut',l:'Recruté par',t:'text'},{k:'dernierService',l:'Dernière prise de service',t:'date'},
     {k:'_actif',l:'Actif',t:'html',f:r=>{
+      // alerte si l'ID unique figure aussi dans la feuille Blacklist
+      const idu=String(r.idU||'').trim();
+      const bl=idu&&((S.sheets&&S.sheets.blacklist)||[]).find(b=>String(b.idU||'').trim()===idu);
+      const warn=bl?`<span style="color:var(--red);font-weight:800;white-space:nowrap" title="${esc(bl.comm||'raison non renseignée')}">⛔ BLACKLISTÉ !</span><br>`:'';
       const d=Date.parse(r.dernierService);
       const j=isNaN(d)?null:Math.floor((Date.now()-d)/86400000);
-      if(r.flagOut) return `<span style="color:var(--red);font-weight:700;white-space:nowrap">🔴 absent du pointage${j!==null?' · '+j+' j':''} — démission ?</span>`;
-      if(j===null) return '<span style="color:var(--muted)">—</span>';
+      if(r.flagOut) return warn+`<span style="color:var(--red);font-weight:700;white-space:nowrap">🔴 absent du pointage${j!==null?' · '+j+' j':''} — démission ?</span>`;
+      if(j===null) return warn+'<span style="color:var(--muted)">—</span>';
       const col=j<=2?'var(--green)':j<=6?'var(--accent)':'var(--red)';
-      return `<span style="color:${col};font-weight:700">${j} j sans service</span>`;
+      return warn+`<span style="color:${col};font-weight:700">${j} j sans service</span>`;
     }}],
     lite:['idU','nom','grade','tel','rib','discord','dernierService','_actif'],
     tot:[], nouveau:{nom:'',grade:'Intérimaire',tel:'',rib:'',idU:'',arrivee:'',discord:'',avert:'',contrat:false,recrut:'',dernierService:'',flagOut:false}},
@@ -1410,9 +1414,14 @@ function rhApplyPaste(){
     const id=String(x.idU||'').replace(/\D/g,'');
     if(id){ x.flagOut=!seen.has(id); if(x.flagOut) absents++; }
   });
+  // contrôle blacklist : un ID du pointage figure-t-il dans la feuille Blacklist ?
+  const blNoms=S.sheets.rh.filter(x=>{
+    const id=String(x.idU||'').replace(/\D/g,'');
+    return id&&seen.has(id)&&(S.sheets.blacklist||[]).some(b=>String(b.idU||'').replace(/\D/g,'')===id);
+  }).map(x=>x.nom||x.idU);
   save(); sbPushNow(); closeModal(); feuilles();
-  toast(`🕒 Pointage importé : ${maj} mis à jour · ${crees} créé(s)${absents?` · 🔴 ${absents} absent(s) du pointage`:''}`);
-  sendLog('🕒 Pointage RH importé', `${maj} mise(s) à jour · ${crees} création(s)${absents?` · 🔴 **${absents} absent(s)** — démissions possibles`:''}`, absents?0xff5c5c:0x3ddc84);
+  toast(`🕒 Pointage importé : ${maj} mis à jour · ${crees} créé(s)${absents?` · 🔴 ${absents} absent(s) du pointage`:''}${blNoms.length?` · ⛔ ${blNoms.length} BLACKLISTÉ(S) !`:''}`);
+  sendLog('🕒 Pointage RH importé', `${maj} mise(s) à jour · ${crees} création(s)${absents?` · 🔴 **${absents} absent(s)** — démissions possibles`:''}${blNoms.length?`\n\n⛔ **ALERTE BLACKLIST** : ${blNoms.map(n=>'**'+esc(n)+'**').join(', ')} figure(nt) dans la blacklist !`:''}`, (absents||blNoms.length)?0xff5c5c:0x3ddc84);
 }
 
 /* ---- Import tablette par copier-coller (Excel / Google Sheets) ---- */
