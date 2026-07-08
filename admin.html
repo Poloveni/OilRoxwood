@@ -1060,7 +1060,10 @@ async function semaine(){
     </tbody></table>`:`<div class="empty">${q?'Aucun employé ne correspond à « '+esc(semSearch)+' »':'Aucun runner'}</div>`}
   </div>
   <div class="grid g2">
-    <div class="panel kpi"><div class="lbl">Total primes projetées</div><div class="val gold">${money(totalPrimes)}</div><div class="delta">si tous les quotas restent en l'état</div></div>
+    <div class="grid g2" style="align-content:start">
+      <div class="panel kpi"><div class="lbl">Total primes projetées</div><div class="val gold">${money(totalPrimes)}</div><div class="delta">si tous les quotas restent en l'état</div></div>
+      <div class="panel kpi"><div class="lbl">Total salaires projetés</div><div class="val">${money(items.reduce((a,it)=>a+it.sal,0))}</div><div class="delta">masse totale : ${money(items.reduce((a,it)=>a+it.tot,0))} (salaires + primes)</div></div>
+    </div>
     <div class="panel">
       <h3>🗃️ Semaines clôturées</h3>
       ${S.weeks.length?`<table><thead><tr><th>Semaine</th><th>Barils</th><th>Primes versées</th><th>🥇 Vainqueur</th></tr></thead><tbody>
