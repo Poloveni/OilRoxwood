@@ -1187,7 +1187,7 @@ const SHEETS_DEF = {
     tot:[], nouveau:{nom:'',grade:'',tel:'',idU:'',date:'',discord:'',comm:''},
     note:'Liste interne — personnes à ne pas recruter'},
   compta:{ico:'🏦',label:'Compta',cols:[
-    {k:'type',l:'Type',t:'text'},{k:'date',l:'Date',t:'date'},{k:'justif',l:'Justificatif',t:'text'},
+    {k:'type',l:'Type',t:'choice',opts:['Dépense déductible','Retrait']},{k:'date',l:'Date',t:'date'},{k:'justif',l:'Justificatif',t:'text'},
     {k:'montant',l:'Montant',t:'num'}],
     tot:['montant'], nouveau:{type:'Dépense déductible',date:'',justif:'',montant:0},
     note:'Dépenses déductibles et retraits du compte entreprise'},
@@ -1220,6 +1220,7 @@ async function feuilles(){
       if(c.t==='num')  return `<td><input type="number" value="${nn(r[c.k])}" onchange="cellEdit(${i},'${c.k}',+this.value||0)"></td>`;
       if(c.t==='client') return `<td><input type="text" list="dlSheetClients" value="${esc(r[c.k])}" placeholder="Client…" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`;
       if(c.t==='html') return `<td>${c.f(r)}</td>`;
+      if(c.t==='choice') return `<td><select style="background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:6px 8px;font-size:.82rem" onchange="cellEdit(${i},'${c.k}',this.value)">${c.opts.map(o=>`<option ${r[c.k]===o?'selected':''}>${o}</option>`).join('')}</select></td>`;
       if(c.t==='date'){ const d=/^\d{4}-\d{2}-\d{2}/.test(r[c.k]||'')?String(r[c.k]).slice(0,10):'';
         return `<td><input type="date" value="${d}" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`; }
       return `<td><input type="text" value="${esc(r[c.k])}" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`;
@@ -1966,7 +1967,29 @@ async function bilan(){
     </tr>`).join('')}
     </tbody></table>
     <p class="note">💡 Plafonds appliqués : employés ${fmt(caps().empSal)} $ / ${fmt(caps().empPrime)} $ · direction ${fmt(caps().patSal)} $ / ${fmt(caps().patPrime)} $ — modifiables en haut de page. Ajoute les dépenses et retraits dans Feuilles → 🏦 Compta.</p>
-  </div>`;
+  </div>
+  ${(()=>{
+    const CPT=(S.sheets&&S.sheets.compta)||[];
+    const dep=CPT.filter(c=>/d[ée]pense/i.test(c.type)), ret=CPT.filter(c=>/retrait/i.test(c.type));
+    const totD=dep.reduce((a,c)=>a+nn(c.montant),0), totR=ret.reduce((a,c)=>a+nn(c.montant),0);
+    const ligne=c=>`<tr><td>${c.date?frDate(c.date):'—'}</td><td>${esc(c.justif)}</td><td style="text-align:right">${money(nn(c.montant))}</td></tr>`;
+    return `<div class="grid g2" style="margin-top:18px">
+      <div class="panel" style="padding:8px 16px;overflow-x:auto">
+        <h3 style="padding:12px 0 4px">🧾 Dépenses déductibles
+          <button class="btn btn-sm btn-ghost" onclick="bilanCopyCompta()">📋 Copier pour GDoc</button></h3>
+        <table><thead><tr><th>Date</th><th>Justificatif</th><th style="text-align:right">Montant</th></tr></thead><tbody>
+          <tr style="background:rgba(232,160,32,.06)"><td>***</td><td><b>Salaire</b></td><td style="text-align:right"><b>${money(B.masseSal)}</b></td></tr>
+          ${dep.map(ligne).join('')}
+        </tbody><tfoot><tr><td></td><td><b>Total</b></td><td style="text-align:right"><b class="gold">${money(totD+B.masseSal)}</b></td></tr></tfoot></table>
+      </div>
+      <div class="panel" style="padding:8px 16px;overflow-x:auto">
+        <h3 style="padding:12px 0 4px">🏧 Tableau des retraits</h3>
+        <table><thead><tr><th>Date</th><th>Justificatif</th><th style="text-align:right">Montant</th></tr></thead><tbody>
+          ${ret.length?ret.map(ligne).join(''):'<tr><td colspan="3"><div class="empty">Aucun retrait</div></td></tr>'}
+        </tbody><tfoot><tr><td></td><td><b>Total</b></td><td style="text-align:right"><b class="gold">${money(totR)}</b></td></tr></tfoot></table>
+      </div>
+    </div>`;
+  })()}`;
   const reste=Math.max(0,B.net);
   mkChart('cBilan',{type:'doughnut',data:{
     labels:['Salaires','Primes','Autres dépenses','Impôts','Retraits','Trésorerie nette'],
@@ -1979,6 +2002,23 @@ async function bilan(){
     options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
 }
 
+/* ---- export dépenses & retraits pour le GDoc (deux tableaux côte à côte) ---- */
+function bilanCopyCompta(){
+  const B=bilanData();
+  const CPT=(S.sheets&&S.sheets.compta)||[];
+  const dep=CPT.filter(c=>/d[ée]pense/i.test(c.type)), ret=CPT.filter(c=>/retrait/i.test(c.type));
+  const jm=d=>{const m=String(d||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[3]}/${m[2]}`:'';};
+  const n=v=>String(Math.round(nn(v)));
+  const rows=[];
+  rows.push(['***','Salaire',n(B.masseSal),'***','Total',n(ret.reduce((a,c)=>a+nn(c.montant),0))]);
+  for(let i=0;i<Math.max(dep.length,ret.length);i++){
+    const d=dep[i], r=ret[i];
+    rows.push([d?jm(d.date):'', d?d.justif:'', d?n(d.montant):'', r?jm(r.date):'', r?r.justif:'', r?n(r.montant):'']);
+  }
+  navigator.clipboard.writeText(rows.map(r=>r.join('\t')).join('\n'))
+    .then(()=>toast('📋 Dépenses & retraits copiés — un Ctrl+V dans le GDoc remplit les deux tableaux d\'un coup'))
+    .catch(()=>toast('⚠️ Copie refusée — clique d\'abord dans la page puis réessaie'));
+}
 /* ---- lignes manuelles du bilan ---- */
 function bxAdd(){ (S.bilanExtra=S.bilanExtra||[]).push({nom:'',grade:'',run:0,facture:0,vente:0,salaire:0,prime:0}); save(); bilan(); }
 function bxEdit(i,k,v){ S.bilanExtra[i][k]=v; save(); bilan(); }
