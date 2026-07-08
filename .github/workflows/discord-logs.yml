@@ -30,9 +30,12 @@ jobs:
           DISCORD_FER_CHANNEL_ID: ${{ secrets.DISCORD_FER_CHANNEL_ID }}
         run: python scripts/fetch_fer_logs.py || true
 
+      - name: Publier les stats du dashboard (automatique)
+        run: python3 scripts/publish_stats.py || true
+
       - name: Commit si changement
         run: |
           git config user.name "oilroxwood-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/discord-logs.json data/fer-logs.json
-          git diff --cached --quiet || (git commit -m "🤖 MAJ logs Discord" && git push)
+          git add data/discord-logs.json data/fer-logs.json data/stats-public.json
+          git diff --cached --quiet || (git commit -m "🤖 MAJ automatique (logs + stats)" && git push)

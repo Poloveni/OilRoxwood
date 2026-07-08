@@ -501,6 +501,7 @@ async function sbPushNow(force){
   try{
     const d=JSON.parse(JSON.stringify(S)); d._cid=SYNC.cid;
     delete d.passHash; // jamais synchronisé : chaque navigateur garde le sien
+    try{ d._statsPub=statsData(); }catch(e){} // paquet prêt à publier, récupéré par le robot GitHub toutes les 15 min
     const {error}=await SYNC.cli.from('oilroxwood_etat').upsert({id:2,data:d,maj:new Date().toISOString()});
     if(error) throw error;
     syncDot(true,'Synchronisé · '+new Date().toLocaleTimeString('fr-FR'));
@@ -1113,11 +1114,9 @@ function undoClose(){
 }
 
 /* ================== PUBLICATION DES STATS PUBLIQUES ================== */
-async function publishStats(){
-  const token=(localStorage.getItem('orx_gh')||'').trim();
-  if(!token){ toast('⚠️ Ajoute d\'abord un token GitHub dans Paramètres'); return; }
+function statsData(){
   const sorted=[...S.runners].sort((a,b)=>b.barils-a.barils);
-  const data={
+  return {
     maj:new Date().toISOString(), semaine:S.settings.semaine,
     totalBarils:S.runners.reduce((a,r)=>a+r.barils,0),
     ca:S.runners.reduce((a,r)=>a+r.barils,0)*S.settings.prix,
@@ -1126,6 +1125,11 @@ async function publishStats(){
     top3:sorted.slice(0,3).filter(r=>r.barils>0).map(r=>({nom:r.nom,barils:r.barils})),
     runners:S.runners.map(r=>({nom:r.nom,grade:r.grade,poste:r.poste||null,barils:r.barils,total:r.total,quota:grade(r).quota,prime:primeProj(r)}))
   };
+}
+async function publishStats(){
+  const token=(localStorage.getItem('orx_gh')||'').trim();
+  if(!token){ toast('⚠️ Ajoute d\'abord un token GitHub dans Paramètres'); return; }
+  const data=statsData();
   const api='https://api.github.com/repos/Poloveni/OilRoxwood/contents/data/stats-public.json';
   const hdr={Authorization:'Bearer '+token,Accept:'application/vnd.github+json'};
   toast('📡 Publication en cours…');
