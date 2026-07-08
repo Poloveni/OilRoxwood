@@ -114,7 +114,8 @@
   .chip b{color:var(--ink)}
   .up{color:var(--green)} .down{color:var(--red)} .gold{color:var(--accent)}
 
-  input.field,select.field,textarea.field{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:10px 13px;font-size:.88rem;width:100%}
+  input.field,select.field,textarea.field,button.field{background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:10px 13px;font-size:.88rem;width:100%}
+  .em-chip{display:inline-block;background:linear-gradient(135deg,rgba(255,45,149,.2),rgba(139,92,246,.12));border:1px solid rgba(255,45,149,.4);border-radius:99px;padding:3px 11px;font-size:.75rem;font-weight:700;color:var(--ink)}
   input.field:focus,select.field:focus,textarea.field:focus{outline:none;border-color:var(--accent)}
   label.f-lbl{display:block;font-size:.75rem;color:var(--muted);font-weight:700;margin:0 0 6px;text-transform:uppercase;letter-spacing:1px}
   .f-row{margin-bottom:14px}
@@ -1501,7 +1502,7 @@ function fNew(){
       </div>
       <div class="f-row"><label class="f-lbl">Émetteur(s) — direction & commerciaux</label>
         <div class="combo">
-          <button type="button" id="emBtn" class="field" style="text-align:left;cursor:pointer" onclick="document.getElementById('emList').classList.toggle('open')">${esc(FD.emetteur||'Sélectionner…')} ▾</button>
+          <button type="button" id="emBtn" class="field" style="text-align:left;cursor:pointer;display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:44px" onclick="document.getElementById('emList').classList.toggle('open')">${emBtnHtml()}</button>
           <div class="combo-list" id="emList">
             ${S.runners.filter(r=>r.poste).sort((a,b)=>a.nom.localeCompare(b.nom)).map(p=>{
               const sel=(FD.emetteur||'').split(',').map(s=>s.trim());
@@ -1554,6 +1555,12 @@ function updL(i,k,v){
   fNew();
 }
 /* ---- sélection multiple des émetteurs ---- */
+function emBtnHtml(){
+  const sel=(FD.emetteur||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const chips=sel.length?sel.map(n=>`<span class="em-chip">${esc(n)}</span>`).join('')
+    :'<span style="color:var(--muted)">Sélectionner les émetteurs…</span>';
+  return chips+'<span style="margin-left:auto;color:var(--muted)">▾</span>';
+}
 function emPick(nom,on){
   const sel=(FD.emetteur||'').split(',').map(s=>s.trim()).filter(Boolean);
   const i=sel.indexOf(nom);
@@ -1561,7 +1568,7 @@ function emPick(nom,on){
   if(!on&&i>=0) sel.splice(i,1);
   FD.emetteur=sel.join(', ');
   const b=document.getElementById('emBtn');
-  if(b) b.textContent=(FD.emetteur||'Sélectionner…')+' ▾'; // maj sans re-render : la liste reste ouverte
+  if(b) b.innerHTML=emBtnHtml(); // maj sans re-render : la liste reste ouverte
 }
 /* ---- autocomplete clients ---- */
 let cliIdx=-1, cliMatches=[];
