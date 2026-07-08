@@ -33,9 +33,14 @@ jobs:
       - name: Publier les stats du dashboard (automatique)
         run: python3 scripts/publish_stats.py || true
 
+      - name: MP Discord pour les nouvelles suggestions/bugs
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        run: python3 scripts/dm_feedback.py || true
+
       - name: Commit si changement
         run: |
           git config user.name "oilroxwood-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/discord-logs.json data/fer-logs.json data/stats-public.json
+          git add data/discord-logs.json data/fer-logs.json data/stats-public.json data/feedback-seen.json
           git diff --cached --quiet || (git commit -m "🤖 MAJ automatique (logs + stats)" && git push)

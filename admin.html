@@ -2291,7 +2291,7 @@ async function fbSend(){
   const auteur=(currentUser()&&currentUser().user)||'anonyme';
   const {error}=await SYNC.cli.from('oilroxwood_feedback').insert({type,texte:txt,auteur});
   if(error) return toast('⚠️ Envoi impossible : '+error.message);
-  sendLog(type==='bug'?'🐛 Bug signalé':'💡 Nouvelle suggestion', `**${auteur}** : ${txt.slice(0,300)}`, type==='bug'?0xff5c5c:0x22d7ee);
+  sendLog(type==='bug'?'🐛 Bug signalé':'💡 Nouvelle suggestion', `**${auteur}** : ${txt.slice(0,300)}`, type==='bug'?0xff5c5c:0x22d7ee, '<@186397473374208000>');
   toast('✅ Merci ! Ta remarque est transmise à la direction');
   feedback();
 }
