@@ -1075,9 +1075,9 @@ function closeWeek(){
   // feuille Éligibilité : réinitialisée pour la nouvelle semaine avec les quotas réussis + direction (auto-éligible)
   let eligN=0;
   if(S.sheets&&S.sheets.eligibilite!==undefined){
-    const dateP=new Date().toISOString().slice(0,10);
     const eligibles=S.runners.filter(r=>r.poste||quotaOK(r));
-    S.sheets.eligibilite=eligibles.map(r=>({nom:r.nom,menus:true,boissons:true,bidons:true,date:dateP,don:'',permis:''}));
+    // liste des noms uniquement : cases vides, à cocher par les RH au moment de la prise
+    S.sheets.eligibilite=eligibles.map(r=>({nom:r.nom,menus:false,boissons:false,bidons:false,date:'',don:'',permis:''}));
     eligN=eligibles.length;
   }
   S.runners.forEach(r=>{ r.barils=0; r.runs=[]; r.recrues=0; r.lastSync=0; });
