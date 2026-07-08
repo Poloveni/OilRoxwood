@@ -1140,11 +1140,19 @@ const SHEETS_DEF = {
     {k:'quantite',l:'Quantité',t:'num'},{k:'qui',l:'Qui ?',t:'text'}],
     tot:['quantite'], nouveau:{date:'',client:'',quantite:0,qui:''}},
   rh:{ico:'🗂️',label:'RH',drag:true,cols:[
-    {k:'nom',l:'Employé',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
-    {k:'rib',l:'RIB',t:'text'},{k:'idU',l:'ID unique',t:'text'},{k:'arrivee',l:'Arrivée',t:'date'},
+    {k:'idU',l:'ID unique',t:'text'},{k:'nom',l:'Employé',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
+    {k:'rib',l:'RIB',t:'text'},{k:'arrivee',l:'Arrivée',t:'date'},
     {k:'discord',l:'Discord',t:'text'},{k:'avert',l:'Avert.',t:'text'},{k:'contrat',l:'Contrat signé',t:'bool'},
-    {k:'recrut',l:'Recruté par',t:'text'},{k:'actif',l:'Actif',t:'bool'}],
-    tot:[], nouveau:{nom:'',grade:'Intérimaire',tel:'',rib:'',idU:'',arrivee:'',discord:'',avert:'',contrat:false,recrut:'',actif:true}},
+    {k:'recrut',l:'Recruté par',t:'text'},{k:'dernierService',l:'Dernière prise de service',t:'date'},
+    {k:'_actif',l:'Actif',t:'html',f:r=>{
+      const d=Date.parse(r.dernierService);
+      const j=isNaN(d)?null:Math.floor((Date.now()-d)/86400000);
+      if(r.flagOut) return `<span style="color:var(--red);font-weight:700;white-space:nowrap">🔴 absent du pointage${j!==null?' · '+j+' j':''} — démission ?</span>`;
+      if(j===null) return '<span style="color:var(--muted)">—</span>';
+      const col=j<=2?'var(--green)':j<=6?'var(--accent)':'var(--red)';
+      return `<span style="color:${col};font-weight:700">${j} j sans service</span>`;
+    }}],
+    tot:[], nouveau:{nom:'',grade:'Intérimaire',tel:'',rib:'',idU:'',arrivee:'',discord:'',avert:'',contrat:false,recrut:'',dernierService:'',flagOut:false}},
   blacklist:{ico:'⛔',label:'Blacklist',cols:[
     {k:'nom',l:'Nom',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
     {k:'idU',l:'ID unique',t:'text'},{k:'date',l:'Date',t:'date'},{k:'discord',l:'Discord',t:'text'},
@@ -1183,6 +1191,7 @@ async function feuilles(){
       if(c.t==='bool') return `<td style="text-align:center"><input type="checkbox" ${r[c.k]?'checked':''} onchange="cellEdit(${i},'${c.k}',this.checked)"></td>`;
       if(c.t==='num')  return `<td><input type="number" value="${nn(r[c.k])}" onchange="cellEdit(${i},'${c.k}',+this.value||0)"></td>`;
       if(c.t==='client') return `<td><input type="text" list="dlSheetClients" value="${esc(r[c.k])}" placeholder="Client…" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`;
+      if(c.t==='html') return `<td>${c.f(r)}</td>`;
       if(c.t==='date'){ const d=/^\d{4}-\d{2}-\d{2}/.test(r[c.k]||'')?String(r[c.k]).slice(0,10):'';
         return `<td><input type="date" value="${d}" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`; }
       return `<td><input type="text" value="${esc(r[c.k])}" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`;
@@ -1200,6 +1209,7 @@ async function feuilles(){
     <div><h2>Feuilles</h2><div class="sub">Les tableaux de gestion de l'entreprise — modifiables directement, sauvegardés automatiquement</div></div>
     <div style="display:flex;gap:10px">
       ${curSheet==='tablette'?'<button class="btn btn-ghost" onclick="openPasteModal()">📋 Coller depuis Excel</button>':''}
+      ${curSheet==='rh'?'<button class="btn btn-ghost" onclick="rhPasteModal()">🕒 Coller le pointage</button>':''}
       <button class="btn btn-ghost" onclick="sheetCsv()">⬇ CSV</button>
       <button class="btn btn-red" onclick="sheetReset()">♻️ Réinitialiser</button>
       <button class="btn btn-gold" onclick="rowAdd()">＋ Ligne</button>
@@ -1275,6 +1285,53 @@ function syncRunners(silent){
   }
   return {added,updated,removed};
 }
+/* ---- Pointage RH par copier-coller (via ID unique) ---- */
+function rhPasteModal(){
+  openModal(`<h3>🕒 Coller le pointage (prises de service)</h3>
+  <p style="color:var(--muted);font-size:.82rem;margin-bottom:12px">
+    Colle les lignes contenant au minimum un <b>ID unique</b> et une <b>date</b> (jj/mm/aaaa). Le nom est repris s'il est présent.<br>
+    • ID connu → sa « dernière prise de service » est mise à jour<br>
+    • ID inconnu → une ligne est <b>créée automatiquement</b> (à compléter ensuite)<br>
+    • ID de la base <b>absent du collage</b> → pastille 🔴 « démission ? » dans la colonne Actif</p>
+  <textarea class="field" id="rhZone" style="min-height:220px;white-space:pre;font-size:.76rem;font-family:monospace" placeholder="232050	Stella Collins	Patron	07/07/2026&#10;…"></textarea>
+  <button class="btn btn-gold" style="width:100%;margin-top:14px" onclick="rhApplyPaste()">Importer le pointage</button>`);
+}
+function rhApplyPaste(){
+  const lines=$('#rhZone').value.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const seen=new Set();
+  let maj=0, crees=0;
+  lines.forEach(l=>{
+    const mid=l.match(/\b(\d{4,7})\b/);           // ID unique (4 à 7 chiffres)
+    if(!mid) return;
+    const idU=mid[1]; seen.add(idU);
+    const md=l.match(/(\d{2})\/(\d{2})\/(\d{4})/); // date jj/mm/aaaa
+    const ds=md?`${md[3]}-${md[2]}-${md[1]}`:new Date().toISOString().slice(0,10);
+    const mn=l.match(/([A-ZÀ-Ý][\wà-ÿ'-]+(?: [A-ZÀ-Ý][\wà-ÿ'-]+)+)/); // espaces simples : ne déborde pas sur la colonne suivante
+    const nom=mn?mn[1].trim():'';
+    let row=S.sheets.rh.find(x=>String(x.idU||'').replace(/\D/g,'')===idU);
+    if(row){
+      if(!row.dernierService||row.dernierService<ds) row.dernierService=ds;
+      row.flagOut=false;
+      if(!String(row.nom||'').trim()&&nom) row.nom=nom;
+      maj++;
+    } else {
+      S.sheets.rh.push({nom,grade:'',tel:'',rib:'',idU,arrivee:'',discord:'',avert:'',
+        contrat:false,recrut:'',dernierService:ds,flagOut:false});
+      crees++;
+    }
+  });
+  if(!seen.size) return toast('⚠️ Aucun ID unique reconnu dans le collage');
+  // les IDs de la base absents du pointage → alerte démission
+  let absents=0;
+  S.sheets.rh.forEach(x=>{
+    const id=String(x.idU||'').replace(/\D/g,'');
+    if(id){ x.flagOut=!seen.has(id); if(x.flagOut) absents++; }
+  });
+  save(); sbPushNow(); closeModal(); feuilles();
+  toast(`🕒 Pointage importé : ${maj} mis à jour · ${crees} créé(s)${absents?` · 🔴 ${absents} absent(s) du pointage`:''}`);
+  sendLog('🕒 Pointage RH importé', `${maj} mise(s) à jour · ${crees} création(s)${absents?` · 🔴 **${absents} absent(s)** — démissions possibles`:''}`, absents?0xff5c5c:0x3ddc84);
+}
+
 /* ---- Import tablette par copier-coller (Excel / Google Sheets) ---- */
 function openPasteModal(){
   openModal(`<h3>📋 Coller la tablette depuis Excel</h3>
