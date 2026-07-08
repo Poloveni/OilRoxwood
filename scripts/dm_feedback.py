@@ -6,7 +6,7 @@ import json, os, sys, urllib.request
 BOT = os.environ.get("DISCORD_BOT_TOKEN", "").strip()
 DEST_IDS = ["186397473374208000"]  # IDs Discord des destinataires des MP
 SB_URL = "https://prwdtdmdkhzwfyivaepw.supabase.co/rest/v1/oilroxwood_feedback"
-SB_KEY = "sb_publishable_qgN4fRX9eVdKn3SWAjtmhw_F00rlqXz"
+SB_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "").strip() or "sb_publishable_qgN4fRX9eVdKn3SWAjtmhw_F00rlqXz"
 SEEN = "data/feedback-seen.json"
 
 if not BOT:

@@ -75,3 +75,46 @@ Par contre ne partage JAMAIS la clé « service_role ».
 - La pastille à côté du logo dans la barre latérale indique l'état de la synchro
   (vert = connecté, rouge = problème, gris = non configuré)
 - En cas de modifications simultanées, la dernière sauvegarde gagne
+
+## 🔒 Verrouillage des tables (recommandé)
+
+Par défaut les tables sont accessibles avec la clé publique visible dans le code.
+Ce verrouillage réserve la lecture/écriture aux personnes **connectées via Discord** :
+
+### 1. SQL à exécuter (SQL Editor → Run)
+
+```sql
+-- supprime toutes les anciennes policies ouvertes
+do $$
+declare p record;
+begin
+  for p in select policyname, tablename from pg_policies
+    where schemaname='public'
+      and tablename in ('oilroxwood_etat','oilroxwood_demandes','oilroxwood_feedback','oilroxwood_agenda')
+  loop
+    execute format('drop policy %I on %I', p.policyname, p.tablename);
+  end loop;
+end $$;
+
+-- accès réservé aux utilisateurs connectés (OAuth Discord)
+create policy "etat_auth"     on oilroxwood_etat     for all to authenticated using (true) with check (true);
+create policy "demandes_auth" on oilroxwood_demandes for all to authenticated using (true) with check (true);
+create policy "feedback_auth" on oilroxwood_feedback for all to authenticated using (true) with check (true);
+create policy "agenda_auth"   on oilroxwood_agenda   for all to authenticated using (true) with check (true);
+```
+
+### 2. Donner la clé secrète aux robots GitHub
+
+Les robots (stats auto, sauvegarde, MP suggestions) ne sont pas « connectés Discord »,
+ils ont besoin de la clé secrète :
+
+1. Supabase → **Settings → API** → copie la clé **service_role** (⚠️ à ne JAMAIS mettre dans le code ou le chat)
+2. GitHub → dépôt OilRoxwood → **Settings → Secrets and variables → Actions → New repository secret**
+3. Nom : `SUPABASE_SERVICE_KEY` — valeur : la clé copiée
+
+### Notes
+
+- Les demandes d'accès continuent de fonctionner : un inconnu qui se connecte via
+  Discord est « authentifié » côté Supabase même s'il n'est pas encore approuvé.
+- L'accès de secours (`#secours-…`) ne pourra plus lire/écrire la base (pas de
+  session Discord) : il n'ouvre le dashboard qu'avec les données locales du navigateur.

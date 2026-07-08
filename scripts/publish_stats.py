@@ -4,7 +4,9 @@ et l'écrit dans data/stats-public.json — publication automatique, sans token 
 import json, os, urllib.request
 
 URL = "https://prwdtdmdkhzwfyivaepw.supabase.co/rest/v1/oilroxwood_etat?id=eq.2&select=data"
-KEY = "sb_publishable_qgN4fRX9eVdKn3SWAjtmhw_F00rlqXz"
+# clé secrète (secret GitHub SUPABASE_SERVICE_KEY) requise depuis le verrouillage des tables ;
+# repli sur la clé publique tant que le verrouillage n'est pas appliqué
+KEY = os.environ.get("SUPABASE_SERVICE_KEY", "").strip() or "sb_publishable_qgN4fRX9eVdKn3SWAjtmhw_F00rlqXz"
 
 req = urllib.request.Request(URL, headers={"apikey": KEY, "Authorization": f"Bearer {KEY}"})
 with urllib.request.urlopen(req, timeout=30) as r:

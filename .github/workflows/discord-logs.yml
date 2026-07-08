@@ -31,11 +31,14 @@ jobs:
         run: python scripts/fetch_fer_logs.py || true
 
       - name: Publier les stats du dashboard (automatique)
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python3 scripts/publish_stats.py || true
 
       - name: MP Discord pour les nouvelles suggestions/bugs
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python3 scripts/dm_feedback.py || true
 
       - name: Commit si changement
