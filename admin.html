@@ -126,6 +126,20 @@
   .modal{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:30px;width:min(460px,92vw);max-height:88vh;overflow:auto}
   .modal h3{margin-bottom:20px;font-size:1.05rem}
 
+  /* agenda personnel */
+  .ag-grid{display:grid;grid-template-columns:56px repeat(7,1fr)}
+  .ag-gh{padding:10px 6px;text-align:center;font-weight:800;font-size:.85rem}
+  .ag-gh small{display:block;color:var(--muted);font-weight:400;font-size:.72rem;margin-top:2px}
+  .ag-gh.today{color:var(--accent)}
+  .ag-scroll{overflow-y:auto;max-height:calc(100vh - 320px)}
+  .ag-col{position:relative;height:1056px;border-left:1px solid var(--line);cursor:copy;
+    background:repeating-linear-gradient(to bottom,transparent 0 43px,var(--line) 43px 44px)}
+  .ag-col.today{background-color:rgba(232,160,32,.05)}
+  .ag-ev{position:absolute;left:3px;right:3px;border-radius:8px;padding:3px 7px;font-size:.72rem;font-weight:700;
+    overflow:hidden;cursor:pointer;border:1px solid;line-height:1.25;transition:filter .15s;z-index:2}
+  .ag-ev:hover{filter:brightness(1.25)}
+  .ag-ev small{display:block;font-weight:400;opacity:.75}
+
   /* toast */
   #toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--panel-2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:13px 22px;font-size:.88rem;z-index:500;transition:transform .3s;box-shadow:0 15px 40px rgba(0,0,0,.4)}
   #toast.show{transform:translateX(-50%) translateY(0)}
@@ -339,7 +353,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-3</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-4</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -365,6 +379,7 @@
     <button class="nav-item" data-view="bilan">🏦 <span class="txt">Bilan compta</span></button>
     <button class="nav-item" data-view="retention">📋 <span class="txt">Ancienneté RH</span></button>
     <button class="nav-item" data-view="fer">🔩 <span class="txt">Achats Fer</span></button>
+    <button class="nav-item" data-view="agenda">📅 <span class="txt">Mon agenda</span></button>
     <button class="nav-item" data-view="feedback">💡 <span class="txt">Suggestions / Bugs</span></button>
     <button class="nav-item" data-view="dlogs">📡 <span class="txt">Logs Discord</span></button>
     <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
@@ -518,11 +533,11 @@ async function sha(t){
 const ROLES={direction:'Direction',rh:'RH',comptable:'Comptable',commercial:'Commercial',membre:'Membre'};
 /* Onglets visibles par rôle — la Direction voit tout, un Membre ne voit que la vue d'ensemble */
 const PERMS={
-  direction:['overview','effectif','runs','semaine','cloture','feuilles','factures','relances','bilan','retention','fer','feedback','dlogs','params'],
-  rh:       ['overview','effectif','semaine','feuilles','retention','feedback','dlogs'],
-  comptable:['overview','feuilles','factures','bilan','feedback'],
-  commercial:['overview','factures','relances','feuilles','feedback'],
-  membre:   ['effectif','feedback'] // lecture seule + boîte à idées
+  direction:['overview','effectif','runs','semaine','cloture','feuilles','factures','relances','bilan','retention','fer','agenda','feedback','dlogs','params'],
+  rh:       ['overview','effectif','semaine','feuilles','retention','agenda','feedback','dlogs'],
+  comptable:['overview','feuilles','factures','bilan','agenda','feedback'],
+  commercial:['overview','factures','relances','feuilles','agenda','feedback'],
+  membre:   ['effectif','agenda','feedback'] // lecture seule + boîte à idées + agenda perso
 };
 function isMembre(){
   if(sessionStorage.getItem('orx_user')==='SECOURS') return false; // clé de secours = Direction
@@ -570,7 +585,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-3';
+const APP_VERSION='C-4';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -745,7 +760,7 @@ function show(v){
   VIEW=v;
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
-  ({overview,effectif,runs,semaine,cloture,feuilles,factures,relances,bilan,retention,fer,feedback,dlogs,params})[v]();
+  ({overview,effectif,runs,semaine,cloture,feuilles,factures,relances,bilan,retention,fer,agenda,feedback,dlogs,params})[v]();
 }
 function rerender(){ show(VIEW); }
 
@@ -2242,6 +2257,109 @@ function ferDel(id){
     S.fer=S.fer.filter(x=>x.id!==id);
     save(); sbPushNow(); fer();
   }
+}
+
+/* ================== AGENDA PERSONNEL ================== */
+let AG_OFF=0, AG_EVS=null, AG_ERR=false; // décalage de semaine · cache événements · table manquante ?
+const AG_TYPES={rdv:{lbl:'RDV',c:'#8b5cf6'},commande:{lbl:'Commande',c:'#e8a020'},entretien:{lbl:'Entretien',c:'#22c55e'},autre:{lbl:'Autre',c:'#38bdf8'}};
+function agKey(){ const cu=currentUser(); return cu?String(cu.did||cu.user):String(sessionStorage.getItem('orx_user')||'anonyme'); }
+function agMonday(off){ const n=new Date(), d=(n.getDay()+6)%7; return new Date(n.getFullYear(),n.getMonth(),n.getDate()-d+off*7); }
+function agISO(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function agMin(h){ const m=String(h||'').match(/^(\d{1,2}):(\d{2})/); return m?(+m[1]*60+ +m[2]):0; }
+function agHM(mn){ mn=((mn%1440)+1440)%1440; return `${String(Math.floor(mn/60)).padStart(2,'0')}:${String(mn%60).padStart(2,'0')}`; }
+async function agLoad(){
+  AG_ERR=false;
+  if(!SYNC.cli){ AG_EVS=[]; return; }
+  try{
+    const {data,error}=await SYNC.cli.from('oilroxwood_agenda').select('*').eq('uid',agKey()).order('date');
+    if(error) throw error;
+    AG_EVS=data||[];
+  }catch(e){ AG_EVS=[]; AG_ERR=true; }
+}
+async function agenda(){
+  if(AG_EVS===null) await agLoad();
+  if(VIEW!=='agenda') return; // l'utilisateur a changé de vue pendant le chargement
+  const H=44, mon=agMonday(AG_OFF), todayIso=agISO(new Date());
+  const days=[...Array(7)].map((_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
+  const names=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  const fr=d=>d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
+  const long=d=>d.toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+  $('#main').innerHTML=`
+  <div class="topbar">
+    <div><h2>Mon agenda</h2><div class="sub">🔒 Personnel — visible uniquement par toi · du ${long(days[0])} au ${long(days[6])}</div></div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn btn-ghost" onclick="AG_OFF--;agenda()">‹</button>
+      <button class="btn btn-ghost" onclick="AG_OFF=0;agenda()">Aujourd'hui</button>
+      <button class="btn btn-ghost" onclick="AG_OFF++;agenda()">›</button>
+      <button class="btn btn-gold" onclick="agEdit()">＋ Événement</button>
+    </div>
+  </div>
+  ${AG_ERR?`<div class="panel" style="border-color:rgba(255,92,92,.4);margin-bottom:14px;color:#ffb0b0;font-size:.85rem">
+    ⚠️ La table <b>oilroxwood_agenda</b> n'existe pas encore dans Supabase — demande à la direction d'exécuter le SQL indiqué dans SETUP-SUPABASE.md.</div>`:''}
+  <div class="panel" style="padding:0;overflow:hidden">
+    <div class="ag-grid" style="border-bottom:1px solid var(--line);background:var(--panel-2)">
+      <div class="ag-gh" style="font-size:.72rem;color:var(--muted)">Heure</div>
+      ${days.map((d,i)=>`<div class="ag-gh ${agISO(d)===todayIso?'today':''}">${names[i]}<small>${fr(d)}</small></div>`).join('')}
+    </div>
+    <div class="ag-scroll" id="agScroll">
+      <div class="ag-grid">
+        <div>${[...Array(24)].map((_,h)=>`<div style="height:${H}px;font-size:.68rem;color:var(--muted);text-align:right;padding:3px 8px 0 0">${String(h).padStart(2,'0')}:00</div>`).join('')}</div>
+        ${days.map(d=>{
+          const iso=agISO(d);
+          return `<div class="ag-col ${iso===todayIso?'today':''}" onclick="agNew('${iso}',event)">
+            ${(AG_EVS||[]).filter(e=>e.date===iso).map(e=>{
+              const t=AG_TYPES[e.type]||AG_TYPES.autre;
+              const top=agMin(e.deb)/60*H, hgt=Math.max(24,(Math.max(agMin(e.fin),agMin(e.deb)+30)-agMin(e.deb))/60*H-2);
+              return `<div class="ag-ev" style="top:${top}px;height:${hgt}px;background:${t.c}26;border-color:${t.c};color:var(--ink)"
+                onclick="event.stopPropagation();agEdit(${e.id})" title="${esc(e.titre)}">
+                <span style="color:${t.c}">${esc(e.deb||'')}</span> ${esc(e.titre)}${e.note?`<small>${esc(e.note)}</small>`:''}</div>`;
+            }).join('')}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>
+  <p style="color:var(--muted);font-size:.75rem;margin-top:10px">Clique sur une case pour ajouter un événement, sur un événement pour le modifier. Chaque compte Discord ne voit que son propre agenda.</p>`;
+  const sc=$('#agScroll'); if(sc) sc.scrollTop=7.5*H;
+}
+function agNew(iso,ev){
+  if(ev.target.closest('.ag-ev')) return;
+  const h=Math.max(0,Math.min(23,Math.floor(ev.offsetY/44)));
+  agEdit(null,iso,`${String(h).padStart(2,'0')}:00`);
+}
+function agEdit(id,iso,deb){
+  const e=(AG_EVS||[]).find(x=>x.id===id)||{titre:'',type:'rdv',date:iso||agISO(new Date()),deb:deb||'14:00',fin:'',note:''};
+  const fin=e.fin||agHM(agMin(e.deb)+60);
+  openModal(`<h3>${id?'✎ Modifier l\'':'📅 Nouvel '}événement</h3>
+  <div class="f-row"><label class="f-lbl">Titre</label><input class="field" id="agT" value="${esc(e.titre)}" placeholder="RDV client, entretien recrue…"></div>
+  <div class="f-row"><label class="f-lbl">Type</label><select class="field" id="agTy">${Object.entries(AG_TYPES).map(([k,t])=>`<option value="${k}" ${e.type===k?'selected':''}>${t.lbl}</option>`).join('')}</select></div>
+  <div class="f-row" style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px">
+    <div><label class="f-lbl">Date</label><input class="field" type="date" id="agD" value="${e.date}"></div>
+    <div><label class="f-lbl">Début</label><input class="field" type="time" id="agDe" value="${e.deb}"></div>
+    <div><label class="f-lbl">Fin</label><input class="field" type="time" id="agF" value="${fin}"></div>
+  </div>
+  <div class="f-row"><label class="f-lbl">Note (optionnel)</label><textarea class="field" id="agN" style="min-height:70px">${esc(e.note||'')}</textarea></div>
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-gold" style="flex:1" onclick="agSave(${id||'null'})">Enregistrer</button>
+    ${id?`<button class="btn btn-ghost" style="color:#f87171" onclick="agDel(${id})">🗑 Supprimer</button>`:''}
+  </div>`);
+}
+async function agSave(id){
+  const titre=$('#agT').value.trim(); if(!titre) return toast('⚠️ Donne un titre à l\'événement');
+  if(!SYNC.cli) return toast('⚠️ Synchronisation non configurée');
+  let deb=$('#agDe').value||'14:00', fin=$('#agF').value;
+  if(!fin||agMin(fin)<=agMin(deb)) fin=agHM(agMin(deb)+60);
+  const row={titre,type:$('#agTy').value,date:$('#agD').value,deb,fin,note:$('#agN').value.trim()};
+  try{
+    const q=SYNC.cli.from('oilroxwood_agenda');
+    const {error}=id?await q.update(row).eq('id',id):await q.insert(Object.assign({uid:agKey()},row));
+    if(error) throw error;
+    closeModal(); await agLoad(); agenda(); toast('📅 Événement enregistré');
+  }catch(e){ toast('❌ Enregistrement impossible — table manquante ?'); }
+}
+async function agDel(id){
+  try{ await SYNC.cli.from('oilroxwood_agenda').delete().eq('id',id); }catch(e){}
+  closeModal(); await agLoad(); agenda(); toast('🗑 Événement supprimé');
 }
 
 /* ================== SUGGESTIONS / BUGS ================== */

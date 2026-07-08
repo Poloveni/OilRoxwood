@@ -29,6 +29,29 @@ create policy "acces_dashboard_oilroxwood" on oilroxwood_etat
 alter publication supabase_realtime add table oilroxwood_etat;
 ```
 
+## Étape 2 bis — Table de l'agenda personnel
+
+Pour la vue « Mon agenda » (RDV / commandes / entretiens privés par membre),
+exécute aussi ce bloc dans le **SQL Editor** :
+
+```sql
+create table if not exists oilroxwood_agenda (
+  id bigint generated always as identity primary key,
+  uid text not null,
+  titre text not null,
+  type text default 'rdv',
+  date date not null,
+  deb text, fin text, note text
+);
+
+create index if not exists oilroxwood_agenda_uid on oilroxwood_agenda(uid);
+
+alter table oilroxwood_agenda enable row level security;
+
+create policy "agenda_oilroxwood" on oilroxwood_agenda
+  for all using (true) with check (true);
+```
+
 ## Étape 3 — Récupérer les clés
 
 Menu **Settings → API** (ou Project Settings → Data API) :
