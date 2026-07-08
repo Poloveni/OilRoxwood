@@ -1328,7 +1328,7 @@ function rhApplyPaste(){
     const ds=rec.ds||new Date().toISOString().slice(0,10);
     let row=S.sheets.rh.find(x=>String(x.idU||'').replace(/\D/g,'')===idU);
     if(row){
-      if(!row.dernierService||row.dernierService<ds) row.dernierService=ds;
+      row.dernierService=ds; // le pointage collé fait foi (permet aussi de corriger une date erronée)
       row.flagOut=false;
       if(!String(row.nom||'').trim()&&rec.nom) row.nom=rec.nom;
       maj++;
