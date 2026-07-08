@@ -2081,13 +2081,11 @@ async function bilan(){
 
 /* ---- export dépenses & retraits pour le GDoc (deux tableaux côte à côte) ---- */
 function bilanCopyCompta(){
-  const B=bilanData();
   const CPT=(S.sheets&&S.sheets.compta)||[];
   const dep=CPT.filter(c=>/d[ée]pense/i.test(c.type)), ret=CPT.filter(c=>/retrait/i.test(c.type));
   const jm=d=>{const m=String(d||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[3]}/${m[2]}`:'';};
   const n=v=>String(Math.round(nn(v)));
-  const rows=[];
-  rows.push(['***','Salaire',n(B.masseSal),'***','Total',n(ret.reduce((a,c)=>a+nn(c.montant),0))]);
+  const rows=[]; // pas de ligne d'en-tête ***/Salaire/Total : le GDoc a déjà la sienne
   for(let i=0;i<Math.max(dep.length,ret.length);i++){
     const d=dep[i], r=ret[i];
     rows.push([d?jm(d.date):'', d?d.justif:'', d?n(d.montant):'', r?jm(r.date):'', r?r.justif:'', r?n(r.montant):'']);
