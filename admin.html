@@ -824,7 +824,7 @@ function effectif(){
   </div>
   <div class="panel" style="padding:8px 16px">
     ${R.length?`<table>
-      <thead><tr><th>Runner</th><th>Grade</th><th>Quota semaine</th><th>Total barils</th>${isMembre()?'':'<th style="text-align:right">Actions</th>'}</tr></thead>
+      <thead><tr><th>Runner</th><th>Grade</th><th>Quota semaine</th>${isMembre()?'':'<th>Total barils</th><th style="text-align:right">Actions</th>'}</tr></thead>
       <tbody>${R.map(rowRunner).join('')}</tbody>
     </table>`:'<div class="empty">Aucun runner trouvé</div>'}
   </div>`;
@@ -835,8 +835,8 @@ function rowRunner(r){
     <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
     <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span>${r.absent?'<div style="font-size:.7rem;color:var(--red);font-weight:700;margin-top:3px">🌴 Congé / absence</div>':''}${!r.poste&&eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(seuilMontee(r))} barils atteints)</span>`:''}</td>
     <td><div class="prog"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></div><div class="pct">${fmt(r.barils)} / ${fmt(g.quota)} (${pc}%)</div></td>
-    <td>${fmt(r.total)}</td>
-    ${isMembre()?'':`<td style="text-align:right;white-space:nowrap">
+    ${isMembre()?'':`<td>${fmt(r.total)}</td>
+    <td style="text-align:right;white-space:nowrap">
       ${eligible(r)?`<button class="btn btn-sm btn-gold" onclick="promote(${r.id})" title="Monter de grade">▲</button>`:''}
       <button class="btn btn-sm btn-ghost" onclick="toggleAbsent(${r.id})" title="${r.absent?'Marquer de retour':'Mettre en congé / absence'}">${r.absent?'💼':'🌴'}</button>
       <button class="btn btn-sm btn-ghost" onclick="openRunnerModal(${r.id})">✎</button>
