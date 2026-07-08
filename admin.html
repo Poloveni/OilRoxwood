@@ -362,7 +362,7 @@
     <button class="nav-item" data-view="factures">🧾 <span class="txt">Factures</span></button>
     <button class="nav-item" data-view="relances">📞 <span class="txt">Relances</span></button>
     <button class="nav-item" data-view="bilan">🏦 <span class="txt">Bilan compta</span></button>
-    <button class="nav-item" data-view="retention">📉 <span class="txt">Rétention RH</span></button>
+    <button class="nav-item" data-view="retention">📋 <span class="txt">Ancienneté RH</span></button>
     <button class="nav-item" data-view="fer">🔩 <span class="txt">Achats Fer</span></button>
     <button class="nav-item" data-view="dlogs">📡 <span class="txt">Logs Discord</span></button>
     <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
@@ -1977,45 +1977,28 @@ function bilanCopy(){
 async function retention(){
   await ensureSheets();
   const RH=(S.sheets.rh||[]).filter(x=>x.nom&&String(x.nom).trim());
-  const HE=(S.sheets.histEmp||[]).filter(x=>x.nom&&String(x.nom).trim());
   const jours=(a,b)=>{const t1=Date.parse(a),t2=Date.parse(b);return(isNaN(t1)||isNaN(t2))?null:Math.round((t2-t1)/86400000);};
   const now=new Date().toISOString().slice(0,10);
-  // ancienneté des actifs
-  const anc=RH.map(x=>jours(x.arrivee,now)).filter(d=>d!==null&&d>=0);
+  const list=RH.map(x=>({x,a:jours(x.arrivee,now)})).sort((p,q)=>(q.a??-1)-(p.a??-1));
+  const anc=list.map(e=>e.a).filter(d=>d!==null&&d>=0);
   const ancMoy=anc.length?Math.round(anc.reduce((a,b)=>a+b,0)/anc.length):0;
-  const actifsCount=RH.filter(x=>String(x.actif??'').toString().toLowerCase()!=='false'&&x.actif!==false).length||RH.length;
-  // départs : par motif + durée de vie si dates dispo
-  const motifs={};
-  HE.forEach(x=>{const m=(x.motif||'—').trim()||'—';motifs[m]=(motifs[m]||0)+1;});
-  const dureesVie=HE.map(x=>jours(x.arrivee,x.depart)).filter(d=>d!==null&&d>=0);
-  const vieMoy=dureesVie.length?Math.round(dureesVie.reduce((a,b)=>a+b,0)/dureesVie.length):null;
-  const totalPasses=RH.length+HE.length;
-  const tauxDepart=totalPasses?Math.round(HE.length/totalPasses*100):0;
-  // survie : combien de départs en moins de 7 jours
-  const flash=dureesVie.filter(d=>d<7).length;
+  const doyen=list.find(e=>e.a!==null), bleu=[...list].reverse().find(e=>e.a!==null);
   $('#main').innerHTML=`
-  <div class="topbar"><div><h2>Rétention RH</h2><div class="sub">Analyse de l'effectif et des départs — pour repérer où fuit le recrutement</div></div></div>
+  <div class="topbar"><div><h2>Ancienneté RH</h2><div class="sub">Recensement de l'effectif actuel, du doyen au dernier arrivé</div></div></div>
   <div class="grid g4" style="margin-bottom:18px">
-    <div class="panel kpi"><div class="lbl">Effectif actif</div><div class="val">${RH.length}</div><div class="delta">${HE.length} anciens enregistrés</div></div>
-    <div class="panel kpi"><div class="lbl">Ancienneté moyenne</div><div class="val">${ancMoy} <span style="font-size:1rem">j</span></div><div class="delta">des employés actuels</div></div>
-    <div class="panel kpi"><div class="lbl">Taux de départ</div><div class="val ${tauxDepart>50?'down':''}">${tauxDepart} %</div><div class="delta">sur ${totalPasses} passages</div></div>
-    <div class="panel kpi"><div class="lbl">Durée de vie moy.</div><div class="val">${vieMoy!==null?vieMoy+' j':'—'}</div><div class="delta">${dureesVie.length?'avant départ':'dates de départ manquantes'}</div></div>
+    <div class="panel kpi"><div class="lbl">Effectif recensé</div><div class="val">${RH.length}</div><div class="delta">fiche RH</div></div>
+    <div class="panel kpi"><div class="lbl">Ancienneté moyenne</div><div class="val">${ancMoy} <span style="font-size:1rem">j</span></div></div>
+    <div class="panel kpi"><div class="lbl">Doyen</div><div class="val" style="font-size:1.2rem">${doyen?esc(doyen.x.nom):'—'}</div><div class="delta">${doyen?doyen.a+' jours de maison':''}</div></div>
+    <div class="panel kpi"><div class="lbl">Dernier arrivé</div><div class="val" style="font-size:1.2rem">${bleu?esc(bleu.x.nom):'—'}</div><div class="delta">${bleu?'il y a '+bleu.a+' jour(s)':''}</div></div>
   </div>
-  ${flash?`<div class="warn">⚠️ <b>${flash} départ(s) en moins de 7 jours</b> — signe d'un problème d'accueil ou de recrutement trop large. À creuser côté RH.</div>`:''}
-  <div class="grid g2">
-    <div class="panel"><h3>Motifs de départ</h3>
-      ${Object.keys(motifs).length?'<canvas id="cMotifs" height="220"></canvas>':'<div class="empty">Aucun historique de départ disponible</div>'}</div>
-    <div class="panel" style="padding:8px 16px;overflow-x:auto"><h3>👥 Ancienneté de l'effectif actuel</h3>
-      ${RH.length?`<table><thead><tr><th>Employé</th><th>Grade</th><th>Arrivée</th><th>Ancienneté</th></tr></thead><tbody>
-      ${RH.map(x=>({x,a:jours(x.arrivee,now)})).sort((p,q)=>(q.a??-1)-(p.a??-1)).slice(0,30).map(({x,a})=>`<tr>
-        <td><b>${esc(x.nom)}</b></td><td style="color:var(--muted);font-size:.8rem">${esc(x.grade||'')}</td>
-        <td>${x.arrivee?frDate(x.arrivee):'—'}</td><td>${a!==null?`<b class="${a<7?'down':a>90?'up':''}">${a} j</b>`:'—'}</td></tr>`).join('')}
-      </tbody></table>`:'<div class="empty">Feuille RH vide</div>'}</div>
+  <div class="panel" style="padding:8px 16px;overflow-x:auto">
+    <h3 style="padding:12px 0 4px">👥 Ancienneté de l'effectif actuel (${RH.length})</h3>
+    ${RH.length?`<table><thead><tr><th>Employé</th><th>Grade</th><th>Arrivée</th><th>Ancienneté</th></tr></thead><tbody>
+    ${list.map(({x,a})=>`<tr>
+      <td><b>${esc(x.nom)}</b></td><td style="color:var(--muted);font-size:.8rem">${esc(x.grade||'')}</td>
+      <td>${x.arrivee?frDate(x.arrivee):'—'}</td><td>${a!==null?`<b class="${a<7?'down':a>90?'up':''}">${a} j</b>`:'<span style="color:var(--muted)">date d\'arrivée manquante</span>'}</td></tr>`).join('')}
+    </tbody></table>`:'<div class="empty">Feuille RH vide</div>'}
   </div>`;
-  if(Object.keys(motifs).length){
-    const e=Object.entries(motifs).sort((a,b)=>b[1]-a[1]);
-    mkChart('cMotifs',{type:'bar',data:{labels:e.map(x=>x[0]),datasets:[{data:e.map(x=>x[1]),backgroundColor:['#ff2d95','#8b5cf6','#22d7ee','#e8a020','#5aa0ff'],borderRadius:6}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}});
-  }
 }
 
 /* ================== CLÔTURE GUIDÉE DU LUNDI ================== */
