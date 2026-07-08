@@ -1047,7 +1047,7 @@ async function semaine(){
 }
 function closeWeek(){
   if(!S.runners.length) return toast('Aucun runner à clôturer');
-  if(!confirm(`Clôturer la semaine ${S.settings.semaine} ?\n\n• Les primes sont figées (quota + TOP 3)\n• Les compteurs hebdo repartent à zéro\n• Les montées de grade éligibles sont appliquées`)) return;
+  if(!confirm(`Clôturer la semaine ${S.settings.semaine} ?\n\n• Les primes sont figées (quota + TOP 3)\n• Les montées de grade éligibles sont appliquées\n• La feuille Éligibilité est regénérée (quotas réussis + direction)\n• Les compteurs hebdo repartent à zéro`)) return;
   const sorted=[...S.runners].sort((a,b)=>b.barils-a.barils);
   let primes=0, promus=[];
   sorted.forEach((r,i)=>{
@@ -1060,10 +1060,18 @@ function closeWeek(){
   const podium=sorted.slice(0,3).filter(r=>r.barils>0).map((r,i)=>`${['🥇','🥈','🥉'][i]} **${r.nom}** — ${fmt(r.barils)} barils (+${money(S.settings.top[i])})`).join('\n');
   sendLog(`🗓️ Clôture de la semaine ${w.num}`,
     `**Production totale : ${fmt(w.total)} barils** (CA ${money(w.total*S.settings.prix)})\n**Primes versées : ${money(primes)}**\n\n${podium||'_Aucun run cette semaine_'}${promus.length?`\n\n📈 Promotions : ${promus.map(n=>'**'+n+'**').join(', ')}`:''}`, 0xe8a020);
+  // feuille Éligibilité : réinitialisée pour la nouvelle semaine avec les quotas réussis + direction (auto-éligible)
+  let eligN=0;
+  if(S.sheets&&S.sheets.eligibilite!==undefined){
+    const dateP=new Date().toISOString().slice(0,10);
+    const eligibles=S.runners.filter(r=>r.poste||quotaOK(r));
+    S.sheets.eligibilite=eligibles.map(r=>({nom:r.nom,menus:true,boissons:true,bidons:true,date:dateP,don:'',permis:''}));
+    eligN=eligibles.length;
+  }
   S.runners.forEach(r=>{ r.barils=0; r.runs=[]; r.recrues=0; r.lastSync=0; });
   S.settings.semaine=isoWeek();
   save(); rerender();
-  toast(`🗓️ Semaine clôturée — ${money(primes)} de primes${promus.length?` · promus : ${promus.join(', ')}`:''}`);
+  toast(`🗓️ Semaine clôturée — ${money(primes)} de primes${promus.length?` · promus : ${promus.join(', ')}`:''} · éligibilité regénérée (${eligN} noms)`);
 }
 
 /* ================== PUBLICATION DES STATS PUBLIQUES ================== */
