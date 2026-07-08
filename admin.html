@@ -2288,9 +2288,9 @@ async function agenda(){
   <div class="topbar">
     <div><h2>Mon agenda</h2><div class="sub">🔒 Personnel — visible uniquement par toi · du ${long(days[0])} au ${long(days[6])}</div></div>
     <div style="display:flex;gap:10px;align-items:center">
-      <button class="btn btn-ghost" onclick="AG_OFF--;agenda()">‹</button>
-      <button class="btn btn-ghost" onclick="AG_OFF=0;agenda()">Aujourd'hui</button>
-      <button class="btn btn-ghost" onclick="AG_OFF++;agenda()">›</button>
+      <button class="btn btn-ghost" onclick="agNav(-1)">‹</button>
+      <button class="btn btn-ghost" onclick="agNav(0)">Aujourd'hui</button>
+      <button class="btn btn-ghost" onclick="agNav(1)">›</button>
       <button class="btn btn-gold" onclick="agEdit()">＋ Événement</button>
     </div>
   </div>
@@ -2322,6 +2322,7 @@ async function agenda(){
   <p style="color:var(--muted);font-size:.75rem;margin-top:10px">Clique sur une case pour ajouter un événement, sur un événement pour le modifier. Chaque compte Discord ne voit que son propre agenda.</p>`;
   const sc=$('#agScroll'); if(sc) sc.scrollTop=7.5*H;
 }
+function agNav(d){ AG_OFF=d===0?0:AG_OFF+d; agenda(); }
 function agNew(iso,ev){
   if(ev.target.closest('.ag-ev')) return;
   const h=Math.max(0,Math.min(23,Math.floor(ev.offsetY/44)));
