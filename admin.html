@@ -363,7 +363,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-11</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-12</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -485,7 +485,12 @@ function initSync(){
       S=Object.assign(defaults(),d);
       S.passHash=monPass;
       localStorage.setItem(LS_KEY,JSON.stringify(S));
-      if(sessionStorage.getItem('orx_auth')==='1'){ applyPerms(); rerender(); toast('☁️ Mise à jour reçue d\'un autre admin'); }
+      if(sessionStorage.getItem('orx_auth')==='1'){
+        applyPerms(); rerender();
+        const cu=currentUser(), wu=document.getElementById('whoami'); // le rôle affiché suit un éventuel changement
+        if(wu) wu.innerHTML=cu?`👤 <b style="color:var(--ink)">${esc(cu.user)}</b> · ${ROLES[cu.role]||cu.role}`:'';
+        toast('☁️ Mise à jour reçue d\'un autre admin');
+      }
       else checkDiscordAuth(); // en attente de validation : entre automatiquement dès que la direction valide
     })
     .subscribe(st=>{ if(st==='SUBSCRIBED') syncDot(true,'Temps réel actif'); });
@@ -607,7 +612,7 @@ function enter(){
   if(wu) wu.innerHTML=cu?`👤 <b style="color:var(--ink)">${esc(cu.user)}</b> · ${ROLES[cu.role]||cu.role}`:'';
   applyPerms(); navBadges();
   let _rsz; addEventListener('resize',()=>{ clearTimeout(_rsz); _rsz=setTimeout(applyPerms,200); });
-  S.settings.semaine=isoWeek(); save(); // semaine calendaire (S27, S28…)
+  const wk=isoWeek(); if(S.settings.semaine!==wk){ S.settings.semaine=wk; save(); } // semaine calendaire — save uniquement si elle change (évite d'écraser les modifs des autres admins)
   show('overview');
   // effectif ← tablette (le pull Supabase a déjà eu lieu au chargement de la page)
   setTimeout(async()=>{
@@ -625,7 +630,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-11';
+const APP_VERSION='C-12';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -2356,6 +2361,8 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-12',d:'09/07/2026',t:'Correctif rôles',items:[
+   ['🛠️','Changements de rôle fiabilisés','Un changement de rôle fait par un autre admin ne peut plus être annulé par accident, et il s\'applique en direct sur l\'écran de la personne concernée.']]},
  {v:'C-11',d:'09/07/2026',t:'MP automatiques & Ma semaine',items:[
    ['🙋','Ma semaine','Nouvelle vue perso pour tous : tes barils, ton quota, ta prime projetée, ton rang, ta progression vers la montée de grade.'],
    ['⏰','Rappels d\'agenda par MP','Le robot t\'envoie un MP Discord environ 1h avant chaque événement de ton agenda.'],
@@ -2980,7 +2987,7 @@ function setUserRole(id,r){
   const u=S.users.find(x=>x.id===id); if(!u) return;
   const dirs=S.users.filter(x=>x.role==='direction');
   if(u.role==='direction'&&r!=='direction'&&dirs.length<=1){ params(); return toast('⚠️ Il faut garder au moins un compte Direction'); }
-  u.role=r; jlog(`Changement de rôle : ${u.user} → ${ROLES[r]}`); save(); toast('👤 '+u.user+' → '+ROLES[r]);
+  u.role=r; jlog(`Changement de rôle : ${u.user} → ${ROLES[r]}`); save(); sbPushNow(); toast('👤 '+u.user+' → '+ROLES[r]);
 }
 async function approvePending(did,pseudo){
   if(!S.users.find(x=>x.did===did))
