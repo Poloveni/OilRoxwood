@@ -62,6 +62,8 @@
   .nav-sec{display:flex;justify-content:space-between;align-items:center;padding:13px 14px 4px;font-size:.6rem;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);opacity:.65;user-select:none;cursor:pointer;transition:opacity .15s}
   .nav-sec:hover{opacity:1}
   .nav-sec .chev{font-size:.9em;transition:transform .2s}
+  .nvb{margin-left:auto;background:var(--red,#ff5c5c);color:#fff;font-size:.66rem;font-weight:800;border-radius:99px;padding:1px 7px;line-height:1.5}
+  .nvb.dot{width:9px;height:9px;padding:0;border-radius:50%}
   .nav-item:hover{background:var(--panel-2);color:var(--ink)}
   .nav-item.active{background:linear-gradient(135deg,rgba(232,160,32,.18),rgba(232,160,32,.06));color:var(--accent)}
   aside .spacer{flex:1}
@@ -344,8 +346,13 @@
     .brand{padding:0 10px}.brand small{display:none}
     .nav-item{width:auto;white-space:nowrap;margin:0 2px}
     .nav-item .txt{display:none}
-    main{margin-left:0;padding:20px}
+    .nav-sec{display:none}
+    .nvb{position:absolute;top:2px;right:2px;margin:0}
+    main{margin-left:0;padding:14px}
     .g4{grid-template-columns:1fr 1fr}
+    .panel{overflow-x:auto}
+    .topbar{flex-wrap:wrap;gap:10px}
+    .modal{padding:20px;width:min(460px,95vw)}
   }
 </style>
 </head>
@@ -356,7 +363,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-10</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-11</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -387,6 +394,7 @@
     <button class="nav-item" data-view="relances">📞 <span class="txt">Relances</span></button>
     <button class="nav-item" data-view="bilan">🏦 <span class="txt">Bilan compta</span></button>
     <div class="nav-sec" data-sec="perso" onclick="navToggle('perso')">Perso <span class="chev">▾</span></div>
+    <button class="nav-item" data-view="moi">🙋 <span class="txt">Ma semaine</span></button>
     <button class="nav-item" data-view="agenda">📅 <span class="txt">Mon agenda</span></button>
     <button class="nav-item" data-view="feedback">💡 <span class="txt">Suggestions / Bugs</span></button>
     <button class="nav-item" data-view="maj">🆕 <span class="txt">Mises à jour</span></button>
@@ -545,11 +553,11 @@ async function sha(t){
 const ROLES={direction:'Direction',rh:'RH',comptable:'Comptable',commercial:'Commercial',membre:'Membre'};
 /* Onglets visibles par rôle — la Direction voit tout, un Membre ne voit que la vue d'ensemble */
 const PERMS={
-  direction:['overview','effectif','runs','semaine','historique','cloture','feuilles','factures','relances','bilan','retention','fer','agenda','feedback','maj','dlogs','journal','params'],
-  rh:       ['overview','effectif','semaine','historique','feuilles','retention','agenda','feedback','maj','dlogs'],
-  comptable:['overview','feuilles','factures','bilan','agenda','feedback','maj'],
-  commercial:['overview','factures','relances','feuilles','agenda','feedback','maj'],
-  membre:   ['effectif','agenda','feedback','maj'] // lecture seule + boîte à idées + agenda perso
+  direction:['overview','effectif','runs','semaine','historique','cloture','feuilles','factures','relances','bilan','retention','fer','moi','agenda','feedback','maj','dlogs','journal','params'],
+  rh:       ['overview','effectif','semaine','historique','feuilles','retention','moi','agenda','feedback','maj','dlogs'],
+  comptable:['overview','feuilles','factures','bilan','moi','agenda','feedback','maj'],
+  commercial:['overview','factures','relances','feuilles','moi','agenda','feedback','maj'],
+  membre:   ['effectif','moi','agenda','feedback','maj'] // lecture seule + stats perso + boîte à idées + agenda
 };
 function isMembre(){
   if(sessionStorage.getItem('orx_user')==='SECOURS') return false; // clé de secours = Direction
@@ -572,8 +580,9 @@ function navToggle(k){
 }
 function applyPerms(){
   const al=allowedViews(), col=navCollapsed();
+  const isMob=window.matchMedia&&matchMedia('(max-width:760px)').matches; // mobile : jamais replié (titres cachés)
   document.querySelectorAll('.nav-sec').forEach(h=>{
-    const closed=col.includes(h.dataset.sec);
+    const closed=!isMob&&col.includes(h.dataset.sec);
     let el=h.nextElementSibling, any=false;
     while(el&&!el.classList.contains('nav-sec')&&!el.classList.contains('spacer')){
       if(el.classList.contains('nav-item')){
@@ -596,7 +605,8 @@ function enter(){
   document.getElementById('app').style.display='block';
   const cu=currentUser(), wu=document.getElementById('whoami');
   if(wu) wu.innerHTML=cu?`👤 <b style="color:var(--ink)">${esc(cu.user)}</b> · ${ROLES[cu.role]||cu.role}`:'';
-  applyPerms();
+  applyPerms(); navBadges();
+  let _rsz; addEventListener('resize',()=>{ clearTimeout(_rsz); _rsz=setTimeout(applyPerms,200); });
   S.settings.semaine=isoWeek(); save(); // semaine calendaire (S27, S28…)
   show('overview');
   // effectif ← tablette (le pull Supabase a déjà eu lieu au chargement de la page)
@@ -615,7 +625,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-10';
+const APP_VERSION='C-11';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -795,7 +805,7 @@ function show(v){
   VIEW=v;
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
-  ({overview,effectif,runs,semaine,historique,cloture,feuilles,factures,relances,bilan,retention,fer,agenda,feedback,maj,dlogs,journal,params})[v]();
+  ({overview,effectif,runs,semaine,historique,cloture,feuilles,factures,relances,bilan,retention,fer,moi,agenda,feedback,maj,dlogs,journal,params})[v]();
 }
 function rerender(){ show(VIEW); }
 
@@ -2346,6 +2356,12 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-11',d:'09/07/2026',t:'MP automatiques & Ma semaine',items:[
+   ['🙋','Ma semaine','Nouvelle vue perso pour tous : tes barils, ton quota, ta prime projetée, ton rang, ta progression vers la montée de grade.'],
+   ['⏰','Rappels d\'agenda par MP','Le robot t\'envoie un MP Discord environ 1h avant chaque événement de ton agenda.'],
+   ['📩','MP de bienvenue','Quand la direction valide une demande d\'accès, le nouveau reçoit automatiquement un MP avec le lien de connexion.'],
+   ['🔴','Badges de notification','Compteur de suggestions à traiter (direction) et point rouge sur « Mises à jour » quand une nouvelle version sort.'],
+   ['📱','Meilleur affichage mobile','Tableaux scrollables, grilles adaptées, navigation compacte sur téléphone.']]},
  {v:'C-10',d:'09/07/2026',t:'Navigation pliable',items:[
    ['🗄️','Sections pliables','Clique sur un titre de section (Pilotage, Gestion…) pour replier ou déplier ses onglets — le choix est mémorisé.'],
    ['🤝','Page Équipe','Accessible directement depuis la barre latérale du dashboard.']]},
@@ -2385,6 +2401,7 @@ const CHANGELOG=[
    ['📺','TV du dépôt & page Équipe','Podium et quotas en direct sur grand écran, consultation des barils restants pour chaque runner.']]}
 ];
 function maj(){
+  localStorage.setItem('orx_seenver',APP_VERSION); navBadges(); // vu → le point rouge s'éteint
   $('#main').innerHTML=`
   <div class="topbar"><div><h2>Mises à jour</h2><div class="sub">Tout ce qui a changé sur le site et le dashboard · version actuelle : <b style="color:var(--accent)">${APP_VERSION}</b></div></div></div>
   ${CHANGELOG.map(c=>`<div class="panel" style="margin-bottom:18px">
@@ -2486,6 +2503,84 @@ async function restoreBackup(name){
     toast('📥 Sauvegarde restaurée — état partagé avec tous les admins');
     sendLog('📥 Restauration de sauvegarde',`La sauvegarde **${name.replace('.json','')}** a été restaurée par **${(currentUser()||{}).user||'?'}** — l'état a été remplacé.`,0xff5c5c);
   }catch(e){ toast('❌ Restauration impossible : '+(e.message||e)); }
+}
+
+/* ================== MA SEMAINE (stats perso) ================== */
+function moiNom(){
+  const cu=currentUser();
+  if(cu){
+    const row=((S.sheets&&S.sheets.rh)||[]).find(x=>String(x.discord||'').toLowerCase().trim()===String(cu.user||'').toLowerCase().trim()&&String(x.nom||'').trim());
+    if(row) return row.nom;
+  }
+  return localStorage.getItem('orx_moi')||'';
+}
+function moi(){
+  const R=S.runners||[], nom=moiNom();
+  const r=R.find(x=>String(x.nom||'').toLowerCase().trim()===String(nom||'').toLowerCase().trim());
+  if(!r){
+    $('#main').innerHTML=`
+    <div class="topbar"><div><h2>Ma semaine</h2><div class="sub">Tes stats perso, rien que les tiennes</div></div></div>
+    <div class="panel" style="max-width:560px">
+      <h3>🙋 Qui es-tu dans l'effectif ?</h3>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px">Je n'ai pas trouvé ton nom automatiquement. Choisis-le ci-dessous — ou mieux : demande aux RH de renseigner ton pseudo Discord dans la feuille RH, et ce sera automatique pour toujours.</p>
+      ${R.length?`<select class="field" id="moiSel">${[...R].sort((a,b)=>String(a.nom).localeCompare(String(b.nom))).map(x=>`<option>${esc(x.nom)}</option>`).join('')}</select>
+      <button class="btn btn-gold" style="width:100%;margin-top:12px" onclick="localStorage.setItem('orx_moi',$('#moiSel').value);moi()">C'est moi !</button>`
+      :'<div class="empty">L\'effectif est vide pour le moment</div>'}
+    </div>`;
+    return;
+  }
+  const g=grade(r), q=g.quota;
+  const pcQ=q?Math.min(100,Math.round(r.barils/q*100)):100;
+  const classement=[...R].filter(x=>!x.poste).sort((a,b)=>b.barils-a.barils);
+  const rang=r.poste?0:classement.findIndex(x=>x===r)+1;
+  const s=seuilMontee(r), next=GRADES[r.grade+1];
+  const pcM=s?Math.min(100,Math.round(r.barils/s*100)):0;
+  const prime=primeProj(r);
+  const bar=(pc,ok)=>`<div style="background:var(--panel-2);border:1px solid var(--line);border-radius:99px;height:16px;overflow:hidden;margin-top:8px">
+    <div style="height:100%;width:${pc}%;border-radius:99px;background:${ok?'linear-gradient(90deg,#2eb872,#3ddc84)':'linear-gradient(90deg,var(--accent),#ff2d95)'}"></div></div>`;
+  $('#main').innerHTML=`
+  <div class="topbar">
+    <div><h2>Ma semaine</h2><div class="sub">👤 <b style="color:var(--ink)">${esc(r.nom)}</b> · <span class="badge ${gCls(r)}">${esc(gTitle(r))}</span> · semaine ${S.settings.semaine}</div></div>
+    <button class="btn btn-ghost btn-sm" onclick="localStorage.removeItem('orx_moi');moi()">↺ Changer de nom</button>
+  </div>
+  <div class="grid g4" style="margin-bottom:18px">
+    <div class="panel kpi"><div class="lbl">Mes barils · semaine</div><div class="val">${fmt(r.barils)}</div><div class="delta">total carrière : ${fmt(r.total)}</div></div>
+    <div class="panel kpi"><div class="lbl">Mon quota</div><div class="val ${quotaOK(r)?'up':''}">${q?pcQ+'%':'—'}</div><div class="delta">${q?fmt(r.barils)+' / '+fmt(q)+' barils':'aucun quota (poste)'}</div></div>
+    <div class="panel kpi"><div class="lbl">Prime projetée</div><div class="val gold">${money(prime)}</div><div class="delta">${quotaOK(r)?'quota validé ✔':'atteins ton quota pour la débloquer'}</div></div>
+    <div class="panel kpi"><div class="lbl">Mon rang</div><div class="val">${rang?rang+'ᵉ':'—'}</div><div class="delta">${rang?(rang<=3?'🏆 dans le TOP 3 !':'sur '+classement.length+' runners'):'poste de direction'}</div></div>
+  </div>
+  ${q?`<div class="panel" style="margin-bottom:18px">
+    <h3>🎯 Mon quota de la semaine — ${fmt(q)} barils</h3>${bar(pcQ,quotaOK(r))}
+    <div style="text-align:right;margin-top:6px;font-size:.8rem;color:${quotaOK(r)?'#3ddc84':'var(--muted)'}">
+      ${quotaOK(r)?'✔ Quota atteint — prime débloquée !':`encore ${fmt(q-r.barils)} barils pour débloquer ta prime`}</div>
+  </div>`:''}
+  ${(!r.poste&&next&&s)?`<div class="panel" style="margin-bottom:18px">
+    <h3>📈 Montée de grade — <span class="badge ${next.cls}">${next.nom}</span> à ${fmt(s)} barils/semaine</h3>${bar(pcM,r.barils>=s)}
+    <div style="text-align:right;margin-top:6px;font-size:.8rem;color:${r.barils>=s?'#3ddc84':'var(--muted)'}">
+      ${r.barils>=s?'🎉 Seuil atteint — montée proposée à la clôture du lundi !':`encore ${fmt(s-r.barils)} barils cette semaine pour la montée`}</div>
+  </div>`:''}
+  ${rang&&rang<=3?`<div class="panel" style="border-color:rgba(232,160,32,.4)">
+    <h3>🏆 TOP 3 en vue !</h3>
+    <p style="color:var(--muted);font-size:.86rem">Tu es ${rang}ᵉ au classement de la semaine — si ça tient jusqu'à la clôture, prime bonus de <b style="color:var(--accent)">${money(S.settings.top[rang-1]||0)}</b> !</p>
+  </div>`:''}`;
+}
+
+/* ================== BADGES DE NOTIFICATION ================== */
+async function navBadges(){
+  const m=document.querySelector('.nav-item[data-view="maj"]');
+  if(m){ const old=m.querySelector('.nvb'); if(old) old.remove();
+    if(localStorage.getItem('orx_seenver')!==APP_VERSION) m.insertAdjacentHTML('beforeend','<span class="nvb dot" title="Nouvelle version !"></span>');
+  }
+  const f=document.querySelector('.nav-item[data-view="feedback"]');
+  if(f){ const old=f.querySelector('.nvb'); if(old) old.remove();
+    try{
+      const cu=currentUser();
+      if(SYNC.cli&&cu&&cu.role==='direction'){
+        const {count}=await SYNC.cli.from('oilroxwood_feedback').select('*',{count:'exact',head:true}).is('statut',null);
+        if(count>0) f.insertAdjacentHTML('beforeend',`<span class="nvb" title="${count} remarque(s) à traiter">${count}</span>`);
+      }
+    }catch(e){}
+  }
 }
 
 /* ================== AGENDA PERSONNEL ================== */
@@ -2645,12 +2740,12 @@ async function fbSend(){
 }
 async function fbDone(id){
   try{ await SYNC.cli.from('oilroxwood_feedback').update({statut:'traite'}).eq('id',id); }catch(e){}
-  feedback();
+  feedback(); navBadges();
 }
 async function fbDel(id){
   if(!confirm('Supprimer cette remarque ?')) return;
   try{ await SYNC.cli.from('oilroxwood_feedback').delete().eq('id',id); }catch(e){}
-  feedback();
+  feedback(); navBadges();
 }
 
 /* ================== LOGS DISCORD ================== */
@@ -2893,6 +2988,8 @@ async function approvePending(did,pseudo){
   jlog(`Accès approuvé : ${pseudo}`);
   save(); await sbPushNow();
   try{ await SYNC.cli.from('oilroxwood_demandes').delete().eq('did',did); }catch(e){}
+  // MP de bienvenue envoyé par le robot au prochain passage (file d'attente oilroxwood_notifs)
+  try{ await SYNC.cli.from('oilroxwood_notifs').insert({did,msg:`✅ **Ton accès à l'espace membre Oil Roxwood est validé !**\nConnecte-toi ici : https://poloveni.github.io/OilRoxwood/admin.html\nBienvenue dans l'équipe 🛢️`}); }catch(e){}
   params();
   toast('✅ '+pseudo+' validé — il entre automatiquement (rôle Membre, modifiable ci-dessous)');
   sendLog('✅ Accès validé', `**${pseudo}** a maintenant accès au dashboard (Membre)`, 0x3ddc84);

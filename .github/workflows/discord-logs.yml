@@ -41,6 +41,18 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
         run: python3 scripts/dm_feedback.py || true
 
+      - name: Rappels d'agenda (MP 1h avant)
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/agenda_reminders.py || true
+
+      - name: Notifications Discord (accès validés…)
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/send_notifs.py || true
+
       - name: Commit si changement
         run: |
           git config user.name "oilroxwood-bot"

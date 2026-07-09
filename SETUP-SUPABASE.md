@@ -52,6 +52,25 @@ create policy "agenda_oilroxwood" on oilroxwood_agenda
   for all using (true) with check (true);
 ```
 
+## Étape 2 ter — Table des notifications (MP automatiques)
+
+Pour les MP automatiques (accès validé, etc.), exécute aussi :
+
+```sql
+create table if not exists oilroxwood_notifs (
+  id bigint generated always as identity primary key,
+  did text not null,
+  msg text not null,
+  done boolean default false,
+  date timestamptz default now()
+);
+
+alter table oilroxwood_notifs enable row level security;
+
+create policy "notifs_auth" on oilroxwood_notifs
+  for all to authenticated using (true) with check (true);
+```
+
 ## Étape 3 — Récupérer les clés
 
 Menu **Settings → API** (ou Project Settings → Data API) :
