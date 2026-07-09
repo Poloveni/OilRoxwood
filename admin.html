@@ -59,7 +59,9 @@
     display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;border:none;background:none;
     color:var(--muted);font-size:.92rem;font-weight:600;width:100%;text-align:left;margin-bottom:4px;transition:all .15s
   }
-  .nav-sec{padding:13px 14px 4px;font-size:.6rem;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);opacity:.65;user-select:none}
+  .nav-sec{display:flex;justify-content:space-between;align-items:center;padding:13px 14px 4px;font-size:.6rem;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);opacity:.65;user-select:none;cursor:pointer;transition:opacity .15s}
+  .nav-sec:hover{opacity:1}
+  .nav-sec .chev{font-size:.9em;transition:transform .2s}
   .nav-item:hover{background:var(--panel-2);color:var(--ink)}
   .nav-item.active{background:linear-gradient(135deg,rgba(232,160,32,.18),rgba(232,160,32,.06));color:var(--accent)}
   aside .spacer{flex:1}
@@ -354,7 +356,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-8</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-10</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -369,31 +371,32 @@
 <div id="app">
   <aside>
     <div class="brand"><img src="assets/logo.png" alt="" width="32" height="32" style="object-fit:contain"> <span>OIL <b>ROXWOOD</b><small>ESPACE MEMBRE <span id="syncDot" title="Synchro non configurée" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-left:4px;vertical-align:middle"></span></small></span></div>
-    <div class="nav-sec">Pilotage</div>
+    <div class="nav-sec" data-sec="pilotage" onclick="navToggle('pilotage')">Pilotage <span class="chev">▾</span></div>
     <button class="nav-item active" data-view="overview">📊 <span class="txt">Vue d'ensemble</span></button>
     <button class="nav-item" data-view="semaine">💰 <span class="txt">Semaine &amp; Primes</span></button>
     <button class="nav-item" data-view="historique">📈 <span class="txt">Historique</span></button>
     <button class="nav-item" data-view="cloture">🗓️ <span class="txt">Clôture du lundi</span></button>
-    <div class="nav-sec">Gestion</div>
+    <div class="nav-sec" data-sec="gestion" onclick="navToggle('gestion')">Gestion <span class="chev">▾</span></div>
     <button class="nav-item" data-view="effectif">👥 <span class="txt">Effectif</span></button>
     <button class="nav-item" data-view="runs">🚛 <span class="txt">Runs</span></button>
     <button class="nav-item" data-view="feuilles">📋 <span class="txt">Feuilles</span></button>
     <button class="nav-item" data-view="retention">🗂️ <span class="txt">Ancienneté RH</span></button>
     <button class="nav-item" data-view="fer">🔩 <span class="txt">Achats Fer</span></button>
-    <div class="nav-sec">Commerce</div>
+    <div class="nav-sec" data-sec="commerce" onclick="navToggle('commerce')">Commerce <span class="chev">▾</span></div>
     <button class="nav-item" data-view="factures">🧾 <span class="txt">Factures</span></button>
     <button class="nav-item" data-view="relances">📞 <span class="txt">Relances</span></button>
     <button class="nav-item" data-view="bilan">🏦 <span class="txt">Bilan compta</span></button>
-    <div class="nav-sec">Perso</div>
+    <div class="nav-sec" data-sec="perso" onclick="navToggle('perso')">Perso <span class="chev">▾</span></div>
     <button class="nav-item" data-view="agenda">📅 <span class="txt">Mon agenda</span></button>
     <button class="nav-item" data-view="feedback">💡 <span class="txt">Suggestions / Bugs</span></button>
     <button class="nav-item" data-view="maj">🆕 <span class="txt">Mises à jour</span></button>
-    <div class="nav-sec">Système</div>
+    <div class="nav-sec" data-sec="systeme" onclick="navToggle('systeme')">Système <span class="chev">▾</span></div>
     <button class="nav-item" data-view="dlogs">📡 <span class="txt">Logs Discord</span></button>
     <button class="nav-item" data-view="journal">📜 <span class="txt">Journal</span></button>
     <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
     <div class="spacer"></div>
     <a class="nav-item" href="tv.html" target="_blank" rel="noopener" style="text-decoration:none">📺 <span class="txt">TV du dépôt</span></a>
+    <a class="nav-item" href="equipe.html" target="_blank" rel="noopener" style="text-decoration:none">🤝 <span class="txt">Page Équipe</span></a>
     <a class="nav-item" href="index.html" style="text-decoration:none">🌐 <span class="txt">Retour au site</span></a>
     <div id="whoami" style="padding:8px 14px;font-size:.78rem;color:var(--muted)"></div>
     <button class="nav-item" id="logout" onclick="logout()">⏻ <span class="txt">Déconnexion</span></button>
@@ -560,19 +563,28 @@ function allowedViews(){
   const cu=currentUser();
   return cu ? (PERMS[cu.role]||PERMS.membre) : PERMS.membre; // session sans compte : minimum
 }
+function navCollapsed(){ try{ return JSON.parse(localStorage.getItem('orx_navcol'))||[]; }catch(e){ return []; } }
+function navToggle(k){
+  let c=navCollapsed();
+  c=c.includes(k)?c.filter(x=>x!==k):[...c,k];
+  localStorage.setItem('orx_navcol',JSON.stringify(c));
+  applyPerms();
+}
 function applyPerms(){
-  const al=allowedViews();
-  document.querySelectorAll('.nav-item[data-view]').forEach(b=>{
-    b.style.display=al.includes(b.dataset.view)?'':'none';
-  });
-  // masque les titres de section dont tous les onglets sont cachés
+  const al=allowedViews(), col=navCollapsed();
   document.querySelectorAll('.nav-sec').forEach(h=>{
-    let el=h.nextElementSibling, visible=false;
+    const closed=col.includes(h.dataset.sec);
+    let el=h.nextElementSibling, any=false;
     while(el&&!el.classList.contains('nav-sec')&&!el.classList.contains('spacer')){
-      if(el.classList.contains('nav-item')&&el.style.display!=='none') visible=true;
+      if(el.classList.contains('nav-item')){
+        const okPerm=!el.dataset.view||al.includes(el.dataset.view);
+        if(okPerm) any=true;
+        el.style.display=(okPerm&&!closed)?'':'none'; // caché si non autorisé OU section repliée
+      }
       el=el.nextElementSibling;
     }
-    h.style.display=visible?'':'none';
+    h.style.display=any?'':'none'; // titre masqué si aucun onglet autorisé dans la section
+    const ch=h.querySelector('.chev'); if(ch) ch.style.transform=closed?'rotate(-90deg)':'';
   });
 }
 function currentUser(){
@@ -603,7 +615,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-8';
+const APP_VERSION='C-10';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -2334,6 +2346,11 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-10',d:'09/07/2026',t:'Navigation pliable',items:[
+   ['🗄️','Sections pliables','Clique sur un titre de section (Pilotage, Gestion…) pour replier ou déplier ses onglets — le choix est mémorisé.'],
+   ['🤝','Page Équipe','Accessible directement depuis la barre latérale du dashboard.']]},
+ {v:'C-9',d:'09/07/2026',t:'Comptes renommables',items:[
+   ['✏️','Renommage des comptes','La direction peut modifier le pseudo de n\'importe quel compte directement dans les Paramètres. (Suggestion d\'Orion 👏)']]},
  {v:'C-8',d:'08/07/2026',t:'Mises à jour & rangement',items:[
    ['🆕','Cet onglet !','Toutes les évolutions du site et du dashboard, réunies au même endroit pour tout le monde.'],
    ['🗄️','Barre latérale rangée','Les onglets sont regroupés par sections : Pilotage, Gestion, Commerce, Perso, Système — plus lisible.']]},
@@ -2766,7 +2783,7 @@ async function params(){
         </div>`:''}
         <table style="margin-bottom:12px"><thead><tr><th>Identifiant</th><th>Rôle</th><th style="text-align:right"></th></tr></thead><tbody>
         ${(S.users||[]).map(u=>`<tr>
-          <td><b>${esc(u.user)}</b></td>
+          <td><input class="field" style="padding:6px 9px;font-weight:700;max-width:170px" value="${esc(u.user)}" title="${u.did?'Compte lié à Discord — renomme librement':'⚠️ Pas encore lié : le pseudo doit rester le pseudo Discord exact'}" onchange="renameUser(${u.id},this.value)"></td>
           <td><select class="field" style="padding:5px 8px;max-width:160px" onchange="setUserRole(${u.id},this.value)">
             ${Object.entries(ROLES).map(([k,l])=>`<option value="${k}" ${u.role===k?'selected':''}>${l}</option>`).join('')}</select></td>
           <td style="text-align:right;white-space:nowrap">
@@ -2852,6 +2869,17 @@ async function addUser(){
   jlog(`Création du compte ${u} (${ROLES[r]})`);
   save(); params(); toast('✅ Compte '+u+' créé ('+ROLES[r]+') — connexion via Discord');
   sendLog('👤 Nouveau compte espace membre', `**${u}** (${ROLES[r]}) créé par ${currentUser()?currentUser().user:'?'}`, 0x3ddc84);
+}
+function renameUser(id,v){
+  const u=S.users.find(x=>x.id===id); if(!u) return;
+  v=String(v||'').trim();
+  if(v.length<2){ params(); return toast('⚠️ Pseudo trop court'); }
+  if(S.users.find(x=>x.id!==id&&x.user.toLowerCase()===v.toLowerCase())){ params(); return toast('⚠️ Ce pseudo existe déjà'); }
+  const moi=currentUser(); // avant renommage (retrouvé par l'ancien pseudo)
+  jlog(`Renommage du compte ${u.user} → ${v}`);
+  u.user=v;
+  if(moi&&moi.id===id) sessionStorage.setItem('orx_user',v); // on se renomme soi-même : la session suit
+  save(); sbPushNow(); params(); toast('✏️ Compte renommé : '+v);
 }
 function setUserRole(id,r){
   const u=S.users.find(x=>x.id===id); if(!u) return;
