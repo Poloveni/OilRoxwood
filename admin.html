@@ -59,6 +59,7 @@
     display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;border:none;background:none;
     color:var(--muted);font-size:.92rem;font-weight:600;width:100%;text-align:left;margin-bottom:4px;transition:all .15s
   }
+  .nav-sec{padding:13px 14px 4px;font-size:.6rem;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);opacity:.65;user-select:none}
   .nav-item:hover{background:var(--panel-2);color:var(--ink)}
   .nav-item.active{background:linear-gradient(135deg,rgba(232,160,32,.18),rgba(232,160,32,.06));color:var(--accent)}
   aside .spacer{flex:1}
@@ -368,21 +369,26 @@
 <div id="app">
   <aside>
     <div class="brand"><img src="assets/logo.png" alt="" width="32" height="32" style="object-fit:contain"> <span>OIL <b>ROXWOOD</b><small>ESPACE MEMBRE <span id="syncDot" title="Synchro non configurée" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-left:4px;vertical-align:middle"></span></small></span></div>
+    <div class="nav-sec">Pilotage</div>
     <button class="nav-item active" data-view="overview">📊 <span class="txt">Vue d'ensemble</span></button>
-    <button class="nav-item" data-view="effectif">👥 <span class="txt">Effectif</span></button>
-    <button class="nav-item" data-view="runs">🚛 <span class="txt">Runs</span></button>
     <button class="nav-item" data-view="semaine">💰 <span class="txt">Semaine &amp; Primes</span></button>
     <button class="nav-item" data-view="historique">📈 <span class="txt">Historique</span></button>
     <button class="nav-item" data-view="cloture">🗓️ <span class="txt">Clôture du lundi</span></button>
+    <div class="nav-sec">Gestion</div>
+    <button class="nav-item" data-view="effectif">👥 <span class="txt">Effectif</span></button>
+    <button class="nav-item" data-view="runs">🚛 <span class="txt">Runs</span></button>
     <button class="nav-item" data-view="feuilles">📋 <span class="txt">Feuilles</span></button>
+    <button class="nav-item" data-view="retention">🗂️ <span class="txt">Ancienneté RH</span></button>
+    <button class="nav-item" data-view="fer">🔩 <span class="txt">Achats Fer</span></button>
+    <div class="nav-sec">Commerce</div>
     <button class="nav-item" data-view="factures">🧾 <span class="txt">Factures</span></button>
     <button class="nav-item" data-view="relances">📞 <span class="txt">Relances</span></button>
     <button class="nav-item" data-view="bilan">🏦 <span class="txt">Bilan compta</span></button>
-    <button class="nav-item" data-view="retention">📋 <span class="txt">Ancienneté RH</span></button>
-    <button class="nav-item" data-view="fer">🔩 <span class="txt">Achats Fer</span></button>
+    <div class="nav-sec">Perso</div>
     <button class="nav-item" data-view="agenda">📅 <span class="txt">Mon agenda</span></button>
     <button class="nav-item" data-view="feedback">💡 <span class="txt">Suggestions / Bugs</span></button>
     <button class="nav-item" data-view="maj">🆕 <span class="txt">Mises à jour</span></button>
+    <div class="nav-sec">Système</div>
     <button class="nav-item" data-view="dlogs">📡 <span class="txt">Logs Discord</span></button>
     <button class="nav-item" data-view="journal">📜 <span class="txt">Journal</span></button>
     <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
@@ -558,6 +564,15 @@ function applyPerms(){
   const al=allowedViews();
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>{
     b.style.display=al.includes(b.dataset.view)?'':'none';
+  });
+  // masque les titres de section dont tous les onglets sont cachés
+  document.querySelectorAll('.nav-sec').forEach(h=>{
+    let el=h.nextElementSibling, visible=false;
+    while(el&&!el.classList.contains('nav-sec')&&!el.classList.contains('spacer')){
+      if(el.classList.contains('nav-item')&&el.style.display!=='none') visible=true;
+      el=el.nextElementSibling;
+    }
+    h.style.display=visible?'':'none';
   });
 }
 function currentUser(){
@@ -2319,8 +2334,9 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
- {v:'C-8',d:'08/07/2026',t:'Onglet Mises à jour',items:[
-   ['🆕','Cet onglet !','Toutes les évolutions du site et du dashboard, réunies au même endroit pour tout le monde.']]},
+ {v:'C-8',d:'08/07/2026',t:'Mises à jour & rangement',items:[
+   ['🆕','Cet onglet !','Toutes les évolutions du site et du dashboard, réunies au même endroit pour tout le monde.'],
+   ['🗄️','Barre latérale rangée','Les onglets sont regroupés par sections : Pilotage, Gestion, Commerce, Perso, Système — plus lisible.']]},
  {v:'C-7',d:'08/07/2026',t:'Vente rapide',items:[
    ['⚡','Vente rapide sans facture','Commande employé/citoyen en 2 clics dans Facturation — aucune facture générée, mais les bidons comptent dans les ventes de la semaine et donc dans le salaire des commerciaux. (Suggestion d\'Orion 👏)']]},
  {v:'C-6',d:'08/07/2026',t:'Alerte blacklist',items:[
