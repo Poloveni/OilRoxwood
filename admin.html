@@ -363,7 +363,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-12</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-13</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -392,6 +392,7 @@
     <button class="nav-item" data-view="factures">🧾 <span class="txt">Factures</span></button>
     <button class="nav-item" data-view="relances">📞 <span class="txt">Relances</span></button>
     <button class="nav-item" data-view="bilan">🏦 <span class="txt">Bilan compta</span></button>
+    <button class="nav-item" data-view="quotascom">⚖️ <span class="txt">Quotas commerciaux</span></button>
     <button class="nav-item" data-view="fer">🔩 <span class="txt">Achats Fer</span></button>
     <div class="nav-sec" data-sec="perso" onclick="navToggle('perso')">Perso <span class="chev">▾</span></div>
     <button class="nav-item" data-view="moi">🙋 <span class="txt">Ma semaine</span></button>
@@ -558,10 +559,10 @@ async function sha(t){
 const ROLES={direction:'Direction',rh:'RH',comptable:'Comptable',commercial:'Commercial',membre:'Membre'};
 /* Onglets visibles par rôle — la Direction voit tout, un Membre ne voit que la vue d'ensemble */
 const PERMS={
-  direction:['overview','effectif','runs','semaine','historique','cloture','feuilles','factures','relances','bilan','retention','fer','moi','agenda','feedback','maj','dlogs','journal','params'],
-  rh:       ['overview','effectif','semaine','historique','feuilles','retention','moi','agenda','feedback','maj','dlogs'],
+  direction:['overview','effectif','runs','semaine','historique','cloture','feuilles','factures','relances','bilan','retention','quotascom','fer','moi','agenda','feedback','maj','dlogs','journal','params'],
+  rh:       ['overview','effectif','semaine','historique','feuilles','retention','factures','relances','quotascom','fer','moi','agenda','feedback','maj','dlogs'],
   comptable:['overview','feuilles','factures','bilan','moi','agenda','feedback','maj'],
-  commercial:['overview','factures','relances','feuilles','fer','moi','agenda','feedback','maj'],
+  commercial:['overview','factures','relances','feuilles','quotascom','fer','moi','agenda','feedback','maj'],
   membre:   ['effectif','moi','agenda','feedback','maj'] // lecture seule + stats perso + boîte à idées + agenda
 };
 function isMembre(){
@@ -630,7 +631,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-12';
+const APP_VERSION='C-13';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -810,7 +811,7 @@ function show(v){
   VIEW=v;
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
-  ({overview,effectif,runs,semaine,historique,cloture,feuilles,factures,relances,bilan,retention,fer,moi,agenda,feedback,maj,dlogs,journal,params})[v]();
+  ({overview,effectif,runs,semaine,historique,cloture,feuilles,factures,relances,bilan,retention,quotascom,fer,moi,agenda,feedback,maj,dlogs,journal,params})[v]();
 }
 function rerender(){ show(VIEW); }
 
@@ -2361,6 +2362,10 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-13',d:'11/07/2026',t:'Quotas commerciaux',items:[
+   ['⚖️','Quotas commerciaux','Nouvelle vue Commerce : bidons à reproduire par personne (ventes ÷ commerciaux actifs), fer à acheter (le double), et une case pour noter ses achats de fer — le reste à acheter se met à jour en direct. Remise à zéro chaque semaine.'],
+   ['🔩','Achats Fer élargi','L\'onglet Achats Fer est maintenant visible par les commerciaux et les RH (qui reçoivent aussi Factures et Relances).'],
+   ['✔','Statut de facture en un clic','La pastille En attente / Payée confirme le changement et se synchronise instantanément.']]},
  {v:'C-12',d:'09/07/2026',t:'Correctif rôles',items:[
    ['🛠️','Changements de rôle fiabilisés','Un changement de rôle fait par un autre admin ne peut plus être annulé par accident, et il s\'applique en direct sur l\'écran de la personne concernée.']]},
  {v:'C-11',d:'09/07/2026',t:'MP automatiques & Ma semaine',items:[
@@ -2510,6 +2515,49 @@ async function restoreBackup(name){
     toast('📥 Sauvegarde restaurée — état partagé avec tous les admins');
     sendLog('📥 Restauration de sauvegarde',`La sauvegarde **${name.replace('.json','')}** a été restaurée par **${(currentUser()||{}).user||'?'}** — l'état a été remplacé.`,0xff5c5c);
   }catch(e){ toast('❌ Restauration impossible : '+(e.message||e)); }
+}
+
+/* ================== QUOTAS COMMERCIAUX ================== */
+function quotascom(){
+  // remise à zéro automatique des achats notés quand la semaine change
+  S.quotasCom=S.quotasCom||{sem:S.settings.semaine,achats:{}};
+  if(S.quotasCom.sem!==S.settings.semaine){ S.quotasCom={sem:S.settings.semaine,achats:{}}; save(); }
+  const coms=commerciauxActifs();
+  const vendus=bidonsVendusSem();
+  const parPers=coms.length?Math.ceil(vendus/coms.length):0; // bidons à reproduire par commercial
+  const ferPers=parPers*2;                                   // fer nécessaire = double des bidons
+  const achats=S.quotasCom.achats;
+  const totAchete=coms.reduce((a,c)=>a+nn(achats[c.nom]),0);
+  const totReste=coms.reduce((a,c)=>a+Math.max(0,ferPers-nn(achats[c.nom])),0);
+  $('#main').innerHTML=`
+  <div class="topbar"><div><h2>Quotas commerciaux</h2><div class="sub">Semaine ${S.settings.semaine} · basé sur la feuille « Ventes de la semaine » · fer nécessaire = 2 × bidons à produire</div></div></div>
+  <div class="grid g4" style="margin-bottom:18px">
+    <div class="panel kpi"><div class="lbl">Bidons vendus · semaine</div><div class="val">${fmt(vendus)}</div><div class="delta">${coms.length} commercial(aux) actif(s)</div></div>
+    <div class="panel kpi"><div class="lbl">Bidons à produire / pers.</div><div class="val">${fmt(parPers)}</div><div class="delta">ventes ÷ commerciaux actifs</div></div>
+    <div class="panel kpi"><div class="lbl">Fer à acheter / pers.</div><div class="val gold">${fmt(ferPers)}</div><div class="delta">2 fer par bidon</div></div>
+    <div class="panel kpi"><div class="lbl">Fer restant · équipe</div><div class="val ${totReste===0&&coms.length?'up':''}">${fmt(totReste)}</div><div class="delta">${fmt(totAchete)} déjà acheté(s)</div></div>
+  </div>
+  <div class="panel">
+    <h3>Suivi par commercial</h3>
+    ${coms.length?`<table><thead><tr><th>Commercial</th><th>Bidons à produire</th><th>Fer à acheter</th><th>Fer acheté (à noter ici)</th><th>Reste à acheter</th></tr></thead><tbody>
+    ${coms.map(c=>{
+      const a=nn(achats[c.nom]), reste=Math.max(0,ferPers-a);
+      return `<tr>
+        <td><b>${esc(c.nom)}</b></td>
+        <td>${fmt(parPers)}</td>
+        <td>${fmt(ferPers)}</td>
+        <td><input class="field" type="number" min="0" style="max-width:120px;text-align:right" value="${a}" onchange="qcSet('${esc(c.nom)}',this.value)"></td>
+        <td style="font-weight:800;color:${reste===0?'#3ddc84':'var(--accent)'}">${reste===0?'✔ complet':fmt(reste)+' fer'}</td>
+      </tr>`;
+    }).join('')}</tbody></table>
+    <p style="color:var(--muted);font-size:.76rem;margin-top:10px">Chaque commercial note ici le fer qu'il a acheté — le « reste à acheter » se met à jour pour tout le monde. Remise à zéro automatique à chaque nouvelle semaine.</p>`
+    :'<div class="empty">Aucun commercial actif dans l\'effectif (poste contenant « commercial »)</div>'}
+  </div>`;
+}
+function qcSet(nom,v){
+  S.quotasCom.achats[nom]=Math.max(0,+v||0);
+  jlog(`Fer acheté noté : ${nom} → ${fmt(S.quotasCom.achats[nom])}`);
+  save(); sbPushNow(); quotascom();
 }
 
 /* ================== MA SEMAINE (stats perso) ================== */
