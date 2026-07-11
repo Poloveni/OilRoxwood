@@ -1787,7 +1787,7 @@ function fHist(){
     <div class="panel kpi"><div class="lbl">En attente de paiement</div><div class="val">${money(F.filter(f=>f.statut!=='payee').reduce((a,f)=>a+f.ttc,0))}</div></div>
   </div>`:''}`;
 }
-function togglePay(i){ S.fact.factures[i].statut=S.fact.factures[i].statut==='payee'?'attente':'payee'; save(); fHist(); }
+function togglePay(i){ const f=S.fact.factures[i]; f.statut=f.statut==='payee'?'attente':'payee'; save(); sbPushNow(); fHist(); toast(f.statut==='payee'?`✔ Facture n°${f.num} marquée payée`:`⏳ Facture n°${f.num} repassée en attente`); }
 /* ---- bases ---- */
 function fClients(){
   $('#factBody').innerHTML=`<div class="panel" style="padding:10px 16px;overflow-x:auto">
