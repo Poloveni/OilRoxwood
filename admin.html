@@ -561,7 +561,7 @@ const PERMS={
   direction:['overview','effectif','runs','semaine','historique','cloture','feuilles','factures','relances','bilan','retention','fer','moi','agenda','feedback','maj','dlogs','journal','params'],
   rh:       ['overview','effectif','semaine','historique','feuilles','retention','moi','agenda','feedback','maj','dlogs'],
   comptable:['overview','feuilles','factures','bilan','moi','agenda','feedback','maj'],
-  commercial:['overview','factures','relances','feuilles','moi','agenda','feedback','maj'],
+  commercial:['overview','factures','relances','feuilles','fer','moi','agenda','feedback','maj'],
   membre:   ['effectif','moi','agenda','feedback','maj'] // lecture seule + stats perso + boîte à idées + agenda
 };
 function isMembre(){
@@ -2270,7 +2270,7 @@ async function fer(){
   const totQ=rows.reduce((a,r)=>a+nn(r.quantite),0), totM=rows.reduce((a,r)=>a+nn(r.montant),0);
   $('#main').innerHTML=`
   <div class="topbar">
-    <div><h2>Achats de Fer</h2><div class="sub">Réservé à la Direction · alimenté par le salon Discord (bot) ou par collage</div></div>
+    <div><h2>Achats de Fer</h2><div class="sub">Direction &amp; commerciaux · alimenté par le salon Discord (bot) ou par collage</div></div>
     <div style="display:flex;gap:10px">
       <button class="btn btn-ghost" onclick="ferPasteModal()">📋 Coller des logs</button>
       <button class="btn btn-gold" onclick="ferImportSalon()">↻ Importer depuis le salon</button>
