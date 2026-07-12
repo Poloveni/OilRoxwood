@@ -1662,9 +1662,14 @@ function fNew(){
     <div class="panel kpi"><div class="lbl">Bidons livrés</div><div class="val">${fmt(t.qte)}</div><div class="delta">dont ${t.off} offerts</div></div>
     <div class="panel kpi"><div class="lbl">Poids total</div><div class="val">${fmt(t.poids)} <span style="font-size:.9rem">kg</span></div><div class="delta">quantité × 2</div></div>
   </div>
-  <label class="chip" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:14px;user-select:none">
-    <input type="checkbox" style="accent-color:var(--accent)" ${FD.postop?'checked':''} onchange="FD.postop=this.checked">
-    🚚 Livraison Post OP — gratuite, mentionnée sur la facture avec leur logo
+  <label style="display:flex;align-items:center;gap:16px;cursor:pointer;user-select:none;margin-bottom:16px;padding:16px 20px;border-radius:14px;transition:all .2s;
+    border:2px ${FD.postop?'solid #3ddc84':'dashed var(--accent)'};background:${FD.postop?'rgba(61,220,132,.08)':'rgba(232,160,32,.08)'}">
+    <input type="checkbox" style="width:24px;height:24px;accent-color:${FD.postop?'#3ddc84':'var(--accent)'};flex:none;cursor:pointer" ${FD.postop?'checked':''} onchange="FD.postop=this.checked;fNew()">
+    <img src="assets/postop.png" alt="" style="height:34px;flex:none" onerror="this.style.display='none'">
+    <span style="font-weight:800;font-size:1rem">Livraison Post OP
+      <span style="display:block;font-weight:400;color:var(--muted);font-size:.8rem;margin-top:2px">Gratuite — ajoute sur la facture « Livraison assurée par Post OP » avec leur logo</span>
+    </span>
+    ${FD.postop?'<span style="margin-left:auto;color:#3ddc84;font-weight:800;font-size:1rem;white-space:nowrap">✔ Activée</span>':'<span style="margin-left:auto;color:var(--muted);font-size:.85rem;white-space:nowrap">cocher pour activer</span>'}
   </label>
   <div style="display:flex;gap:12px">
     <button class="btn btn-gold" onclick="saveFact()">💾 Enregistrer la facture</button>
