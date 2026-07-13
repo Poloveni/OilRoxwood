@@ -943,7 +943,7 @@ function rowRunner(r){
     ${isMembre()?'':`<td>${fmt(r.total)}</td>
     <td style="text-align:right;white-space:nowrap">
       ${eligible(r)?`<button class="btn btn-sm btn-gold" onclick="promote(${r.id})" title="Monter de grade">▲</button>`:''}
-      ${!r.poste&&r.grade>0&&r.barils===0?`<button class="btn btn-sm btn-red" onclick="demote(${r.id})" title="Descendre de grade (0 baril cette semaine)">▼</button>`:''}
+      ${!r.poste&&r.grade>0&&r.barils<g.quota*0.95?`<button class="btn btn-sm btn-red" onclick="demote(${r.id})" title="Descendre de grade (quota réalisé à ${pc}% — sous les 95%)">▼</button>`:''}
       <button class="btn btn-sm btn-ghost" onclick="toggleAbsent(${r.id})" title="${r.absent?'Marquer de retour':'Mettre en congé / absence'}">${r.absent?'💼':'🌴'}</button>
       <button class="btn btn-sm btn-ghost" onclick="openRunnerModal(${r.id})">✎</button>
       <button class="btn btn-sm btn-red" onclick="delRunner(${r.id})">✕</button>
@@ -1011,12 +1011,13 @@ function demote(id){
   if(isMembre()) return toast('👀 Consultation seule pour les membres');
   const r=S.runners.find(x=>x.id===id);
   if(!r||r.poste||r.grade<=0) return;
-  if(!confirm(`Descendre ${r.nom} de ${GRADES[r.grade].nom} à ${GRADES[r.grade-1].nom} ?\n(0 baril cette semaine)`)) return;
+  const pcD=grade(r).quota?Math.round(r.barils/grade(r).quota*100):0;
+  if(!confirm(`Descendre ${r.nom} de ${GRADES[r.grade].nom} à ${GRADES[r.grade-1].nom} ?\n(quota réalisé à ${pcD}% cette semaine — sous les 95%)`)) return;
   r.grade--;
   const rhMaj=syncRhGrade(r);
-  jlog(`Descente de grade : ${r.nom} → ${GRADES[r.grade].nom}`);
+  jlog(`Descente de grade : ${r.nom} → ${GRADES[r.grade].nom} (quota à ${pcD}%)`);
   save(); sbPushNow(); rerender();
-  sendLog('📉 Descente de grade', `**${r.nom}** redescend **${GRADES[r.grade].nom}** (0 baril cette semaine)${rhMaj?' (feuille RH mise à jour)':''}`, 0xff5c5c);
+  sendLog('📉 Descente de grade', `**${r.nom}** redescend **${GRADES[r.grade].nom}** (quota réalisé à ${pcD}% cette semaine)${rhMaj?' (feuille RH mise à jour)':''}`, 0xff5c5c);
   toast(`📉 ${r.nom} redescend ${GRADES[r.grade].nom}${rhMaj?' · feuille RH mise à jour':''}`);
 }
 function delRunner(id){
