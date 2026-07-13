@@ -915,7 +915,7 @@ function effectif(){
     </div>`}
   </div>
   <div class="panel" style="margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-    <input class="field" style="max-width:220px" placeholder="🔍 Rechercher…" value="${esc(search)}" oninput="search=this.value;effectif()">
+    <input class="field" id="effSearchInput" style="max-width:220px" placeholder="🔍 Rechercher…" value="${esc(search)}" oninput="search=this.value;effectif()">
     <select class="field" style="max-width:200px" onchange="filterG=this.value;effectif()">
       <option value="-1">Tous les grades</option>
       ${GRADES.map((g,i)=>`<option value="${i}" ${String(filterG)===String(i)?'selected':''}>${g.nom}</option>`).join('')}
@@ -928,6 +928,8 @@ function effectif(){
       <tbody>${R.map(rowRunner).join('')}</tbody>
     </table>`:'<div class="empty">Aucun runner trouvé</div>'}
   </div>`;
+  // la frappe reste fluide : le curseur revient dans la barre de recherche après chaque caractère
+  if(search){ const el=document.getElementById('effSearchInput'); if(el){ el.focus(); el.setSelectionRange(el.value.length,el.value.length); } }
 }
 function rowRunner(r){
   const g=grade(r), pc=g.quota?Math.min(100,Math.round(r.barils/g.quota*100)):100;
