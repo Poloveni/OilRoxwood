@@ -934,7 +934,9 @@ function rowRunner(r){
     <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
     <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span><div style="font-size:.7rem;color:var(--muted);font-weight:700;margin-top:3px">💤 aucune prise de service</div></td>
     <td><div class="prog"><i style="width:0%"></i></div><div class="pct">0 / ${fmt(g.quota)} (0%)</div></td>
-    ${isMembre()?'':`<td>0</td><td style="text-align:right;color:var(--muted);font-size:.78rem">apparaîtra ici après son 1ᵉʳ pointage</td>`}
+    ${isMembre()?'':`<td>0</td><td style="text-align:right;white-space:nowrap;color:var(--muted);font-size:.78rem">
+      ${!r.poste&&r.grade>0?`<button class="btn btn-sm btn-red" onclick="demoteGhost(decodeURIComponent('${encodeURIComponent(r.nom)}'))" title="Descendre de grade (aucune prise de service)">▼</button> `:''}
+      apparaîtra ici après son 1ᵉʳ pointage</td>`}
   </tr>`;
   return `<tr>
     <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
@@ -1019,6 +1021,23 @@ function demote(id){
   save(); sbPushNow(); rerender();
   sendLog('📉 Descente de grade', `**${r.nom}** redescend **${GRADES[r.grade].nom}** (quota réalisé à ${pcD}% cette semaine)${rhMaj?' (feuille RH mise à jour)':''}`, 0xff5c5c);
   toast(`📉 ${r.nom} redescend ${GRADES[r.grade].nom}${rhMaj?' · feuille RH mise à jour':''}`);
+}
+function demoteGhost(nom){
+  // descente de grade pour le personnel présent uniquement en feuille RH (aucune prise de service)
+  if(isMembre()) return toast('👀 Consultation seule pour les membres');
+  const row=((S.sheets&&S.sheets.rh)||[]).find(x=>String(x.nom||'').toLowerCase().trim()===String(nom).toLowerCase().trim());
+  if(!row) return;
+  const deacc=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+  const gn=deacc(row.grade);
+  let gi=GRADES.findIndex(g=>deacc(g.nom)===gn);
+  if(gi<0){ const m=[3,2,1,0].find(i=>gn&&gn.includes(deacc(GRADES[i].nom))); gi=m===undefined?-1:m; }
+  if(gi<=0) return toast('⚠️ Déjà au grade le plus bas (ou grade non reconnu)');
+  if(!confirm(`Descendre ${row.nom} de ${GRADES[gi].nom} à ${GRADES[gi-1].nom} ?\n(aucune prise de service cette semaine)`)) return;
+  row.grade=GRADES[gi-1].nom;
+  jlog(`Descente de grade : ${row.nom} → ${GRADES[gi-1].nom} (aucune prise de service)`);
+  save(); sbPushNow(); effectif();
+  sendLog('📉 Descente de grade', `**${row.nom}** redescend **${GRADES[gi-1].nom}** (aucune prise de service) — feuille RH mise à jour`, 0xff5c5c);
+  toast(`📉 ${row.nom} redescend ${GRADES[gi-1].nom} · feuille RH mise à jour`);
 }
 function delRunner(id){
   if(isMembre()) return toast('👀 Consultation seule pour les membres');
