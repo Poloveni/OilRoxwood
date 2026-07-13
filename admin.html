@@ -1309,7 +1309,7 @@ const SHEETS_DEF = {
       const bl=idu&&((S.sheets&&S.sheets.blacklist)||[]).find(b=>String(b.idU||'').trim()===idu);
       const warn=bl?`<span style="color:var(--red);font-weight:800;white-space:nowrap" title="${esc(bl.comm||'raison non renseignée')}">⛔ BLACKLISTÉ !</span><br>`:'';
       const ab=absDe(r.nom);
-      const abs=ab?`<span style="color:var(--accent);font-weight:700;white-space:nowrap">🌴 absent jusqu'au ${frDate(ab.au)}</span><br>`:'';
+      const abs=ab?`<span style="color:#22d3ee;font-weight:800;white-space:nowrap">💤 zzz — absent jusqu'au ${frDate(ab.au)}</span><br>`:'';
       const d=Date.parse(r.dernierService);
       const j=isNaN(d)?null:Math.floor((Date.now()-d)/86400000);
       if(r.flagOut) return warn+abs+`<span style="color:var(--red);font-weight:700;white-space:nowrap">🔴 absent du pointage${j!==null?' · '+j+' j':''} — démission ?</span>`;
@@ -1377,7 +1377,7 @@ async function feuilles(){
     <div><h2>Feuilles</h2><div class="sub">Les tableaux de gestion de l'entreprise — modifiables directement, sauvegardés automatiquement</div></div>
     <div style="display:flex;gap:10px">
       ${curSheet==='tablette'?'<button class="btn btn-ghost" onclick="openPasteModal()">📋 Coller depuis Excel</button>':''}
-      ${curSheet==='rh'?'<button class="btn btn-ghost" onclick="rhPasteModal()">🕒 Coller le pointage</button>':''}
+      ${curSheet==='rh'?'<button class="btn btn-ghost" onclick="rhPasteModal()">🕒 Coller le pointage</button><button class="btn btn-ghost" onclick="rhTriGrade()" title="Réordonne les lignes : Patron → Co Patron → … → Intérimaire">⇅ Trier par grade</button>':''}
       ${def.lite?`<button class="btn btn-ghost" onclick="sheetFull=!sheetFull;feuilles()">${sheetFull?'👁 Colonnes essentielles':'👁 Toutes les colonnes'}</button>`:''}
       <button class="btn btn-ghost" onclick="sheetCsv()">⬇ CSV</button>
       <button class="btn btn-red" onclick="sheetReset()">♻️ Réinitialiser</button>
@@ -1455,6 +1455,13 @@ function syncRunners(silent){
   return {added,updated,removed};
 }
 /* ---- Pointage RH par copier-coller (via ID unique) ---- */
+function rhTriGrade(){
+  if(!S.sheets||!S.sheets.rh||!S.sheets.rh.length) return toast('Feuille RH vide');
+  S.sheets.rh.sort((a,b)=>bilanOrdGrade(a.grade)-bilanOrdGrade(b.grade)||String(a.nom||'').localeCompare(String(b.nom||'')));
+  jlog('Feuille RH triée par grade');
+  save(); sbPushNow(); feuilles();
+  toast('⇅ Feuille RH triée par grade (Patron → Intérimaire)');
+}
 function rhPasteModal(){
   openModal(`<h3>🕒 Coller le pointage (prises de service)</h3>
   <p style="color:var(--muted);font-size:.82rem;margin-bottom:12px">
