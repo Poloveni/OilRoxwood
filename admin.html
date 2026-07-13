@@ -363,7 +363,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-17</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-18</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -631,7 +631,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-17';
+const APP_VERSION='C-18';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -1132,7 +1132,7 @@ async function semaine(){
   const rang=new Map(byB.map((r,i)=>[r.id,i]));
   const items=S.runners.map(r=>{
     const g=grade(r), okk=quotaOK(r), i=rang.get(r.id);
-    const sal=salaireDe(r), pr=okk?primeProj(r)+(!PRIMES_OFF&&i<3&&r.barils>0?S.settings.top[i]:0):0;
+    const sal=salaireDe(r), pr=(okk?primeProj(r)+(!PRIMES_OFF&&i<3&&r.barils>0?S.settings.top[i]:0):0)+primeExtraDe(r.nom);
     return {r,g,okk,i,sal,pr,tot:sal+pr};
   });
   const K=semTri.k, D=semTri.d;
@@ -1151,11 +1151,12 @@ async function semaine(){
   const q=semSearch.trim().toLowerCase();
   const visibles=q?items.filter(it=>it.r.nom.toLowerCase().includes(q)||gTitle(it.r).toLowerCase().includes(q)):items;
   const R=items.map(x=>x.r);
-  const totalPrimes = PRIMES_OFF ? 0 : R.reduce((a,r)=>a+primeProj(r),0) + S.settings.top.slice(0,Math.min(3,R.length)).reduce((a,b)=>a+b,0);
+  const totalPrimes = (PRIMES_OFF ? 0 : R.reduce((a,r)=>a+primeProj(r),0) + S.settings.top.slice(0,Math.min(3,R.length)).reduce((a,b)=>a+b,0)) + (S.primesExtra||[]).reduce((a,p)=>a+nn(p.montant),0);
   $('#main').innerHTML = `
   <div class="topbar">
     <div><h2>Semaine ${S.settings.semaine} — Primes</h2><div class="sub">${weekRange()} · prime = barils × multiplicateur (plafond ${fmt(caps().empPrime)} $ · dir. ${fmt(caps().patPrime)} $)${(()=>{const n=commerciauxActifs().length,b=bidonsVendusSem();return n?` · 🛢 commerciaux : ${fmt(b)} bidons ÷ ${n} actif(s) = ${fmt(Math.round(b/n))} × ${S.settings.prixBidonCom??45} $ = ${money(Math.round(b/n)*(S.settings.prixBidonCom??45))} chacun`:''})()}</div></div>
     <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="peModal()">💎 Primes exceptionnelles${(S.primesExtra||[]).length?` (${(S.primesExtra||[]).length})`:''}</button>
       ${S.closeUndo?`<button class="btn btn-ghost" onclick="undoClose()" title="Annuler la dernière clôture">↩ Annuler la clôture</button>`:''}
       <button class="btn btn-gold" onclick="closeWeek()">🗓️ Clôturer la semaine (lundi)</button>
     </div>
@@ -1209,13 +1210,15 @@ function closeWeek(){
   if(!confirm(`Clôturer la semaine ${semClose} ?\n\n• Les primes sont figées (quota + TOP 3)\n• Les montées de grade éligibles sont appliquées\n• La feuille Éligibilité est regénérée (quotas réussis + direction)\n• Les compteurs hebdo repartent à zéro\n\n↩ Tu pourras ANNULER cette clôture juste après en cas d'oubli.`)) return;
   // instantané complet AVANT clôture — permet d'annuler intégralement
   S.closeUndo={ date:new Date().toISOString(), semaine:semClose,
-    snap:JSON.stringify({runners:S.runners,weeks:S.weeks,settings:S.settings,sheets:S.sheets,quotasCom:S.quotasCom,quotasComHist:S.quotasComHist}) };
+    snap:JSON.stringify({runners:S.runners,weeks:S.weeks,settings:S.settings,sheets:S.sheets,quotasCom:S.quotasCom,quotasComHist:S.quotasComHist,primesExtra:S.primesExtra||[]}) };
   const sorted=[...S.runners].sort((a,b)=>b.barils-a.barils);
   let primes=0, promus=[];
   sorted.forEach((r,i)=>{
     if(quotaOK(r)) primes+=primeProj(r);
     if(!PRIMES_OFF && i<3 && r.barils>0) primes+=S.settings.top[i];
   });
+  primes+=(S.primesExtra||[]).reduce((a,p)=>a+nn(p.montant),0); // primes exceptionnelles de la semaine
+  S.primesExtra=[]; // versées avec cette clôture → remise à zéro
   S.runners.forEach(r=>{ if(eligible(r)){ r.grade++; promus.push(r.nom); syncRhGrade(r); } });
   S.weeks.push({num:semClose, date:new Date().toLocaleDateString('fr-FR'), total:sorted.reduce((a,r)=>a+r.barils,0), primes, winner:sorted[0]?.barils>0?sorted[0].nom:null});
   const w=S.weeks[S.weeks.length-1];
@@ -1245,6 +1248,7 @@ function undoClose(){
   const snap=JSON.parse(S.closeUndo.snap);
   S.runners=snap.runners; S.weeks=snap.weeks; S.settings=snap.settings; S.sheets=snap.sheets;
   if(snap.quotasCom!==undefined){ S.quotasCom=snap.quotasCom; S.quotasComHist=snap.quotasComHist; }
+  if(snap.primesExtra!==undefined) S.primesExtra=snap.primesExtra;
   delete S.closeUndo;
   save(); sbPushNow(); rerender();
   toast('↩ Clôture annulée — tout est revenu à l\'état précédent');
@@ -2156,7 +2160,7 @@ function bilanData(){
     const base=salFixeDe(r.rang)+prodCom+rec; // additif, comme la feuille Excel d'origine
     const sal=Math.min(base, isPatron(r)?C.patSal:C.empSal);
     const topB=(!PRIMES_OFF&&run&&rangTop.get(run.id)<3&&run.barils>0)?S.settings.top[rangTop.get(run.id)]:0;
-    const prime=run?Math.min(primeProj(run)+topB,isPatron(r)?C.patPrime:C.empPrime):0;
+    const prime=(run?Math.min(primeProj(run)+topB,isPatron(r)?C.patPrime:C.empPrime):0)+primeExtraDe(r.nom);
     return {nom:r.nom,rang:r.rang,run:nn(r.runs),facture:nn(r.factures),vente:nn(r.ventes),
       ca:nn(r.runs)+nn(r.factures)+nn(r.ventes),sal,prime};
   });
@@ -2488,6 +2492,11 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-18',d:'13/07/2026',t:'Primes exceptionnelles & quotas com.',items:[
+   ['💎','Primes exceptionnelles','Depuis Semaine & Primes, la direction attribue une prime hors quota et hors plafond à n\'importe quel employé (montant + motif). Comptée dans les primes projetées et le Bilan compta, versée et remise à zéro à la clôture.'],
+   ['🗓','Historique des quotas commerciaux','Les semaines précédentes restent consultables : ventes, objectifs et achats de fer notés par chacun.'],
+   ['🕒','Pointage : grades repris','Un changement de rang dans le pointage collé met à jour la feuille RH et le grade du runner dans l\'Effectif.'],
+   ['📋','Éligibilité : copier les noms','Un bouton copie la liste des noms, un par ligne, prête à coller sur Discord.']]},
  {v:'C-17',d:'13/07/2026',t:'Tri par grade partout',items:[
    ['🏦','Bilan compta ordonné','Le détail par employé suit la hiérarchie : Patron, Co Patron, Comptable, RH, Resp. Commercial, Commerciaux, Web Master, puis les grades raffineurs — à l\'écran comme au copier GDoc.'],
    ['🗂️','Feuille RH : tri par grade','Bouton ⇅ pour réordonner toute la feuille selon la hiérarchie, et indication « 💤 zzz » bleue dans la colonne Actif pour les absents déclarés.'],
@@ -2654,6 +2663,48 @@ async function restoreBackup(name){
     toast('📥 Sauvegarde restaurée — état partagé avec tous les admins');
     sendLog('📥 Restauration de sauvegarde',`La sauvegarde **${name.replace('.json','')}** a été restaurée par **${(currentUser()||{}).user||'?'}** — l'état a été remplacé.`,0xff5c5c);
   }catch(e){ toast('❌ Restauration impossible : '+(e.message||e)); }
+}
+
+/* ================== PRIMES EXCEPTIONNELLES ================== */
+function primeExtraDe(nom){
+  return (S.primesExtra||[]).filter(p=>String(p.nom||'').toLowerCase().trim()===String(nom||'').toLowerCase().trim()).reduce((a,p)=>a+nn(p.montant),0);
+}
+function peModal(){
+  if(isMembre()) return toast('👀 Réservé aux rôles avec accès gestion');
+  const noms=[...new Set([
+    ...((S.sheets&&S.sheets.rh)||[]).map(x=>String(x.nom||'').trim()),
+    ...S.runners.map(r=>String(r.nom||'').trim())
+  ].filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const L=S.primesExtra||[];
+  openModal(`<h3>💎 Primes exceptionnelles — semaine ${S.settings.semaine}</h3>
+  <p style="color:var(--muted);font-size:.8rem;margin-bottom:14px">S'ajoute à la prime de la personne (hors quota et hors plafond) dans Semaine &amp; Primes et dans le Bilan compta. Versée puis remise à zéro à la clôture du lundi.</p>
+  <div class="f-row"><label class="f-lbl">Employé</label><select class="field" id="peN">${noms.map(n=>`<option>${esc(n)}</option>`).join('')}</select></div>
+  <div class="f-row" style="display:grid;grid-template-columns:1fr 1.4fr;gap:10px">
+    <div><label class="f-lbl">Montant ($)</label><input class="field" type="number" min="1" id="peM" placeholder="5000"></div>
+    <div><label class="f-lbl">Motif (visible au journal)</label><input class="field" id="peR" placeholder="Recrutement massif, event RP…"></div>
+  </div>
+  <button class="btn btn-gold" style="width:100%;margin-bottom:16px" onclick="peAdd()">Attribuer la prime</button>
+  ${L.length?`<label class="f-lbl">Primes de la semaine</label>
+  ${L.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:.85rem">
+    <span>💎 <b>${esc(p.nom)}</b> · <b style="color:var(--accent)">${money(p.montant)}</b>${p.motif?` · <small style="color:var(--muted)">${esc(p.motif)}</small>`:''}</span>
+    <button class="btn btn-sm btn-red" onclick="peDel(${p.id})">✕</button>
+  </div>`).join('')}`:'<div class="empty" style="padding:10px">Aucune prime exceptionnelle cette semaine</div>'}`);
+}
+function peAdd(){
+  const nom=$('#peN').value, m=+$('#peM').value||0, motif=$('#peR').value.trim();
+  if(m<=0) return toast('⚠️ Indique un montant');
+  (S.primesExtra=S.primesExtra||[]).push({id:Date.now(),nom,montant:m,motif});
+  jlog(`Prime exceptionnelle : ${nom} +${fmt(m)} $${motif?' — '+motif:''}`);
+  save(); sbPushNow(); peModal(); rerender();
+  toast(`💎 Prime de ${money(m)} attribuée à ${nom}`);
+  sendLog('💎 Prime exceptionnelle',`**${nom}** reçoit **${money(m)}**${motif?`\nMotif : ${motif}`:''}\n_(versée à la clôture de la semaine ${S.settings.semaine})_`,0xe8a020);
+}
+function peDel(id){
+  const p=(S.primesExtra||[]).find(x=>x.id===id); if(!p) return;
+  if(!confirm(`Retirer la prime de ${money(p.montant)} attribuée à ${p.nom} ?`)) return;
+  S.primesExtra=S.primesExtra.filter(x=>x.id!==id);
+  jlog(`Prime exceptionnelle retirée : ${p.nom} (${fmt(p.montant)} $)`);
+  save(); sbPushNow(); peModal(); rerender();
 }
 
 /* ================== QUOTAS COMMERCIAUX ================== */
