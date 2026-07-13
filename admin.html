@@ -2067,16 +2067,21 @@ function annuleRelance(i){
 
 /* ================== BILAN COMPTABLE ================== */
 function bilanOrdGrade(rang){
-  // ordre d'affichage : Patron → autres postes → Web Master → Expert → Confirmé → Raffineur → Intérimaire
+  // ordre : Patron / Co Patron / Comptable / RH / Resp. Commercial / Commerciaux / Web Master / Expert / Confirmé / Raffineur / Intérimaire / —
   const s=String(rang||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  if(!s.trim()) return 12;
+  if(/co[\s-]*patron/.test(s)) return 1;
   if(/patron/.test(s)) return 0;
-  if(/web\s*master/.test(s)) return 2;
-  if(/expert/.test(s)) return 3;
-  if(/confirme/.test(s)) return 4;
-  if(/raffineur/.test(s)) return 5;
-  if(/interimaire/.test(s)) return 6;
-  if(s.trim()) return 1; // autre poste (commercial, RH…)
-  return 7;
+  if(/comptable/.test(s)) return 2;
+  if(/\brh\b|ressources\s*humaines/.test(s)) return 3;
+  if(/resp/.test(s)&&/commercial/.test(s)) return 4;
+  if(/commercial/.test(s)) return 5;
+  if(/web\s*master/.test(s)) return 6;
+  if(/expert/.test(s)) return 7;
+  if(/confirme/.test(s)) return 8;
+  if(/raffineur/.test(s)) return 9;
+  if(/interimaire/.test(s)) return 10;
+  return 11; // poste inconnu → juste avant les sans-grade
 }
 function bilanData(){
   const T=S.sheets.tablette||[], CPT=S.sheets.compta||[];
