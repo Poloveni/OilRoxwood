@@ -1202,9 +1202,11 @@ async function semaine(){
 }
 function closeWeek(){
   if(!S.runners.length) return toast('Aucun runner à clôturer');
-  if(!confirm(`Clôturer la semaine ${S.settings.semaine} ?\n\n• Les primes sont figées (quota + TOP 3)\n• Les montées de grade éligibles sont appliquées\n• La feuille Éligibilité est regénérée (quotas réussis + direction)\n• Les compteurs hebdo repartent à zéro\n\n↩ Tu pourras ANNULER cette clôture juste après en cas d'oubli.`)) return;
+  // la semaine qu'on clôture = celle d'HIER : une clôture le lundi 13/07 (S29) ferme la semaine 28
+  const semClose=isoWeek(new Date(Date.now()-86400000));
+  if(!confirm(`Clôturer la semaine ${semClose} ?\n\n• Les primes sont figées (quota + TOP 3)\n• Les montées de grade éligibles sont appliquées\n• La feuille Éligibilité est regénérée (quotas réussis + direction)\n• Les compteurs hebdo repartent à zéro\n\n↩ Tu pourras ANNULER cette clôture juste après en cas d'oubli.`)) return;
   // instantané complet AVANT clôture — permet d'annuler intégralement
-  S.closeUndo={ date:new Date().toISOString(), semaine:S.settings.semaine,
+  S.closeUndo={ date:new Date().toISOString(), semaine:semClose,
     snap:JSON.stringify({runners:S.runners,weeks:S.weeks,settings:S.settings,sheets:S.sheets}) };
   const sorted=[...S.runners].sort((a,b)=>b.barils-a.barils);
   let primes=0, promus=[];
@@ -1213,7 +1215,7 @@ function closeWeek(){
     if(!PRIMES_OFF && i<3 && r.barils>0) primes+=S.settings.top[i];
   });
   S.runners.forEach(r=>{ if(eligible(r)){ r.grade++; promus.push(r.nom); syncRhGrade(r); } });
-  S.weeks.push({num:S.settings.semaine, date:new Date().toLocaleDateString('fr-FR'), total:sorted.reduce((a,r)=>a+r.barils,0), primes, winner:sorted[0]?.barils>0?sorted[0].nom:null});
+  S.weeks.push({num:semClose, date:new Date().toLocaleDateString('fr-FR'), total:sorted.reduce((a,r)=>a+r.barils,0), primes, winner:sorted[0]?.barils>0?sorted[0].nom:null});
   const w=S.weeks[S.weeks.length-1];
   jlog(`Clôture de la semaine ${w.num} — ${fmt(w.total)} barils · ${money(primes)} de primes${promus.length?' · promus : '+promus.join(', '):''}`);
   const podium=sorted.slice(0,3).filter(r=>r.barils>0).map((r,i)=>`${['🥇','🥈','🥉'][i]} **${r.nom}** — ${fmt(r.barils)} barils (+${money(S.settings.top[i])})`).join('\n');
@@ -2062,6 +2064,18 @@ function annuleRelance(i){
 }
 
 /* ================== BILAN COMPTABLE ================== */
+function bilanOrdGrade(rang){
+  // ordre d'affichage : Patron → autres postes → Web Master → Expert → Confirmé → Raffineur → Intérimaire
+  const s=String(rang||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  if(/patron/.test(s)) return 0;
+  if(/web\s*master/.test(s)) return 2;
+  if(/expert/.test(s)) return 3;
+  if(/confirme/.test(s)) return 4;
+  if(/raffineur/.test(s)) return 5;
+  if(/interimaire/.test(s)) return 6;
+  if(s.trim()) return 1; // autre poste (commercial, RH…)
+  return 7;
+}
 function bilanData(){
   const T=S.sheets.tablette||[], CPT=S.sheets.compta||[];
   const byB=[...S.runners].sort((a,b)=>b.barils-a.barils);
@@ -2116,7 +2130,7 @@ async function bilan(){
   $('#main').innerHTML='<div class="panel"><div class="empty">Calcul du bilan…</div></div>';
   await ensureSheets();
   const B=bilanData();
-  const actifs=B.lignes.filter(l=>!l.manuel).sort((a,b)=>b.ca-a.ca||a.nom.localeCompare(b.nom));
+  const actifs=B.lignes.filter(l=>!l.manuel).sort((a,b)=>bilanOrdGrade(a.rang)-bilanOrdGrade(b.rang)||b.ca-a.ca||a.nom.localeCompare(b.nom));
   $('#main').innerHTML=`
   <div class="topbar">
     <div><h2>Bilan comptable</h2><div class="sub">Calculé en direct depuis les feuilles Tablette, Budget & salaires et Compta</div></div>
@@ -2229,7 +2243,7 @@ function bxDel(i){ if(confirm('Supprimer cette ligne manuelle ?')){ S.bilanExtra
 /* ---- export prêt à coller dans le GDoc de compta ---- */
 function bilanCopy(){
   const B=bilanData();
-  const rows=[...B.lignes].sort((a,b)=>(a.manuel?1:0)-(b.manuel?1:0)||b.ca-a.ca||a.nom.localeCompare(b.nom)); // tout le personnel, 0 compris
+  const rows=[...B.lignes].sort((a,b)=>(a.manuel?1:0)-(b.manuel?1:0)||bilanOrdGrade(a.rang)-bilanOrdGrade(b.rang)||b.ca-a.ca||a.nom.localeCompare(b.nom)); // tout le personnel, 0 compris, classé par grade
   const $n=v=>String(Math.round(v)); // nombres bruts, sans « $ » : le GDoc peut calculer dessus
   const L=[['Nom du salarié','Grade','RUN','FACTURE','VENTE','CA TOTAL RÉALISÉ','Salaire','Prime'].join('\t')];
   rows.forEach(l=>L.push([l.nom,l.rang,$n(l.run),$n(l.facture),$n(l.vente),$n(l.ca),$n(l.sal),$n(l.prime)].join('\t')));
