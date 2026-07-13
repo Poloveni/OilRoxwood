@@ -363,7 +363,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-16</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-17</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -631,7 +631,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-16';
+const APP_VERSION='C-17';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -1226,9 +1226,10 @@ function closeWeek(){
   // feuille Éligibilité : réinitialisée pour la nouvelle semaine avec les quotas réussis + direction (auto-éligible)
   let eligN=0;
   if(S.sheets&&S.sheets.eligibilite!==undefined){
-    const eligibles=S.runners.filter(r=>r.poste||quotaOK(r));
-    // liste des noms uniquement : cases vides, à cocher par les RH au moment de la prise
-    S.sheets.eligibilite=eligibles.map(r=>({nom:r.nom,menus:false,boissons:false,bidons:false,date:'',don:'',permis:''}));
+    const eligibles=S.runners.filter(r=>r.poste||quotaOK(r))
+      .sort((a,b)=>bilanOrdGrade(gTitle(a))-bilanOrdGrade(gTitle(b))||String(a.nom).localeCompare(String(b.nom)));
+    // liste des noms + grades, triée par grade : cases vides, à cocher par les RH au moment de la prise
+    S.sheets.eligibilite=eligibles.map(r=>({nom:r.nom,grade:gTitle(r),menus:false,boissons:false,bidons:false,date:'',don:'',permis:''}));
     eligN=eligibles.length;
   }
   S.runners.forEach(r=>{ r.barils=0; r.runs=[]; r.recrues=0; r.lastSync=0; });
@@ -1291,9 +1292,9 @@ const SHEETS_DEF = {
     {k:'part',l:'Part employé',t:'num'},{k:'heures',l:'Heures service',t:'text'}],
     tot:['factures','runs','ventes','_total','part'], nouveau:{nom:'',rang:'Intérimaire',factures:0,runs:0,ventes:0,part:0,heures:''}},
   eligibilite:{ico:'✅',label:'Éligibilité',drag:true,cols:[
-    {k:'nom',l:'Nom employé',t:'text'},{k:'menus',l:'Menus',t:'bool'},{k:'boissons',l:'Boissons',t:'bool'},
+    {k:'nom',l:'Nom employé',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'menus',l:'Menus',t:'bool'},{k:'boissons',l:'Boissons',t:'bool'},
     {k:'bidons',l:'Bidons',t:'bool'},{k:'date',l:'Date de prise',t:'date'},{k:'don',l:'Don',t:'text'},{k:'permis',l:'Contrôle permis',t:'text'}],
-    tot:[], nouveau:{nom:'',menus:false,boissons:false,bidons:false,date:'',don:'',permis:''}},
+    tot:[], nouveau:{nom:'',grade:'',menus:false,boissons:false,bidons:false,date:'',don:'',permis:''}},
   ventesSem:{ico:'🛒',label:'Ventes de la semaine',cols:[
     {k:'date',l:'Date',t:'date'},{k:'client',l:'Client',t:'client'},
     {k:'quantite',l:'Quantité',t:'num'},{k:'qui',l:'Qui ?',t:'text'}],
@@ -1378,6 +1379,7 @@ async function feuilles(){
     <div style="display:flex;gap:10px">
       ${curSheet==='tablette'?'<button class="btn btn-ghost" onclick="openPasteModal()">📋 Coller depuis Excel</button>':''}
       ${curSheet==='rh'?'<button class="btn btn-ghost" onclick="rhPasteModal()">🕒 Coller le pointage</button><button class="btn btn-ghost" onclick="rhTriGrade()" title="Réordonne les lignes : Patron → Co Patron → … → Intérimaire">⇅ Trier par grade</button>':''}
+      ${curSheet==='eligibilite'?'<button class="btn btn-ghost" onclick="eligTriGrade()" title="Complète les grades manquants et réordonne : Patron → Co Patron → … → Intérimaire">⇅ Trier par grade</button>':''}
       ${def.lite?`<button class="btn btn-ghost" onclick="sheetFull=!sheetFull;feuilles()">${sheetFull?'👁 Colonnes essentielles':'👁 Toutes les colonnes'}</button>`:''}
       <button class="btn btn-ghost" onclick="sheetCsv()">⬇ CSV</button>
       <button class="btn btn-red" onclick="sheetReset()">♻️ Réinitialiser</button>
@@ -1455,6 +1457,23 @@ function syncRunners(silent){
   return {added,updated,removed};
 }
 /* ---- Pointage RH par copier-coller (via ID unique) ---- */
+function eligTriGrade(){
+  const E=(S.sheets&&S.sheets.eligibilite)||[];
+  if(!E.length) return toast('Feuille Éligibilité vide');
+  // complète les grades manquants depuis l'effectif ou la fiche RH
+  E.forEach(x=>{
+    if(String(x.grade||'').trim()) return;
+    const low=String(x.nom||'').toLowerCase().trim();
+    const run=S.runners.find(r=>String(r.nom||'').toLowerCase().trim()===low);
+    if(run){ x.grade=gTitle(run); return; }
+    const rh=((S.sheets&&S.sheets.rh)||[]).find(r=>String(r.nom||'').toLowerCase().trim()===low);
+    if(rh&&rh.grade) x.grade=rh.grade;
+  });
+  E.sort((a,b)=>bilanOrdGrade(a.grade)-bilanOrdGrade(b.grade)||String(a.nom||'').localeCompare(String(b.nom||'')));
+  jlog('Feuille Éligibilité triée par grade');
+  save(); sbPushNow(); feuilles();
+  toast('⇅ Feuille Éligibilité triée par grade (grades complétés au passage)');
+}
 function rhTriGrade(){
   if(!S.sheets||!S.sheets.rh||!S.sheets.rh.length) return toast('Feuille RH vide');
   S.sheets.rh.sort((a,b)=>bilanOrdGrade(a.grade)-bilanOrdGrade(b.grade)||String(a.nom||'').localeCompare(String(b.nom||'')));
@@ -2449,6 +2468,12 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-17',d:'13/07/2026',t:'Tri par grade partout',items:[
+   ['🏦','Bilan compta ordonné','Le détail par employé suit la hiérarchie : Patron, Co Patron, Comptable, RH, Resp. Commercial, Commerciaux, Web Master, puis les grades raffineurs — à l\'écran comme au copier GDoc.'],
+   ['🗂️','Feuille RH : tri par grade','Bouton ⇅ pour réordonner toute la feuille selon la hiérarchie, et indication « 💤 zzz » bleue dans la colonne Actif pour les absents déclarés.'],
+   ['✅','Feuille Éligibilité : grades affichés','Nouvelle colonne Grade, remplie et triée automatiquement à la clôture (bouton ⇅ pour trier/compléter la feuille en cours).'],
+   ['🗓️','Clôture : bon numéro de semaine','Clôturer le lundi 13/07 ferme bien la semaine 28, pas la 29.'],
+   ['🔍','Recherche fluide dans l\'Effectif','On peut taper sa recherche d\'une traite, le curseur ne saute plus.']]},
  {v:'C-16',d:'13/07/2026',t:'Absences déclarées',items:[
    ['🌴','Déclaration d\'absences','Bouton « Absences » dans l\'Effectif : déclare une absence de telle date à telle date pour n\'importe quel membre de la fiche RH. Pendant la période : descente de grade bloquée, pas d\'alerte « démission ? » au pointage, et le commercial absent sort du partage des quotas.'],
    ['▼','Descente de grade élargie','Le bouton de descente apparaît dès que le quota réalisé est sous les 95 % (et aussi pour le personnel sans prise de service).']]},
