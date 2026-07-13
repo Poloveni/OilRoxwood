@@ -363,7 +363,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-14</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-15</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -631,7 +631,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-14';
+const APP_VERSION='C-15';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -886,6 +886,20 @@ function top3html(sorted){
 let filterG=-1, search='';
 function effectif(){
   let R=[...S.runners].sort((a,b)=>b.grade-a.grade||b.barils-a.barils);
+  // personnel de la feuille RH jamais pointé sur la tablette : affiché à 0
+  const noms=new Set(S.runners.map(r=>String(r.nom||'').toLowerCase().trim()));
+  const deacc=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+  const GH=((S.sheets&&S.sheets.rh)||[])
+    .filter(x=>String(x.nom||'').trim()&&!noms.has(String(x.nom).toLowerCase().trim()))
+    .map(x=>{
+      const gn=deacc(x.grade);
+      let gi=GRADES.findIndex(g=>deacc(g.nom)===gn);
+      if(gi<0){ const m=[3,2,1,0].find(i=>gn&&gn.includes(deacc(GRADES[i].nom))); gi=m===undefined?-1:m; }
+      const r={nom:x.nom,discord:x.discord||'',barils:0,total:0,runs:[],_ghost:true,grade:gi>=0?gi:0};
+      if(gi<0&&String(x.grade||'').trim()) r.poste=x.grade; // grade RH inconnu → traité comme poste
+      return r;
+    }).sort((a,b)=>String(a.nom).localeCompare(String(b.nom)));
+  R=R.concat(GH);
   if(String(filterG)!=='-1'){
     if(String(filterG).startsWith('p:')) R=R.filter(r=>r.poste===String(filterG).slice(2));
     else R=R.filter(r=>r.grade===+filterG&&!r.poste);
@@ -893,7 +907,7 @@ function effectif(){
   if(search) R=R.filter(r=>(r.nom+' '+r.discord).toLowerCase().includes(search.toLowerCase()));
   $('#main').innerHTML = `
   <div class="topbar">
-    <div><h2>Effectif</h2><div class="sub">${S.runners.length} runner(s)${isMembre()?' · consultation':` · ${S.runners.filter(eligible).length} montée(s) de grade en attente · synchronisé avec la feuille Tablette`}</div></div>
+    <div><h2>Effectif</h2><div class="sub">${S.runners.length} runner(s)${GH.length?` + ${GH.length} sans prise de service (feuille RH)`:''}${isMembre()?' · consultation':` · ${S.runners.filter(eligible).length} montée(s) de grade en attente · synchronisé avec la feuille Tablette`}</div></div>
     ${isMembre()?'':`<div style="display:flex;gap:10px">
       <button class="btn btn-ghost" onclick="ensureSheets().then(()=>{syncRunners(false);effectif();})">🔄 Sync tablette</button>
       <button class="btn btn-gold" onclick="openRunnerModal()">＋ Ajouter un runner</button>
@@ -916,6 +930,12 @@ function effectif(){
 }
 function rowRunner(r){
   const g=grade(r), pc=g.quota?Math.min(100,Math.round(r.barils/g.quota*100)):100;
+  if(r._ghost) return `<tr style="opacity:.55">
+    <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
+    <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span><div style="font-size:.7rem;color:var(--muted);font-weight:700;margin-top:3px">💤 aucune prise de service</div></td>
+    <td><div class="prog"><i style="width:0%"></i></div><div class="pct">0 / ${fmt(g.quota)} (0%)</div></td>
+    ${isMembre()?'':`<td>0</td><td style="text-align:right;color:var(--muted);font-size:.78rem">apparaîtra ici après son 1ᵉʳ pointage</td>`}
+  </tr>`;
   return `<tr>
     <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
     <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span>${r.absent?'<div style="font-size:.7rem;color:var(--red);font-weight:700;margin-top:3px">🌴 Congé / absence</div>':''}${!r.poste&&eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(seuilMontee(r))} barils atteints)</span>`:''}</td>
@@ -2375,6 +2395,8 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-15',d:'12/07/2026',t:'Effectif complet',items:[
+   ['💤','Effectif : personnel sans service visible','Les personnes présentes en feuille RH mais jamais pointées sur la tablette apparaissent maintenant dans l\'Effectif, grisées à 0 baril.']]},
  {v:'C-14',d:'11/07/2026',t:'Livraison Post OP',items:[
    ['🚚','Option Livraison Post OP','Case à cocher sur la facture : gratuite, elle ajoute sur le PDF la mention « Livraison assurée par Post OP » avec leur logo, et un indicateur 🚚 dans l\'historique.']]},
  {v:'C-13',d:'11/07/2026',t:'Quotas commerciaux',items:[
