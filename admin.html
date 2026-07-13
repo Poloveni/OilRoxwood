@@ -1379,7 +1379,7 @@ async function feuilles(){
     <div style="display:flex;gap:10px">
       ${curSheet==='tablette'?'<button class="btn btn-ghost" onclick="openPasteModal()">📋 Coller depuis Excel</button>':''}
       ${curSheet==='rh'?'<button class="btn btn-ghost" onclick="rhPasteModal()">🕒 Coller le pointage</button><button class="btn btn-ghost" onclick="rhTriGrade()" title="Réordonne les lignes : Patron → Co Patron → … → Intérimaire">⇅ Trier par grade</button>':''}
-      ${curSheet==='eligibilite'?'<button class="btn btn-ghost" onclick="eligTriGrade()" title="Complète les grades manquants et réordonne : Patron → Co Patron → … → Intérimaire">⇅ Trier par grade</button>':''}
+      ${curSheet==='eligibilite'?'<button class="btn btn-ghost" onclick="eligTriGrade()" title="Complète les grades manquants et réordonne : Patron → Co Patron → … → Intérimaire">⇅ Trier par grade</button><button class="btn btn-ghost" onclick="eligCopyNoms()" title="Copie uniquement les noms, un par ligne — prêt à coller sur Discord">📋 Copier les noms</button>':''}
       ${def.lite?`<button class="btn btn-ghost" onclick="sheetFull=!sheetFull;feuilles()">${sheetFull?'👁 Colonnes essentielles':'👁 Toutes les colonnes'}</button>`:''}
       <button class="btn btn-ghost" onclick="sheetCsv()">⬇ CSV</button>
       <button class="btn btn-red" onclick="sheetReset()">♻️ Réinitialiser</button>
@@ -1457,6 +1457,13 @@ function syncRunners(silent){
   return {added,updated,removed};
 }
 /* ---- Pointage RH par copier-coller (via ID unique) ---- */
+function eligCopyNoms(){
+  const noms=((S.sheets&&S.sheets.eligibilite)||[]).map(x=>String(x.nom||'').trim()).filter(Boolean);
+  if(!noms.length) return toast('Feuille Éligibilité vide');
+  navigator.clipboard.writeText(noms.join('\n'))
+    .then(()=>toast(`📋 ${noms.length} nom(s) copié(s) — prêt à coller sur Discord`))
+    .catch(()=>toast('⚠️ Copie refusée — clique d\'abord dans la page puis réessaie'));
+}
 function eligTriGrade(){
   const E=(S.sheets&&S.sheets.eligibilite)||[];
   if(!E.length) return toast('Feuille Éligibilité vide');
