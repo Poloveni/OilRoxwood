@@ -363,7 +363,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-15</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-16</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -631,7 +631,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-15';
+const APP_VERSION='C-16';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -909,6 +909,7 @@ function effectif(){
   <div class="topbar">
     <div><h2>Effectif</h2><div class="sub">${S.runners.length} runner(s)${GH.length?` + ${GH.length} sans prise de service (feuille RH)`:''}${isMembre()?' · consultation':` · ${S.runners.filter(eligible).length} montée(s) de grade en attente · synchronisé avec la feuille Tablette`}</div></div>
     ${isMembre()?'':`<div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="absModal()">🌴 Absences${(S.absences||[]).filter(a=>a.au>=new Date().toISOString().slice(0,10)).length?` (${(S.absences||[]).filter(a=>a.au>=new Date().toISOString().slice(0,10)).length})`:''}</button>
       <button class="btn btn-ghost" onclick="ensureSheets().then(()=>{syncRunners(false);effectif();})">🔄 Sync tablette</button>
       <button class="btn btn-gold" onclick="openRunnerModal()">＋ Ajouter un runner</button>
     </div>`}
@@ -930,22 +931,23 @@ function effectif(){
 }
 function rowRunner(r){
   const g=grade(r), pc=g.quota?Math.min(100,Math.round(r.barils/g.quota*100)):100;
+  const ab=absDe(r.nom); // absence déclarée en cours ?
   if(r._ghost) return `<tr style="opacity:.55">
     <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
-    <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span><div style="font-size:.7rem;color:var(--muted);font-weight:700;margin-top:3px">💤 aucune prise de service</div></td>
+    <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span><div style="font-size:.7rem;color:var(--muted);font-weight:700;margin-top:3px">💤 aucune prise de service</div>${ab?`<div style="font-size:.7rem;color:var(--accent);font-weight:700;margin-top:3px">🌴 absent jusqu'au ${frDate(ab.au)}</div>`:''}</td>
     <td><div class="prog"><i style="width:0%"></i></div><div class="pct">0 / ${fmt(g.quota)} (0%)</div></td>
     ${isMembre()?'':`<td>0</td><td style="text-align:right;white-space:nowrap;color:var(--muted);font-size:.78rem">
-      ${!r.poste&&r.grade>0?`<button class="btn btn-sm btn-red" onclick="demoteGhost(decodeURIComponent('${encodeURIComponent(r.nom)}'))" title="Descendre de grade (aucune prise de service)">▼</button> `:''}
+      ${!r.poste&&r.grade>0&&!ab?`<button class="btn btn-sm btn-red" onclick="demoteGhost(decodeURIComponent('${encodeURIComponent(r.nom)}'))" title="Descendre de grade (aucune prise de service)">▼</button> `:''}
       apparaîtra ici après son 1ᵉʳ pointage</td>`}
   </tr>`;
   return `<tr>
     <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
-    <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span>${r.absent?'<div style="font-size:.7rem;color:var(--red);font-weight:700;margin-top:3px">🌴 Congé / absence</div>':''}${!r.poste&&eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(seuilMontee(r))} barils atteints)</span>`:''}</td>
+    <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span>${(r.absent||ab)?`<div style="font-size:.7rem;color:var(--accent);font-weight:700;margin-top:3px">🌴 ${ab?`absent du ${frDate(ab.du)} au ${frDate(ab.au)}`:'Congé / absence'}</div>`:''}${!r.poste&&eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(seuilMontee(r))} barils atteints)</span>`:''}</td>
     <td><div class="prog"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></div><div class="pct">${fmt(r.barils)} / ${fmt(g.quota)} (${pc}%)</div></td>
     ${isMembre()?'':`<td>${fmt(r.total)}</td>
     <td style="text-align:right;white-space:nowrap">
       ${eligible(r)?`<button class="btn btn-sm btn-gold" onclick="promote(${r.id})" title="Monter de grade">▲</button>`:''}
-      ${!r.poste&&r.grade>0&&r.barils<g.quota*0.95?`<button class="btn btn-sm btn-red" onclick="demote(${r.id})" title="Descendre de grade (quota réalisé à ${pc}% — sous les 95%)">▼</button>`:''}
+      ${!r.poste&&r.grade>0&&r.barils<g.quota*0.95&&!r.absent&&!ab?`<button class="btn btn-sm btn-red" onclick="demote(${r.id})" title="Descendre de grade (quota réalisé à ${pc}% — sous les 95%)">▼</button>`:''}
       <button class="btn btn-sm btn-ghost" onclick="toggleAbsent(${r.id})" title="${r.absent?'Marquer de retour':'Mettre en congé / absence'}">${r.absent?'💼':'🌴'}</button>
       <button class="btn btn-sm btn-ghost" onclick="openRunnerModal(${r.id})">✎</button>
       <button class="btn btn-sm btn-red" onclick="delRunner(${r.id})">✕</button>
@@ -1013,6 +1015,7 @@ function demote(id){
   if(isMembre()) return toast('👀 Consultation seule pour les membres');
   const r=S.runners.find(x=>x.id===id);
   if(!r||r.poste||r.grade<=0) return;
+  if(r.absent||absDe(r.nom)) return toast('🌴 Absence déclarée — descente de grade bloquée');
   const pcD=grade(r).quota?Math.round(r.barils/grade(r).quota*100):0;
   if(!confirm(`Descendre ${r.nom} de ${GRADES[r.grade].nom} à ${GRADES[r.grade-1].nom} ?\n(quota réalisé à ${pcD}% cette semaine — sous les 95%)`)) return;
   r.grade--;
@@ -1032,6 +1035,7 @@ function demoteGhost(nom){
   let gi=GRADES.findIndex(g=>deacc(g.nom)===gn);
   if(gi<0){ const m=[3,2,1,0].find(i=>gn&&gn.includes(deacc(GRADES[i].nom))); gi=m===undefined?-1:m; }
   if(gi<=0) return toast('⚠️ Déjà au grade le plus bas (ou grade non reconnu)');
+  if(absDe(row.nom)) return toast('🌴 Absence déclarée — descente de grade bloquée');
   if(!confirm(`Descendre ${row.nom} de ${GRADES[gi].nom} à ${GRADES[gi-1].nom} ?\n(aucune prise de service cette semaine)`)) return;
   row.grade=GRADES[gi-1].nom;
   jlog(`Descente de grade : ${row.nom} → ${GRADES[gi-1].nom} (aucune prise de service)`);
@@ -1088,7 +1092,7 @@ function delRun(rid,t){
 function prixRecrue(){ return S.settings.prixRecrue??4000; }
 /* ---- rémunération commerciale : 45 $/bidon produit ---- */
 function estCommercial(r){ return !!(r.poste&&/commercial/i.test(r.poste)); }
-function commerciauxActifs(){ return S.runners.filter(r=>estCommercial(r)&&!r.absent); }
+function commerciauxActifs(){ return S.runners.filter(r=>estCommercial(r)&&!r.absent&&!absDe(r.nom)); }
 function bidonsVendusSem(){ return ((S.sheets&&S.sheets.ventesSem)||[]).reduce((a,v)=>a+nn(v.quantite),0); }
 function salaireProdCom(r){
   if(!estCommercial(r)||r.absent) return 0;
@@ -1300,12 +1304,14 @@ const SHEETS_DEF = {
       const idu=String(r.idU||'').trim();
       const bl=idu&&((S.sheets&&S.sheets.blacklist)||[]).find(b=>String(b.idU||'').trim()===idu);
       const warn=bl?`<span style="color:var(--red);font-weight:800;white-space:nowrap" title="${esc(bl.comm||'raison non renseignée')}">⛔ BLACKLISTÉ !</span><br>`:'';
+      const ab=absDe(r.nom);
+      const abs=ab?`<span style="color:var(--accent);font-weight:700;white-space:nowrap">🌴 absent jusqu'au ${frDate(ab.au)}</span><br>`:'';
       const d=Date.parse(r.dernierService);
       const j=isNaN(d)?null:Math.floor((Date.now()-d)/86400000);
-      if(r.flagOut) return warn+`<span style="color:var(--red);font-weight:700;white-space:nowrap">🔴 absent du pointage${j!==null?' · '+j+' j':''} — démission ?</span>`;
-      if(j===null) return warn+'<span style="color:var(--muted)">—</span>';
+      if(r.flagOut) return warn+abs+`<span style="color:var(--red);font-weight:700;white-space:nowrap">🔴 absent du pointage${j!==null?' · '+j+' j':''} — démission ?</span>`;
+      if(j===null) return warn+abs+'<span style="color:var(--muted)">—</span>';
       const col=j<=2?'var(--green)':j<=6?'var(--accent)':'var(--red)';
-      return warn+`<span style="color:${col};font-weight:700">${j} j sans service</span>`;
+      return warn+abs+`<span style="color:${col};font-weight:700">${j} j sans service</span>`;
     }}],
     lite:['idU','nom','grade','tel','rib','discord','dernierService','_actif'],
     tot:[], nouveau:{nom:'',grade:'Intérimaire',tel:'',rib:'',idU:'',arrivee:'',discord:'',avert:'',contrat:false,recrut:'',dernierService:'',flagOut:false}},
@@ -1496,7 +1502,7 @@ function rhApplyPaste(){
   let absents=0;
   S.sheets.rh.forEach(x=>{
     const id=String(x.idU||'').replace(/\D/g,'');
-    if(id){ x.flagOut=!seen.has(id); if(x.flagOut) absents++; }
+    if(id){ x.flagOut=!seen.has(id)&&!absDe(x.nom); if(x.flagOut) absents++; } // absence déclarée → pas d'alerte démission
   });
   // contrôle blacklist : un ID du pointage figure-t-il dans la feuille Blacklist ?
   const blNoms=S.sheets.rh.filter(x=>{
@@ -2415,6 +2421,9 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-16',d:'13/07/2026',t:'Absences déclarées',items:[
+   ['🌴','Déclaration d\'absences','Bouton « Absences » dans l\'Effectif : déclare une absence de telle date à telle date pour n\'importe quel membre de la fiche RH. Pendant la période : descente de grade bloquée, pas d\'alerte « démission ? » au pointage, et le commercial absent sort du partage des quotas.'],
+   ['▼','Descente de grade élargie','Le bouton de descente apparaît dès que le quota réalisé est sous les 95 % (et aussi pour le personnel sans prise de service).']]},
  {v:'C-15',d:'12/07/2026',t:'Effectif complet',items:[
    ['💤','Effectif : personnel sans service visible','Les personnes présentes en feuille RH mais jamais pointées sur la tablette apparaissent maintenant dans l\'Effectif, grisées à 0 baril.']]},
  {v:'C-14',d:'11/07/2026',t:'Livraison Post OP',items:[
@@ -2615,6 +2624,56 @@ function qcSet(nom,v){
   S.quotasCom.achats[nom]=Math.max(0,+v||0);
   jlog(`Fer acheté noté : ${nom} → ${fmt(S.quotasCom.achats[nom])}`);
   save(); sbPushNow(); quotascom();
+}
+
+/* ================== ABSENCES DÉCLARÉES ================== */
+function absDe(nom,date){
+  const d=date||new Date().toISOString().slice(0,10);
+  return (S.absences||[]).find(a=>String(a.nom||'').toLowerCase().trim()===String(nom||'').toLowerCase().trim()&&a.du<=d&&d<=a.au)||null;
+}
+function absModal(){
+  if(isMembre()) return toast('👀 Réservé aux rôles avec accès gestion');
+  // purge des absences terminées depuis plus de 30 jours
+  const lim=new Date(Date.now()-30*86400000).toISOString().slice(0,10);
+  S.absences=(S.absences||[]).filter(a=>a.au>=lim);
+  // liste des membres : feuille RH ∪ effectif
+  const noms=[...new Set([
+    ...((S.sheets&&S.sheets.rh)||[]).map(x=>String(x.nom||'').trim()),
+    ...S.runners.map(r=>String(r.nom||'').trim())
+  ].filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const auj=new Date().toISOString().slice(0,10);
+  const enCours=[...S.absences].sort((a,b)=>a.du.localeCompare(b.du));
+  openModal(`<h3>🌴 Absences déclarées</h3>
+  <p style="color:var(--muted);font-size:.8rem;margin-bottom:14px">Une absence déclarée bloque la descente de grade, désactive l'alerte « démission ? » du pointage RH et retire les commerciaux du partage des quotas.</p>
+  <div class="f-row"><label class="f-lbl">Membre (fiche RH)</label>
+    <select class="field" id="abN">${noms.map(n=>`<option>${esc(n)}</option>`).join('')}</select></div>
+  <div class="f-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div><label class="f-lbl">Du</label><input class="field" type="date" id="abDu" value="${auj}"></div>
+    <div><label class="f-lbl">Au (inclus)</label><input class="field" type="date" id="abAu"></div>
+  </div>
+  <button class="btn btn-gold" style="width:100%;margin-bottom:16px" onclick="absAdd()">Déclarer l'absence</button>
+  ${enCours.length?`<label class="f-lbl">Absences enregistrées</label>
+  ${enCours.map(a=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:.85rem">
+    <span>🌴 <b>${esc(a.nom)}</b> · du ${frDate(a.du)} au ${frDate(a.au)}${a.au<auj?' <small style="color:var(--muted)">(terminée)</small>':''}</span>
+    <button class="btn btn-sm btn-red" onclick="absDel(${a.id})">✕</button>
+  </div>`).join('')}`:'<div class="empty" style="padding:10px">Aucune absence enregistrée</div>'}`);
+}
+function absAdd(){
+  const nom=$('#abN').value, du=$('#abDu').value, au=$('#abAu').value;
+  if(!nom||!du||!au) return toast('⚠️ Choisis le membre et les deux dates');
+  if(au<du) return toast('⚠️ La date de fin est avant la date de début');
+  (S.absences=S.absences||[]).push({id:Date.now(),nom,du,au});
+  jlog(`Absence déclarée : ${nom} du ${frDate(du)} au ${frDate(au)}`);
+  save(); sbPushNow(); absModal(); rerender();
+  toast(`🌴 Absence de ${nom} enregistrée`);
+  sendLog('🌴 Absence déclarée',`**${nom}** sera absent(e) du **${frDate(du)}** au **${frDate(au)}** (inclus).\nDescente de grade bloquée sur la période.`,0x22d3ee);
+}
+function absDel(id){
+  const a=(S.absences||[]).find(x=>x.id===id); if(!a) return;
+  if(!confirm(`Supprimer l'absence de ${a.nom} (du ${frDate(a.du)} au ${frDate(a.au)}) ?`)) return;
+  S.absences=S.absences.filter(x=>x.id!==id);
+  jlog(`Absence supprimée : ${a.nom} (du ${frDate(a.du)} au ${frDate(a.au)})`);
+  save(); sbPushNow(); absModal(); rerender();
 }
 
 /* ================== MA SEMAINE (stats perso) ================== */
