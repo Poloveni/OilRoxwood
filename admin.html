@@ -1209,7 +1209,7 @@ function closeWeek(){
   if(!confirm(`Clôturer la semaine ${semClose} ?\n\n• Les primes sont figées (quota + TOP 3)\n• Les montées de grade éligibles sont appliquées\n• La feuille Éligibilité est regénérée (quotas réussis + direction)\n• Les compteurs hebdo repartent à zéro\n\n↩ Tu pourras ANNULER cette clôture juste après en cas d'oubli.`)) return;
   // instantané complet AVANT clôture — permet d'annuler intégralement
   S.closeUndo={ date:new Date().toISOString(), semaine:semClose,
-    snap:JSON.stringify({runners:S.runners,weeks:S.weeks,settings:S.settings,sheets:S.sheets}) };
+    snap:JSON.stringify({runners:S.runners,weeks:S.weeks,settings:S.settings,sheets:S.sheets,quotasCom:S.quotasCom,quotasComHist:S.quotasComHist}) };
   const sorted=[...S.runners].sort((a,b)=>b.barils-a.barils);
   let primes=0, promus=[];
   sorted.forEach((r,i)=>{
@@ -1234,6 +1234,7 @@ function closeWeek(){
   }
   S.runners.forEach(r=>{ r.barils=0; r.runs=[]; r.recrues=0; r.lastSync=0; });
   S.settings.semaine=isoWeek();
+  qcArchive(); // quotas commerciaux : la semaine close part dans l'historique
   save(); rerender();
   toast(`🗓️ Semaine clôturée — ${money(primes)} de primes${promus.length?` · promus : ${promus.join(', ')}`:''} · éligibilité regénérée (${eligN} noms). Annulation possible.`);
 }
@@ -1243,6 +1244,7 @@ function undoClose(){
   jlog(`Annulation de la clôture de la semaine ${S.closeUndo.semaine}`);
   const snap=JSON.parse(S.closeUndo.snap);
   S.runners=snap.runners; S.weeks=snap.weeks; S.settings=snap.settings; S.sheets=snap.sheets;
+  if(snap.quotasCom!==undefined){ S.quotasCom=snap.quotasCom; S.quotasComHist=snap.quotasComHist; }
   delete S.closeUndo;
   save(); sbPushNow(); rerender();
   toast('↩ Clôture annulée — tout est revenu à l\'état précédent');
@@ -2655,14 +2657,25 @@ async function restoreBackup(name){
 }
 
 /* ================== QUOTAS COMMERCIAUX ================== */
+function qcArchive(){
+  // archive la semaine écoulée dans l'historique (16 semaines max) puis repart à zéro
+  const q=S.quotasCom;
+  if(q&&(Object.keys(q.achats||{}).length||q.vendus)){
+    (S.quotasComHist=S.quotasComHist||[]).push({sem:q.sem,vendus:q.vendus||0,parPers:q.parPers||0,ferPers:q.ferPers||0,achats:q.achats||{}});
+    if(S.quotasComHist.length>16) S.quotasComHist.shift();
+  }
+  S.quotasCom={sem:S.settings.semaine,achats:{}};
+}
 function quotascom(){
-  // remise à zéro automatique des achats notés quand la semaine change
+  // changement de semaine → la semaine écoulée part dans l'historique
   S.quotasCom=S.quotasCom||{sem:S.settings.semaine,achats:{}};
-  if(S.quotasCom.sem!==S.settings.semaine){ S.quotasCom={sem:S.settings.semaine,achats:{}}; save(); }
+  if(S.quotasCom.sem!==S.settings.semaine){ qcArchive(); save(); }
   const coms=commerciauxActifs();
   const vendus=bidonsVendusSem();
   const parPers=coms.length?Math.ceil(vendus/coms.length):0; // bidons à reproduire par commercial
   const ferPers=parPers*2;                                   // fer nécessaire = double des bidons
+  // photographie continue (utilisée par l'archivage)
+  if(S.quotasCom.vendus!==vendus||S.quotasCom.parPers!==parPers){ Object.assign(S.quotasCom,{vendus,parPers,ferPers}); save(); }
   const achats=S.quotasCom.achats;
   const totAchete=coms.reduce((a,c)=>a+nn(achats[c.nom]),0);
   const totReste=coms.reduce((a,c)=>a+Math.max(0,ferPers-nn(achats[c.nom])),0);
@@ -2687,9 +2700,23 @@ function quotascom(){
         <td style="font-weight:800;color:${reste===0?'#3ddc84':'var(--accent)'}">${reste===0?'✔ complet':fmt(reste)+' fer'}</td>
       </tr>`;
     }).join('')}</tbody></table>
-    <p style="color:var(--muted);font-size:.76rem;margin-top:10px">Chaque commercial note ici le fer qu'il a acheté — le « reste à acheter » se met à jour pour tout le monde. Remise à zéro automatique à chaque nouvelle semaine.</p>`
+    <p style="color:var(--muted);font-size:.76rem;margin-top:10px">Chaque commercial note ici le fer qu'il a acheté — le « reste à acheter » se met à jour pour tout le monde. Remise à zéro automatique à chaque nouvelle semaine (l'ancienne part dans l'historique ci-dessous).</p>`
     :'<div class="empty">Aucun commercial actif dans l\'effectif (poste contenant « commercial »)</div>'}
-  </div>`;
+  </div>
+  ${(S.quotasComHist||[]).length?`<div class="panel" style="margin-top:18px">
+    <h3>🗓 Historique des semaines précédentes</h3>
+    ${[...S.quotasComHist].reverse().map(h=>{
+      const noms=Object.keys(h.achats||{});
+      const tot=noms.reduce((a,n)=>a+nn(h.achats[n]),0);
+      return `<div style="padding:12px 0;border-bottom:1px solid var(--line)">
+        <b>Semaine ${h.sem}</b> <small style="color:var(--muted)">· ${fmt(h.vendus)} bidons vendus · ${fmt(h.parPers)} bidons/pers. · objectif fer : ${fmt(h.ferPers)}/pers.</small>
+        <div style="color:var(--muted);font-size:.84rem;margin-top:5px">
+          ${noms.length?noms.map(n=>`${esc(n)} : <b style="color:${nn(h.achats[n])>=h.ferPers?'#3ddc84':'var(--accent)'}">${fmt(nn(h.achats[n]))}</b>${nn(h.achats[n])>=h.ferPers?' ✔':''}`).join(' · '):'aucun achat noté'}
+          — total équipe : <b>${fmt(tot)} fer</b>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`:''}`;
 }
 function qcSet(nom,v){
   S.quotasCom.achats[nom]=Math.max(0,+v||0);
