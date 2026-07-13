@@ -1511,7 +1511,7 @@ function rhApplyPaste(){
   });
   if(cur) recs.push(cur);
   const seen=new Set();
-  let maj=0, crees=0;
+  let maj=0, crees=0, grUpd=0, nomUpd=0;
   recs.forEach(rec=>{
     const idU=rec.idU; seen.add(idU);
     const ds=rec.ds||new Date().toISOString().slice(0,10);
@@ -1519,6 +1519,17 @@ function rhApplyPaste(){
     if(row){
       row.dernierService=ds; // le pointage collé fait foi (permet aussi de corriger une date erronée)
       row.flagOut=false;
+      // le pointage fait foi aussi pour le grade : un changement de rang est repris (feuille RH + effectif)
+      if(rec.grade&&String(rec.grade).trim()&&String(rec.grade).trim()!==String(row.grade||'').trim()){
+        row.grade=String(rec.grade).trim(); grUpd++;
+        const runMaj=S.runners.find(x=>String(x.nom||'').toLowerCase().trim()===String(row.nom||'').toLowerCase().trim());
+        if(runMaj&&!runMaj.poste){
+          const gnP=String(rec.grade).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+          let giP=GRADES.findIndex(g=>g.nom.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase()===gnP.trim());
+          if(giP<0){ const mP=[3,2,1,0].find(i=>gnP.includes(GRADES[i].nom.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase())); giP=mP===undefined?-1:mP; }
+          if(giP>=0&&runMaj.grade!==giP){ runMaj.grade=giP; jlog(`Grade mis à jour via pointage : ${runMaj.nom} → ${GRADES[giP].nom}`); }
+        }
+      }
       if(!String(row.nom||'').trim()&&rec.nom) row.nom=rec.nom;
       maj++;
     } else {
@@ -1540,7 +1551,7 @@ function rhApplyPaste(){
     return id&&seen.has(id)&&(S.sheets.blacklist||[]).some(b=>String(b.idU||'').replace(/\D/g,'')===id);
   }).map(x=>x.nom||x.idU);
   save(); sbPushNow(); closeModal(); feuilles();
-  toast(`🕒 Pointage importé : ${maj} mis à jour · ${crees} créé(s)${absents?` · 🔴 ${absents} absent(s) du pointage`:''}${blNoms.length?` · ⛔ ${blNoms.length} BLACKLISTÉ(S) !`:''}`);
+  toast(`🕒 Pointage importé : ${maj} mis à jour${grUpd?` (dont ${grUpd} changement(s) de grade)`:''} · ${crees} créé(s)${absents?` · 🔴 ${absents} absent(s) du pointage`:''}${blNoms.length?` · ⛔ ${blNoms.length} BLACKLISTÉ(S) !`:''}`);
   sendLog('🕒 Pointage RH importé', `${maj} mise(s) à jour · ${crees} création(s)${absents?` · 🔴 **${absents} absent(s)** — démissions possibles`:''}${blNoms.length?`\n\n⛔ **ALERTE BLACKLIST** : ${blNoms.map(n=>'**'+esc(n)+'**').join(', ')} figure(nt) dans la blacklist !`:''}`, (absents||blNoms.length)?0xff5c5c:0x3ddc84);
 }
 
