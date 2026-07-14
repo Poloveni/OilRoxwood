@@ -2085,14 +2085,16 @@ async function relances(){
     <h3 style="padding:12px 0 4px">💰 Clients à relancer (déjà commandé)</h3>
     ${rows.length?`<table><thead><tr><th>Client</th><th>Dernière commande</th><th>Inactif</th><th>Contact</th><th>Statut</th><th style="text-align:right"></th></tr></thead><tbody>
     ${rows.map(x=>`<tr>
-      <td>${dot(x)} <b>${esc(x.c.nom)}</b></td>
+      <td>${dot(x)} <b>${esc(x.c.nom)}</b>${(x.c.notes||[]).length?`<div style="color:var(--muted);font-size:.74rem;margin-top:2px">📝 ${esc(x.c.notes[x.c.notes.length-1].txt.slice(0,70))}${x.c.notes[x.c.notes.length-1].txt.length>70?'…':''}</div>`:''}</td>
       <td>${frDate(x.c.lastCmd)}</td>
       <td><b class="${x.a>=90?'down':'gold'}">${x.a} j</b></td>
       <td style="color:var(--muted);font-size:.8rem">${x.c.tel?'📞 '+esc(x.c.tel):'—'}</td>
       <td>${x.c.relance
         ?`<span class="badge" style="background:rgba(61,220,132,.14);color:var(--green)">en cours · ${esc(x.c.relance.par)} · ${frDate(x.c.relance.date)}</span>`
         :'<span class="badge bg0">à relancer</span>'}</td>
-      <td style="text-align:right;white-space:nowrap">${x.c.relance
+      <td style="text-align:right;white-space:nowrap">
+        <button class="btn btn-sm btn-ghost" onclick="relNotes(${x.i})" title="Notes de suivi du démarchage">📝${(x.c.notes||[]).length||''}</button>
+        ${x.c.relance
         ?`<button class="btn btn-sm btn-ghost" onclick="annuleRelance(${x.i})">↩ Annuler</button>`
         :`<button class="btn btn-sm btn-gold" onclick="marqueRelance(${x.i})">✓ Relancé</button>`}</td>
     </tr>`).join('')}
@@ -2102,12 +2104,14 @@ async function relances(){
     <h3 style="padding:12px 0 4px">🌱 Prospects — jamais commandé (${jamais.length})</h3>
     ${jamais.length?`<table><thead><tr><th>Client</th><th>Contact</th><th>Statut</th><th style="text-align:right"></th></tr></thead><tbody>
     ${jamais.map(x=>`<tr>
-      <td>${x.c.relance?'🟢':'🟠'} <b>${esc(x.c.nom)}</b></td>
+      <td>${x.c.relance?'🟢':'🟠'} <b>${esc(x.c.nom)}</b>${(x.c.notes||[]).length?`<div style="color:var(--muted);font-size:.74rem;margin-top:2px">📝 ${esc(x.c.notes[x.c.notes.length-1].txt.slice(0,70))}${x.c.notes[x.c.notes.length-1].txt.length>70?'…':''}</div>`:''}</td>
       <td style="color:var(--muted);font-size:.8rem">${x.c.tel?'📞 '+esc(x.c.tel):'—'}</td>
       <td>${x.c.relance
         ?`<span class="badge" style="background:rgba(61,220,132,.14);color:var(--green)">démarchage en cours · ${esc(x.c.relance.par)} · ${frDate(x.c.relance.date)}</span>`
         :'<span class="badge bg0">à démarcher</span>'}</td>
-      <td style="text-align:right;white-space:nowrap">${x.c.relance
+      <td style="text-align:right;white-space:nowrap">
+        <button class="btn btn-sm btn-ghost" onclick="relNotes(${x.i})" title="Notes de suivi du démarchage">📝${(x.c.notes||[]).length||''}</button>
+        ${x.c.relance
         ?`<button class="btn btn-sm btn-ghost" onclick="annuleRelance(${x.i})">↩ Annuler</button>`
         :`<button class="btn btn-sm btn-gold" onclick="marqueRelance(${x.i})">✓ Démarché</button>`}</td>
     </tr>`).join('')}
@@ -2115,6 +2119,34 @@ async function relances(){
   </div>`;
   // frappe fluide : le curseur revient dans la recherche après chaque caractère
   if(REL_SEARCH){ const el=document.getElementById('relSearchInput'); if(el){ el.focus(); el.setSelectionRange(el.value.length,el.value.length); } }
+}
+/* ---- notes de suivi du démarchage ---- */
+function relNotes(i){
+  const c=S.fact.clients[i]; if(!c) return;
+  const N=c.notes||[];
+  openModal(`<h3>📝 Suivi du démarchage — ${esc(c.nom)}</h3>
+  <textarea class="field" id="rnTxt" style="min-height:70px" placeholder="Ex. : appelé le 13/07, intéressé par 200 bidons, rappeler jeudi…"></textarea>
+  <button class="btn btn-gold" style="width:100%;margin:10px 0 16px" onclick="relNoteAdd(${i})">Ajouter la note</button>
+  ${N.length?[...N].reverse().map(n=>`<div style="padding:9px 0;border-bottom:1px solid var(--line);font-size:.86rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.75rem">
+      <span><b style="color:var(--ink)">${esc(n.par)}</b> · ${new Date(n.t).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
+      <button class="btn btn-sm btn-ghost" style="color:#f87171" onclick="relNoteDel(${i},${n.t})">✕</button>
+    </div>
+    <div style="margin-top:4px;line-height:1.5">${esc(n.txt)}</div>
+  </div>`).join(''):'<div class="empty" style="padding:10px">Aucune note pour ce client — sois le premier à documenter le contact 📞</div>'}`);
+}
+function relNoteAdd(i){
+  const c=S.fact.clients[i], txt=$('#rnTxt').value.trim();
+  if(!txt) return toast('⚠️ Écris d\'abord ta note');
+  (c.notes=c.notes||[]).push({t:Date.now(),par:(currentUser()||{}).user||'?',txt});
+  save(); sbPushNow(); relNotes(i); relances();
+  toast('📝 Note ajoutée — visible par toute l\'équipe');
+}
+function relNoteDel(i,t){
+  const c=S.fact.clients[i]; if(!c) return;
+  if(!confirm('Supprimer cette note ?')) return;
+  c.notes=(c.notes||[]).filter(n=>n.t!==t);
+  save(); sbPushNow(); relNotes(i); relances();
 }
 function marqueRelance(i){
   const c=S.fact.clients[i]; if(!c) return;
@@ -2507,9 +2539,10 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
- {v:'C-20',d:'13/07/2026',t:'Factures reçues & recherche relances',items:[
+ {v:'C-20',d:'13/07/2026',t:'Factures reçues & relances enrichies',items:[
    ['📥','Factures reçues (Direction)','Archive des factures des autres entreprises : colle une capture avec Ctrl+V (compressée automatiquement) ou un lien, classement par entreprise avec totaux, zoom, et suppression.'],
-   ['🔍','Recherche dans les Relances','Barre de recherche par nom ou téléphone, sur les deux tableaux à la fois.']]},
+   ['🔍','Recherche dans les Relances','Barre de recherche par nom ou téléphone, sur les deux tableaux à la fois.'],
+   ['📝','Notes de suivi du démarchage','Un bouton 📝 sur chaque client des Relances : historique horodaté des contacts (qui, quand, quoi), dernière note visible sous le nom, partagé avec toute l\'équipe.']]},
  {v:'C-19',d:'13/07/2026',t:'Interface plus claire',items:[
    ['🦓','Tableaux zébrés','Une ligne sur deux légèrement teintée + surlignage au survol : l\'œil ne perd plus sa ligne dans les grandes feuilles.'],
    ['🖱️','KPI cliquables','Les cartes de la Vue d\'ensemble mènent directement à leur vue (Effectif, Semaine & Primes, Bilan).'],
