@@ -2030,7 +2030,7 @@ function printFact(f){
 }
 
 /* ================== RELANCES COMMERCIALES ================== */
-let REL_J=30;
+let REL_J=30, REL_SEARCH='';
 async function ensureSheets(){
   // charge le seed pour les feuilles manquantes (première fois OU nouvelles feuilles ajoutées)
   const missing = S.sheets ? Object.keys(SHEETS_DEF).filter(k=>!S.sheets[k]) : Object.keys(SHEETS_DEF);
@@ -2062,8 +2062,10 @@ async function relances(){
   const now=Date.now(), jour=86400000;
   const age=d=>{ const t=Date.parse(d); return isNaN(t)?null:Math.floor((now-t)/jour); };
   const all=S.fact.clients.map((c,i)=>({c,i,a:age(c.lastCmd)}));
-  const rows=all.filter(x=>x.a!==null&&x.a>=REL_J).sort((x,y)=>y.a-x.a);
-  const jamais=all.filter(x=>x.a===null).sort((x,y)=>x.c.nom.localeCompare(y.c.nom));
+  const q=REL_SEARCH.trim().toLowerCase();
+  const match=x=>!q||String(x.c.nom||'').toLowerCase().includes(q)||String(x.c.tel||'').toLowerCase().includes(q);
+  const rows=all.filter(x=>x.a!==null&&x.a>=REL_J&&match(x)).sort((x,y)=>y.a-x.a);
+  const jamais=all.filter(x=>x.a===null&&match(x)).sort((x,y)=>x.c.nom.localeCompare(y.c.nom));
   const dot=x=> (x.a!==null&&x.a>=90)?'🔴':(x.c.relance?'🟢':'🟠');
   const enCours=all.filter(x=>x.c.relance).length;
   $('#main').innerHTML=`
@@ -2073,8 +2075,10 @@ async function relances(){
       ${[0,30,60,90].map(j=>`<button class="tab ${REL_J===j?'on':''}" onclick="REL_J=${j};relances()">${j===0?'Tous':'+'+j+' jours'}</button>`).join('')}
     </div>
   </div>
-  <div style="display:flex;gap:14px;margin-bottom:14px;font-size:.8rem;color:var(--muted)">
+  <div style="display:flex;gap:14px;margin-bottom:14px;font-size:.8rem;color:var(--muted);align-items:center;flex-wrap:wrap">
+    <input class="field" id="relSearchInput" style="max-width:250px" placeholder="🔍 Rechercher un client…" value="${esc(REL_SEARCH)}" oninput="REL_SEARCH=this.value;relances()">
     <span>🟠 à relancer</span><span>🟢 relance en cours</span><span>🔴 +90 jours sans commande</span>
+    ${q?`<span style="color:var(--accent)">filtre : « ${esc(REL_SEARCH)} » · ${rows.length+jamais.length} résultat(s)</span>`:''}
   </div>
   <div class="panel" style="margin-bottom:18px;padding:8px 16px;overflow-x:auto">
     <h3 style="padding:12px 0 4px">💰 Clients à relancer (déjà commandé)</h3>
@@ -2108,6 +2112,8 @@ async function relances(){
     </tr>`).join('')}
     </tbody></table>`:'<div class="empty">Aucun prospect — tout le monde a déjà commandé 💪</div>'}
   </div>`;
+  // frappe fluide : le curseur revient dans la recherche après chaque caractère
+  if(REL_SEARCH){ const el=document.getElementById('relSearchInput'); if(el){ el.focus(); el.setSelectionRange(el.value.length,el.value.length); } }
 }
 function marqueRelance(i){
   const c=S.fact.clients[i]; if(!c) return;
