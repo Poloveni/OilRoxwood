@@ -71,6 +71,26 @@ create policy "notifs_auth" on oilroxwood_notifs
   for all to authenticated using (true) with check (true);
 ```
 
+## Étape 2 quater — Table des factures reçues (archives Direction)
+
+```sql
+create table if not exists oilroxwood_frecues (
+  id bigint generated always as identity primary key,
+  entreprise text not null,
+  date date,
+  montant numeric default 0,
+  lien text, note text,
+  img text,          -- capture compressée (JPEG base64)
+  auteur text,
+  created timestamptz default now()
+);
+
+alter table oilroxwood_frecues enable row level security;
+
+create policy "frecues_auth" on oilroxwood_frecues
+  for all to authenticated using (true) with check (true);
+```
+
 ## Étape 3 — Récupérer les clés
 
 Menu **Settings → API** (ou Project Settings → Data API) :
