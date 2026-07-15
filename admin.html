@@ -368,7 +368,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-20</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-21</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -464,7 +464,32 @@ function load(){
   try{ const d = JSON.parse(localStorage.getItem(LS_KEY)); return d ? Object.assign(defaults(), d) : defaults(); }
   catch(e){ return defaults(); }
 }
-function save(){ S._maj=Date.now(); localStorage.setItem(LS_KEY, JSON.stringify(S)); sbQueue(); }
+/* ---- synchro par sections : chaque famille de données a sa propre date ----
+   Évite qu'un admin qui touche l'effectif écrase la facture qu'un autre vient de créer. */
+const SEC_KEYS=['runners','weeks','sheets','fact','users','pending','fer','settings','absences','primesExtra','quotasCom','quotasComHist','journal','bilanExtra','closeUndo'];
+function fpOf(v){ const s=JSON.stringify(v)||''; let h=0; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))|0; } return s.length+':'+h; }
+function save(){
+  S._maj=Date.now();
+  S._majSec=S._majSec||{}; S._fp=S._fp||{};
+  SEC_KEYS.forEach(k=>{
+    const fp=fpOf(S[k]);
+    if(S._fp[k]!==fp){ S._fp[k]=fp; S._majSec[k]=S._maj; } // seule la section réellement modifiée est re-datée
+  });
+  localStorage.setItem(LS_KEY, JSON.stringify(S)); sbQueue();
+}
+function mergeRemote(rem){
+  // fusion section par section : pour chacune, la plus récente gagne
+  let changed=false, localNewer=false;
+  S._majSec=S._majSec||{}; S._fp=S._fp||{};
+  SEC_KEYS.forEach(k=>{
+    const rt=(rem._majSec&&rem._majSec[k])||rem._maj||0;
+    const lt=S._majSec[k]||S._maj||0;
+    if(rt>lt){ if(rem[k]!==undefined) S[k]=rem[k]; S._majSec[k]=rt; S._fp[k]=fpOf(S[k]); changed=true; }
+    else if(lt>rt) localNewer=true;
+  });
+  S._maj=Math.max(S._maj||0,rem._maj||0);
+  return {changed,localNewer};
+}
 
 /* ================== SYNCHRO SUPABASE (multi-admin temps réel) ================== */
 const SB_URL='https://prwdtdmdkhzwfyivaepw.supabase.co';
@@ -487,10 +512,18 @@ function initSync(){
       const d=p.new&&p.new.data;
       if(!d||d._cid===SYNC.cid) return; // ignore l'écho de nos propres écritures
       const localReal=(S.runners&&S.runners.length)||(S.users&&S.users.length);
-      if(localReal&&S._maj&&(!d._maj||d._maj<S._maj)) return; // jamais d'écrasement par un état plus ancien ou non daté
-      const monPass=S.passHash; // le mot de passe reste propre à chaque navigateur
-      S=Object.assign(defaults(),d);
-      S.passHash=monPass;
+      if(d._majSec&&S._majSec&&localReal){
+        // fusion section par section : personne n'écrase le travail de personne
+        const r=mergeRemote(d);
+        if(r.localNewer) sbQueue(); // nos sections plus récentes repartent vers la base
+        if(!r.changed) return;      // rien de neuf pour nous : pas de re-rendu
+      } else {
+        // compatibilité anciens clients : comparaison globale
+        if(localReal&&S._maj&&(!d._maj||d._maj<S._maj)) return;
+        const monPass=S.passHash; // le mot de passe reste propre à chaque navigateur
+        S=Object.assign(defaults(),d);
+        S.passHash=monPass;
+      }
       localStorage.setItem(LS_KEY,JSON.stringify(S));
       if(sessionStorage.getItem('orx_auth')==='1'){
         applyPerms(); rerender();
@@ -524,7 +557,12 @@ async function sbPull(){
     if(data&&data.data){
       const rem=data.data;
       const localReal=(S.runners&&S.runners.length)||(S.users&&S.users.length);
-      if(localReal && S._maj && (!rem._maj || rem._maj < S._maj)){
+      if(rem._majSec&&S._majSec&&localReal){
+        // fusion section par section, puis on republie l'état fusionné
+        mergeRemote(rem);
+        localStorage.setItem(LS_KEY,JSON.stringify(S));
+        SYNC.ready=true; await sbPushNow();
+      } else if(localReal && S._maj && (!rem._maj || rem._maj < S._maj)){
         // notre état local est plus récent : on le repousse au lieu de régresser
         SYNC.ready=true; await sbPushNow();
       } else {
@@ -550,6 +588,7 @@ async function sbPushNow(force){
   try{
     const d=JSON.parse(JSON.stringify(S)); d._cid=SYNC.cid;
     delete d.passHash; // jamais synchronisé : chaque navigateur garde le sien
+    delete d._fp;      // empreintes locales : inutiles aux autres
     try{ d._statsPub=statsData(); }catch(e){} // paquet prêt à publier, récupéré par le robot GitHub toutes les 15 min
     const {error}=await SYNC.cli.from('oilroxwood_etat').upsert({id:2,data:d,maj:new Date().toISOString()});
     if(error) throw error;
@@ -637,7 +676,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-20';
+const APP_VERSION='C-21';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -2541,6 +2580,9 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-21',d:'14/07/2026',t:'Fin des pertes de données',items:[
+   ['🛡️','Synchro par sections','Correction du bug qui faisait parfois disparaître une facture ou des infos RH quand deux admins travaillaient en même temps : chaque famille de données (factures, feuilles, effectif…) est maintenant datée et fusionnée séparément — personne n\'écrase plus le travail de personne.'],
+   ['🏦','Bilan : sans grade = 0','Une personne au grade vide ou « - » passe automatiquement à 0 $ de salaire et de prime.']]},
  {v:'C-20',d:'13/07/2026',t:'Factures reçues & relances enrichies',items:[
    ['📥','Factures reçues (Direction)','Archive des factures des autres entreprises : colle une capture avec Ctrl+V (compressée automatiquement) ou un lien, classement par entreprise avec totaux, zoom, et suppression.'],
    ['🔍','Recherche dans les Relances','Barre de recherche par nom ou téléphone, sur les deux tableaux à la fois.'],
