@@ -2208,8 +2208,10 @@ function bilanData(){
     const sal=Math.min(base, isPatron(r)?C.patSal:C.empSal);
     const topB=(!PRIMES_OFF&&run&&rangTop.get(run.id)<3&&run.barils>0)?S.settings.top[rangTop.get(run.id)]:0;
     const prime=(run?Math.min(primeProj(run)+topB,isPatron(r)?C.patPrime:C.empPrime):0)+primeExtraDe(r.nom);
+    // grade vide ou « - » → pas de salaire ni de prime
+    const sansGrade=!String(r.rang||'').trim()||String(r.rang).trim()==='-';
     return {nom:r.nom,rang:r.rang,run:nn(r.runs),facture:nn(r.factures),vente:nn(r.ventes),
-      ca:nn(r.runs)+nn(r.factures)+nn(r.ventes),sal,prime};
+      ca:nn(r.runs)+nn(r.factures)+nn(r.ventes),sal:sansGrade?0:sal,prime:sansGrade?0:prime};
   });
   // lignes ajoutées à la main (hors tablette) — CA total calculé automatiquement
   (S.bilanExtra||[]).forEach(x=>{
