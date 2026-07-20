@@ -2,102 +2,11 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oil Roxwood — Espace employé</title>
-<meta name="robots" content="noindex">
-<link rel="icon" type="image/png" href="assets/favicon.png">
-<style>
-  :root{--bg:#0b111b;--panel:#121a28;--panel-2:#182337;--line:rgba(255,255,255,.07);
-    --ink:#e8edf4;--muted:#8494a9;--accent:#e8a020;--accent-2:#f5b23a;--green:#3ddc84;--blue:#5aa0ff;--violet:#a78bfa}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Segoe UI',system-ui,sans-serif;color:var(--ink);min-height:100vh;
-    background:radial-gradient(ellipse at 70% 10%, rgba(232,160,32,.10), transparent 55%),linear-gradient(160deg,#0b111b,#16202e)}
-  .top{display:flex;align-items:center;gap:12px;padding:18px 6vw;border-bottom:1px solid var(--line)}
-  .top img{width:36px;height:36px;object-fit:contain}
-  .top b{color:var(--accent)}
-  .top a{margin-left:auto;color:var(--muted);text-decoration:none;font-size:.85rem}
-  .top a:hover{color:var(--accent)}
-  main{max-width:660px;margin:0 auto;padding:48px 5vw 80px;text-align:center}
-  h1{font-size:1.7rem;font-weight:800;background:linear-gradient(90deg,#fff 40%,var(--accent-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-  .sub{color:var(--muted);font-size:.92rem;margin:10px 0 30px}
-  input{width:100%;max-width:420px;padding:15px 20px;border-radius:12px;border:1px solid var(--line);
-    background:var(--panel);color:var(--ink);font-size:1.05rem;text-align:center;transition:border-color .2s}
-  input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,160,32,.15)}
-  .card{background:linear-gradient(165deg,rgba(25,34,52,.9),rgba(15,22,35,.95));border:1px solid var(--line);
-    border-radius:18px;padding:32px;margin-top:28px;text-align:left;box-shadow:0 16px 44px rgba(0,0,0,.35);
-    animation:up .5s cubic-bezier(.2,.7,.3,1)}
-  @keyframes up{from{opacity:0;transform:translateY(16px)}}
-  .badge{display:inline-block;padding:4px 14px;border-radius:99px;font-size:.78rem;font-weight:700}
-  .bg0{background:rgba(255,255,255,.08);color:#c2cad4}.bg1{background:rgba(90,160,255,.14);color:var(--blue)}
-  .bg2{background:rgba(167,139,250,.14);color:var(--violet)}.bg3{background:rgba(232,160,32,.16);color:var(--accent)}
-  .row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);font-size:.95rem}
-  .row:last-child{border-bottom:none}
-  .row span{color:var(--muted)}
-  .row b.gold{color:var(--accent)}
-  .prog{height:10px;background:var(--panel-2);border-radius:99px;overflow:hidden;margin:10px 0 6px}
-  .prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2));
-    transform-origin:left;animation:grow 1s cubic-bezier(.2,.7,.3,1)}
-  .prog i.full{background:linear-gradient(90deg,#2eb872,var(--green))}
-  @keyframes grow{from{transform:scaleX(0)}}
-  .pct{font-size:.8rem;color:var(--muted);text-align:right}
-  .empty{color:var(--muted);margin-top:30px;font-size:.92rem}
-  .maj{color:var(--muted);font-size:.75rem;margin-top:26px}
-</style>
+<meta http-equiv="refresh" content="0;url=admin.html">
+<title>Oil Roxwood — Espace membre</title>
 </head>
-<body>
-<div class="top">
-  <img src="assets/logo.png" alt=""><span>OIL <b>ROXWOOD</b> · Espace employé</span>
-  <a href="index.html">← Retour au site</a>
-</div>
-<main>
-  <h1>Où en es-tu cette semaine ?</h1>
-  <p class="sub">Tape ton nom RP pour voir ton quota, ta progression et ta prime projetée.</p>
-  <input id="q" placeholder="Ex : Bobby Rousseau" autofocus>
-  <div id="out"></div>
-  <div class="maj" id="maj"></div>
-</main>
-<script>
-const GRADES=[
-  {nom:'Intérimaire',cls:'bg0',montee:3000},
-  {nom:'Raffineur',cls:'bg1',montee:5000},
-  {nom:'Raffineur Confirmé',cls:'bg2',montee:8000},
-  {nom:'Raffineur Expert',cls:'bg3',montee:10000}];
-const F=n=>(n||0).toLocaleString('fr-FR');
-const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let DATA=null;
-fetch('data/stats-public.json?ts='+Date.now(),{cache:'no-store'})
-  .then(r=>r.ok?r.json():null)
-  .then(d=>{
-    DATA=d;
-    document.getElementById('maj').textContent=d&&d.maj
-      ?'Données publiées le '+new Date(d.maj).toLocaleString('fr-FR')+' · Semaine '+d.semaine
-      :'Les données ne sont pas encore publiées — repasse plus tard.';
-  }).catch(()=>{document.getElementById('maj').textContent='Données indisponibles pour le moment.';});
-document.getElementById('q').addEventListener('input',function(){
-  const q=this.value.trim().toLowerCase(), out=document.getElementById('out');
-  if(q.length<3||!DATA||!DATA.runners){ out.innerHTML=''; return; }
-  const r=DATA.runners.find(x=>x.nom.toLowerCase()===q)
-        ||DATA.runners.find(x=>x.nom.toLowerCase().includes(q));
-  if(!r){ out.innerHTML='<div class="empty">Aucun runner trouvé à ce nom. Vérifie l\'orthographe ou vois avec les RH.</div>'; return; }
-  const g=r.poste?{nom:r.poste,cls:/patron/i.test(r.poste)?'bg3':'bg2',montee:GRADES[r.grade].montee}:(GRADES[r.grade]||GRADES[0]);
-  const pc=r.quota?Math.min(100,Math.round(r.barils/r.quota*100)):100;
-  const sorted=[...DATA.runners].sort((a,b)=>b.barils-a.barils);
-  const pos=sorted.findIndex(x=>x.nom===r.nom)+1;
-  const next=GRADES[r.grade+1];
-  out.innerHTML=`<div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-      <div style="font-size:1.25rem;font-weight:800">${esc(r.nom)}</div>
-      <span class="badge ${g.cls}">${g.nom}</span>
-    </div>
-    <div class="prog"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></div>
-    <div class="pct">${F(r.barils)} / ${F(r.quota)} barils — ${pc}% du quota${pc>=100?' 🎯':''}</div>
-    <div class="row"><span>Quota hebdomadaire</span><b>${pc>=100?'✅ Atteint':F(r.quota-r.barils)+' barils restants'}</b></div>
-    <div class="row"><span>Prime projetée (lundi)</span><b class="gold">${r.prime?F(Math.round(r.prime))+' $':'— (quota non atteint)'}</b></div>
-    <div class="row"><span>Classement de la semaine</span><b>${pos<=3?['🥇','🥈','🥉'][pos-1]+' ':''}${pos}ᵉ sur ${DATA.runners.length}</b></div>
-    <div class="row"><span>Total barils (carrière)</span><b>${F(r.total)}</b></div>
-    ${r.poste?'':next?`<div class="row"><span>Prochain grade : ${next.nom}</span><b>${r.barils>=next.montee?'📈 Éligible — vois avec la direction !':F(next.montee-r.barils)+' barils restants cette semaine'}</b></div>`:'<div class="row"><span>Grade</span><b>👑 Grade maximum atteint</b></div>'}
-  </div>`;
-});
-</script>
+<body style="background:#0d131e;color:#8494a9;font-family:system-ui;text-align:center;padding-top:20vh">
+<p>Cette page a été remplacée par l'onglet « 🙋 Ma semaine » de l'espace membre.<br>
+<a href="admin.html" style="color:#e8a020">Redirection en cours…</a></p>
 </body>
 </html>

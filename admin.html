@@ -368,7 +368,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-21</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-22</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -393,6 +393,7 @@
     <button class="nav-item" data-view="runs">🚛 <span class="txt">Runs</span></button>
     <button class="nav-item" data-view="feuilles">📋 <span class="txt">Feuilles</span></button>
     <button class="nav-item" data-view="retention">🗂️ <span class="txt">Ancienneté RH</span></button>
+    <button class="nav-item" data-view="acces">🔔 <span class="txt">Demandes d'accès</span></button>
     <div class="nav-sec" data-sec="commerce" onclick="navToggle('commerce')">Commerce <span class="chev">▾</span></div>
     <button class="nav-item" data-view="factures">🧾 <span class="txt">Factures</span></button>
     <button class="nav-item" data-view="relances">📞 <span class="txt">Relances</span></button>
@@ -402,6 +403,8 @@
     <button class="nav-item" data-view="frecues">📥 <span class="txt">Factures reçues</span></button>
     <div class="nav-sec" data-sec="perso" onclick="navToggle('perso')">Perso <span class="chev">▾</span></div>
     <button class="nav-item" data-view="moi">🙋 <span class="txt">Ma semaine</span></button>
+    <button class="nav-item" data-view="quotashist">📊 <span class="txt">Quotas 3 semaines</span></button>
+    <button class="nav-item" data-view="todo">✅ <span class="txt">Ma to-do</span></button>
     <button class="nav-item" data-view="agenda">📅 <span class="txt">Mon agenda</span></button>
     <button class="nav-item" data-view="feedback">💡 <span class="txt">Suggestions / Bugs</span></button>
     <button class="nav-item" data-view="maj">🆕 <span class="txt">Mises à jour</span></button>
@@ -411,7 +414,6 @@
     <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
     <div class="spacer"></div>
     <a class="nav-item" href="tv.html" target="_blank" rel="noopener" style="text-decoration:none">📺 <span class="txt">TV du dépôt</span></a>
-    <a class="nav-item" href="equipe.html" target="_blank" rel="noopener" style="text-decoration:none">🤝 <span class="txt">Page Équipe</span></a>
     <a class="nav-item" href="index.html" style="text-decoration:none">🌐 <span class="txt">Retour au site</span></a>
     <div id="whoami" style="padding:8px 14px;font-size:.78rem;color:var(--muted)"></div>
     <button class="nav-item" id="logout" onclick="logout()">⏻ <span class="txt">Déconnexion</span></button>
@@ -604,11 +606,11 @@ async function sha(t){
 const ROLES={direction:'Direction',rh:'RH',comptable:'Comptable',commercial:'Commercial',membre:'Membre'};
 /* Onglets visibles par rôle — la Direction voit tout, un Membre ne voit que la vue d'ensemble */
 const PERMS={
-  direction:['overview','effectif','runs','semaine','historique','cloture','feuilles','factures','relances','bilan','retention','quotascom','fer','frecues','moi','agenda','feedback','maj','dlogs','journal','params'],
-  rh:       ['overview','effectif','semaine','historique','feuilles','retention','factures','relances','quotascom','fer','moi','agenda','feedback','maj','dlogs'],
-  comptable:['overview','feuilles','factures','bilan','moi','agenda','feedback','maj'],
-  commercial:['overview','factures','relances','feuilles','quotascom','fer','moi','agenda','feedback','maj'],
-  membre:   ['effectif','moi','agenda','feedback','maj'] // lecture seule + stats perso + boîte à idées + agenda
+  direction:['overview','effectif','runs','semaine','historique','cloture','feuilles','factures','relances','bilan','retention','quotascom','fer','frecues','moi','quotashist','todo','agenda','feedback','maj','dlogs','journal','params'],
+  rh:       ['overview','effectif','semaine','historique','feuilles','retention','acces','factures','relances','quotascom','fer','moi','quotashist','todo','agenda','feedback','maj','dlogs'],
+  comptable:['overview','feuilles','factures','bilan','moi','quotashist','todo','agenda','feedback','maj'],
+  commercial:['overview','factures','relances','feuilles','quotascom','fer','moi','quotashist','todo','agenda','feedback','maj'],
+  membre:   ['effectif','moi','quotashist','todo','agenda','feedback','maj'] // lecture seule + stats perso + boîte à idées + agenda
 };
 function isMembre(){
   if(sessionStorage.getItem('orx_user')==='SECOURS') return false; // clé de secours = Direction
@@ -676,7 +678,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-21';
+const APP_VERSION='C-22';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -856,7 +858,7 @@ function show(v){
   VIEW=v;
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
-  ({overview,effectif,runs,semaine,historique,cloture,feuilles,factures,relances,bilan,retention,quotascom,fer,frecues,moi,agenda,feedback,maj,dlogs,journal,params})[v]();
+  ({overview,effectif,runs,semaine,historique,cloture,feuilles,factures,relances,bilan,retention,quotascom,fer,frecues,moi,quotashist,todo,acces,agenda,feedback,maj,dlogs,journal,params})[v]();
 }
 function rerender(){ show(VIEW); }
 
@@ -995,6 +997,7 @@ function rowRunner(r){
     <td style="text-align:right;white-space:nowrap">
       ${eligible(r)?`<button class="btn btn-sm btn-gold" onclick="promote(${r.id})" title="Monter de grade">▲</button>`:''}
       ${!r.poste&&r.grade>0&&r.barils<g.quota*0.95&&!r.absent&&!ab?`<button class="btn btn-sm btn-red" onclick="demote(${r.id})" title="Descendre de grade (quota réalisé à ${pc}% — sous les 95%)">▼</button>`:''}
+      ${!r.poste&&r.grade===0&&r.barils<g.quota*0.95&&!r.absent&&!ab&&!estNouveau(r.nom)?`<button class="btn btn-sm btn-ghost" style="color:#ffa500;border-color:rgba(255,165,0,.4)" onclick="avertir(${r.id})" title="Intérimaire sous quota (${pc}%) — donner un avertissement">⚠</button>`:''}
       <button class="btn btn-sm btn-ghost" onclick="toggleAbsent(${r.id})" title="${r.absent?'Marquer de retour':'Mettre en congé / absence'}">${r.absent?'💼':'🌴'}</button>
       <button class="btn btn-sm btn-ghost" onclick="openRunnerModal(${r.id})">✎</button>
       <button class="btn btn-sm btn-red" onclick="delRunner(${r.id})">✕</button>
@@ -1072,6 +1075,25 @@ function demote(id){
   sendLog('📉 Descente de grade', `**${r.nom}** redescend **${GRADES[r.grade].nom}** (quota réalisé à ${pcD}% cette semaine)${rhMaj?' (feuille RH mise à jour)':''}`, 0xff5c5c);
   toast(`📉 ${r.nom} redescend ${GRADES[r.grade].nom}${rhMaj?' · feuille RH mise à jour':''}`);
 }
+function estNouveau(nom){
+  // arrivé dans l'entreprise pendant la semaine en cours (date d'arrivée en fiche RH)
+  const row=((S.sheets&&S.sheets.rh)||[]).find(x=>String(x.nom||'').toLowerCase().trim()===String(nom||'').toLowerCase().trim());
+  if(!row||!row.arrivee) return false;
+  return String(row.arrivee)>=agISO(agMonday(0));
+}
+function avertir(id){
+  if(isMembre()) return toast('👀 Consultation seule pour les membres');
+  const r=S.runners.find(x=>x.id===id); if(!r) return;
+  const g=grade(r), pcA=g.quota?Math.round(r.barils/g.quota*100):0;
+  const row=((S.sheets&&S.sheets.rh)||[]).find(x=>String(x.nom||'').toLowerCase().trim()===String(r.nom||'').toLowerCase().trim());
+  if(!confirm(`Donner un avertissement à ${r.nom} ?\n(Intérimaire · quota réalisé à ${pcA}% cette semaine)\n\nL'avertissement sera compté dans la colonne « Avert. » de sa fiche RH.`)) return;
+  let tot='?';
+  if(row){ const n=(parseInt(String(row.avert||'').replace(/\D/g,''),10)||0)+1; row.avert=String(n); tot=n; }
+  jlog(`Avertissement : ${r.nom} (intérimaire, quota à ${pcA}%)${row?` — total : ${tot}`:''}`);
+  save(); sbPushNow(); rerender();
+  toast(`⚠ Avertissement donné à ${r.nom}${row?` (total : ${tot})`:' — introuvable en fiche RH, pense à l\'y ajouter'}`);
+  sendLog('⚠️ Avertissement',`**${r.nom}** (Intérimaire) reçoit un avertissement — quota réalisé à **${pcA}%** cette semaine.${row?`\nTotal d'avertissements : **${tot}**`:''}`,0xffa500);
+}
 function demoteGhost(nom){
   // descente de grade pour le personnel présent uniquement en feuille RH (aucune prise de service)
   if(isMembre()) return toast('👀 Consultation seule pour les membres');
@@ -1142,7 +1164,7 @@ function estCommercial(r){ return !!(r.poste&&/commercial/i.test(r.poste)); }
 function commerciauxActifs(){ return S.runners.filter(r=>estCommercial(r)&&!r.absent&&!absDe(r.nom)); }
 function bidonsVendusSem(){ return ((S.sheets&&S.sheets.ventesSem)||[]).reduce((a,v)=>a+nn(v.quantite),0); }
 function salaireProdCom(r){
-  if(!estCommercial(r)||r.absent) return 0;
+  if(!estCommercial(r)||r.absent||absDe(r.nom)) return 0;
   const n=commerciauxActifs().length;
   if(!n) return 0;
   return Math.round(bidonsVendusSem()/n)*(S.settings.prixBidonCom??45);
@@ -1157,6 +1179,7 @@ function toggleAbsent(id){
 }
 function salaireDe(r){
   // 100 % automatique et additif : salaire fixe du poste + production bidons (commerciaux) + recrues (direction)
+  if(r.absent||absDe(r.nom)) return 0; // absent déclaré → pas de salaire cette semaine
   const rec=r.poste?nn(r.recrues)*prixRecrue():0;
   const base=salFixeDe(r.poste||'')+salaireProdCom(r)+rec;
   const C=caps();
@@ -1266,7 +1289,8 @@ function closeWeek(){
   primes+=(S.primesExtra||[]).reduce((a,p)=>a+nn(p.montant),0); // primes exceptionnelles de la semaine
   S.primesExtra=[]; // versées avec cette clôture → remise à zéro
   S.runners.forEach(r=>{ if(eligible(r)){ r.grade++; promus.push(r.nom); syncRhGrade(r); } });
-  S.weeks.push({num:semClose, date:new Date().toLocaleDateString('fr-FR'), total:sorted.reduce((a,r)=>a+r.barils,0), primes, winner:sorted[0]?.barils>0?sorted[0].nom:null});
+  S.weeks.push({num:semClose, date:new Date().toLocaleDateString('fr-FR'), total:sorted.reduce((a,r)=>a+r.barils,0), primes, winner:sorted[0]?.barils>0?sorted[0].nom:null,
+    detail:sorted.map(r=>({nom:r.nom,barils:r.barils,quota:grade(r).quota,ok:quotaOK(r),poste:!!r.poste}))});
   const w=S.weeks[S.weeks.length-1];
   jlog(`Clôture de la semaine ${w.num} — ${fmt(w.total)} barils · ${money(primes)} de primes${promus.length?' · promus : '+promus.join(', '):''}`);
   const podium=sorted.slice(0,3).filter(r=>r.barils>0).map((r,i)=>`${['🥇','🥈','🥉'][i]} **${r.nom}** — ${fmt(r.barils)} barils (+${money(S.settings.top[i])})`).join('\n');
@@ -2247,10 +2271,11 @@ function bilanData(){
     const sal=Math.min(base, isPatron(r)?C.patSal:C.empSal);
     const topB=(!PRIMES_OFF&&run&&rangTop.get(run.id)<3&&run.barils>0)?S.settings.top[rangTop.get(run.id)]:0;
     const prime=(run?Math.min(primeProj(run)+topB,isPatron(r)?C.patPrime:C.empPrime):0)+primeExtraDe(r.nom);
-    // grade vide ou « - » → pas de salaire ni de prime
+    // grade vide ou « - » → pas de salaire ni de prime ; absent déclaré → idem (il ne produit pas)
     const sansGrade=!String(r.rang||'').trim()||String(r.rang).trim()==='-';
+    const abs0=(run&&run.absent)||!!absDe(r.nom);
     return {nom:r.nom,rang:r.rang,run:nn(r.runs),facture:nn(r.factures),vente:nn(r.ventes),
-      ca:nn(r.runs)+nn(r.factures)+nn(r.ventes),sal:sansGrade?0:sal,prime:sansGrade?0:prime};
+      ca:nn(r.runs)+nn(r.factures)+nn(r.ventes),sal:(sansGrade||abs0)?0:sal,prime:(sansGrade||abs0)?0:prime};
   });
   // lignes ajoutées à la main (hors tablette) — CA total calculé automatiquement
   (S.bilanExtra||[]).forEach(x=>{
@@ -2580,6 +2605,13 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-22',d:'16/07/2026',t:'To-do, quotas 3 semaines & avertissements',items:[
+   ['✅','Ma to-do','Liste de tâches personnelle (comme l\'agenda) : ajoute, coche, supprime — visible uniquement par toi.'],
+   ['📊','Quotas 3 semaines','Vue lecture seule pour tous : qui a atteint son quota sur les 3 dernières semaines clôturées (✔/✗ + barils).'],
+   ['⚠','Avertissements intérimaires','Un intérimaire sous 95 % de quota reçoit un bouton ⚠ (au lieu de la descente impossible) qui incrémente sa colonne Avert. en fiche RH — sauf absents déclarés et arrivés dans la semaine.'],
+   ['🔔','Demandes d\'accès pour les RH','Les RH ont leur onglet pour valider/refuser les nouveaux membres, sans accès aux autres paramètres.'],
+   ['🌴','Commercial absent = salaire 0','Une absence déclarée met le salaire à zéro (quotas déjà redistribués aux présents).'],
+   ['🙋','Page Équipe retirée','Doublon de « Ma semaine » — l\'ancienne adresse redirige vers l\'espace membre.']]},
  {v:'C-21',d:'14/07/2026',t:'Fin des pertes de données',items:[
    ['🛡️','Synchro par sections','Correction du bug qui faisait parfois disparaître une facture ou des infos RH quand deux admins travaillaient en même temps : chaque famille de données (factures, feuilles, effectif…) est maintenant datée et fusionnée séparément — personne n\'écrase plus le travail de personne.'],
    ['🏦','Bilan : sans grade = 0','Une personne au grade vide ou « - » passe automatiquement à 0 $ de salaire et de prime.']]},
@@ -3036,6 +3068,106 @@ function absDel(id){
   S.absences=S.absences.filter(x=>x.id!==id);
   jlog(`Absence supprimée : ${a.nom} (du ${frDate(a.du)} au ${frDate(a.au)})`);
   save(); sbPushNow(); absModal(); rerender();
+}
+
+/* ================== QUOTAS 3 SEMAINES (lecture seule, tous) ================== */
+function quotashist(){
+  const W=(S.weeks||[]).filter(w=>w.detail&&w.detail.length).slice(-3);
+  if(!W.length){
+    $('#main').innerHTML=`<div class="topbar"><div><h2>Quotas — 3 dernières semaines</h2><div class="sub">Consultation seule</div></div></div>
+    <div class="panel"><div class="empty">L'historique détaillé se remplira à partir de la prochaine clôture du lundi 🗓️<br>(les clôtures passées n'avaient pas encore ce niveau de détail)</div></div>`;
+    return;
+  }
+  const noms=[...new Set(W.flatMap(w=>w.detail.filter(x=>!x.poste).map(x=>x.nom)))].sort((a,b)=>a.localeCompare(b));
+  $('#main').innerHTML=`
+  <div class="topbar"><div><h2>Quotas — 3 dernières semaines</h2><div class="sub">Consultation seule · ✔ quota atteint · ✗ manqué · — pas dans l'effectif cette semaine-là</div></div></div>
+  <div class="panel" style="overflow-x:auto">
+    <table><thead><tr><th>Runner</th>${W.map(w=>`<th style="text-align:center">S${w.num}<div style="font-weight:400;color:var(--muted);font-size:.7rem">${esc(w.date||'')}</div></th>`).join('')}</tr></thead><tbody>
+    ${noms.map(n=>`<tr><td><b>${esc(n)}</b></td>
+      ${W.map(w=>{
+        const x=w.detail.find(d=>d.nom===n);
+        if(!x) return '<td style="text-align:center;color:var(--muted)">—</td>';
+        return `<td style="text-align:center;font-weight:700;color:${x.ok?'#3ddc84':'var(--red,#ff5c5c)'}">${x.ok?'✔':'✗'} <span style="font-weight:400;color:var(--muted);font-size:.78rem">${fmt(x.barils)}/${fmt(x.quota)}</span></td>`;
+      }).join('')}
+    </tr>`).join('')}
+    </tbody></table>
+  </div>`;
+}
+
+/* ================== MA TO-DO (perso) ================== */
+let TD_CACHE=null;
+async function tdLoad(){
+  if(!SYNC.cli){ TD_CACHE=[]; return; }
+  try{
+    const {data,error}=await SYNC.cli.from('oilroxwood_todo').select('*').eq('uid',agKey()).order('id',{ascending:false});
+    if(error) throw error;
+    TD_CACHE=data||[]; TD_CACHE._err=false;
+  }catch(e){ TD_CACHE=[]; TD_CACHE._err=true; }
+}
+async function todo(){
+  if(TD_CACHE===null){ $('#main').innerHTML='<div class="panel"><div class="empty">Chargement…</div></div>'; await tdLoad(); }
+  if(VIEW!=='todo') return;
+  const L=TD_CACHE||[], afaire=L.filter(t=>!t.fait), faites=L.filter(t=>t.fait);
+  $('#main').innerHTML=`
+  <div class="topbar"><div><h2>Ma to-do</h2><div class="sub">🔒 Personnelle — visible uniquement par toi · ${afaire.length} à faire · ${faites.length} faite(s)</div></div></div>
+  ${L._err?`<div class="panel" style="border-color:rgba(255,92,92,.4);margin-bottom:14px;color:#ffb0b0;font-size:.85rem">⚠️ La table <b>oilroxwood_todo</b> n'existe pas encore — demande à la direction d'exécuter le SQL de SETUP-SUPABASE.md.</div>`:''}
+  <div class="panel" style="max-width:680px">
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <input class="field" id="tdTxt" placeholder="Relancer LTD Strawberry, acheter du fer…" onkeydown="if(event.key==='Enter')tdAdd()">
+      <button class="btn btn-gold" onclick="tdAdd()">＋ Ajouter</button>
+    </div>
+    ${afaire.map(t=>`<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)">
+      <input type="checkbox" style="width:19px;height:19px;accent-color:var(--accent);cursor:pointer" onchange="tdToggle(${t.id},true)">
+      <span style="flex:1">${esc(t.txt)}</span>
+      <button class="btn btn-sm btn-ghost" style="color:#f87171" onclick="tdDel(${t.id})">✕</button>
+    </div>`).join('')||'<div class="empty" style="padding:14px">Rien à faire — profite 🌴</div>'}
+    ${faites.length?`<div style="margin-top:16px;color:var(--muted);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px">Fait ✔</div>
+    ${faites.slice(0,15).map(t=>`<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);opacity:.55">
+      <input type="checkbox" checked style="width:19px;height:19px;accent-color:#3ddc84;cursor:pointer" onchange="tdToggle(${t.id},false)">
+      <span style="flex:1;text-decoration:line-through">${esc(t.txt)}</span>
+      <button class="btn btn-sm btn-ghost" style="color:#f87171" onclick="tdDel(${t.id})">✕</button>
+    </div>`).join('')}`:''}
+  </div>`;
+}
+async function tdAdd(){
+  const txt=$('#tdTxt').value.trim();
+  if(!txt) return toast('⚠️ Écris d\'abord ta tâche');
+  if(!SYNC.cli) return toast('⚠️ Synchronisation non configurée');
+  try{
+    const {error}=await SYNC.cli.from('oilroxwood_todo').insert({uid:agKey(),txt});
+    if(error) throw error;
+    await tdLoad(); todo();
+  }catch(e){ toast('❌ Ajout impossible — table manquante ?'); }
+}
+async function tdToggle(id,v){
+  try{ await SYNC.cli.from('oilroxwood_todo').update({fait:v}).eq('id',id); }catch(e){}
+  await tdLoad(); todo();
+}
+async function tdDel(id){
+  try{ await SYNC.cli.from('oilroxwood_todo').delete().eq('id',id); }catch(e){}
+  await tdLoad(); todo();
+}
+
+/* ================== DEMANDES D'ACCÈS (vue RH) ================== */
+async function acces(){
+  let DEM=[];
+  try{
+    if(SYNC.cli){ const {data}=await SYNC.cli.from('oilroxwood_demandes').select('*').order('date'); DEM=data||[]; }
+  }catch(e){}
+  if(VIEW!=='acces') return;
+  $('#main').innerHTML=`
+  <div class="topbar"><div><h2>Demandes d'accès</h2><div class="sub">Valide les nouveaux membres — le rôle attribué est « Membre », la direction peut l'ajuster ensuite</div></div>
+    <button class="btn btn-ghost" onclick="acces()">🔄 Actualiser</button></div>
+  <div class="panel" style="max-width:680px">
+    ${DEM.length?DEM.map(p=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)">
+      <span>👤 <b>${esc(p.pseudo)}</b> <small style="color:var(--muted)">· demande du ${frDate(String(p.date||'').slice(0,10))}</small></span>
+      <span style="white-space:nowrap">
+        <button class="btn btn-sm btn-gold" onclick="approvePending('${esc(p.did)}','${esc(p.pseudo)}')">✓ Valider</button>
+        <button class="btn btn-sm btn-red" onclick="refusePending('${esc(p.did)}','${esc(p.pseudo)}')">✕ Refuser</button>
+      </span>
+    </div>`).join(''):'<div class="empty">Aucune demande en attente 🎉<br>Les nouvelles demandes apparaissent ici en direct.</div>'}
+    <p style="color:var(--muted);font-size:.78rem;margin-top:14px">À la validation, la personne entre automatiquement (rôle Membre) et reçoit un MP Discord de bienvenue.</p>
+  </div>`;
 }
 
 /* ================== MA SEMAINE (stats perso) ================== */
@@ -3523,14 +3655,14 @@ async function approvePending(did,pseudo){
   try{ await SYNC.cli.from('oilroxwood_demandes').delete().eq('did',did); }catch(e){}
   // MP de bienvenue envoyé par le robot au prochain passage (file d'attente oilroxwood_notifs)
   try{ await SYNC.cli.from('oilroxwood_notifs').insert({did,msg:`✅ **Ton accès à l'espace membre Oil Roxwood est validé !**\nConnecte-toi ici : https://poloveni.github.io/OilRoxwood/admin.html\nBienvenue dans l'équipe 🛢️`}); }catch(e){}
-  params();
+  (VIEW==='acces'?acces:params)();
   toast('✅ '+pseudo+' validé — il entre automatiquement (rôle Membre, modifiable ci-dessous)');
   sendLog('✅ Accès validé', `**${pseudo}** a maintenant accès au dashboard (Membre)`, 0x3ddc84);
 }
 async function refusePending(did,pseudo){
   try{ await SYNC.cli.from('oilroxwood_demandes').delete().eq('did',did); }catch(e){}
   jlog(`Demande d'accès refusée : ${pseudo}`); save();
-  params(); toast('Demande de '+pseudo+' refusée');
+  (VIEW==='acces'?acces:params)(); toast('Demande de '+pseudo+' refusée');
 }
 function delUser(id){
   const u=S.users.find(x=>x.id===id); if(!u) return;

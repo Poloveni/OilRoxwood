@@ -91,6 +91,25 @@ create policy "frecues_auth" on oilroxwood_frecues
   for all to authenticated using (true) with check (true);
 ```
 
+## Étape 2 quinquies — Table des to-do personnelles
+
+```sql
+create table if not exists oilroxwood_todo (
+  id bigint generated always as identity primary key,
+  uid text not null,
+  txt text not null,
+  fait boolean default false,
+  date timestamptz default now()
+);
+
+create index if not exists oilroxwood_todo_uid on oilroxwood_todo(uid);
+
+alter table oilroxwood_todo enable row level security;
+
+create policy "todo_auth" on oilroxwood_todo
+  for all to authenticated using (true) with check (true);
+```
+
 ## Étape 3 — Récupérer les clés
 
 Menu **Settings → API** (ou Project Settings → Data API) :
