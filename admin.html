@@ -987,6 +987,7 @@ function rowRunner(r){
     <td><div class="prog"><i style="width:0%"></i></div><div class="pct">0 / ${fmt(g.quota)} (0%)</div></td>
     ${isMembre()?'':`<td>0</td><td style="text-align:right;white-space:nowrap;color:var(--muted);font-size:.78rem">
       ${!r.poste&&r.grade>0&&!ab?`<button class="btn btn-sm btn-red" onclick="demoteGhost(decodeURIComponent('${encodeURIComponent(r.nom)}'))" title="Descendre de grade (aucune prise de service)">▼</button> `:''}
+      ${!r.poste&&r.grade===0&&!ab&&!estNouveau(r.nom)?`<button class="btn btn-sm btn-ghost" style="color:#ffa500;border-color:rgba(255,165,0,.4)" onclick="avertirGhost(decodeURIComponent('${encodeURIComponent(r.nom)}'))" title="Intérimaire sans prise de service — donner un avertissement">⚠</button> `:''}
       apparaîtra ici après son 1ᵉʳ pointage</td>`}
   </tr>`;
   return `<tr>
@@ -1093,6 +1094,20 @@ function avertir(id){
   save(); sbPushNow(); rerender();
   toast(`⚠ Avertissement donné à ${r.nom}${row?` (total : ${tot})`:' — introuvable en fiche RH, pense à l\'y ajouter'}`);
   sendLog('⚠️ Avertissement',`**${r.nom}** (Intérimaire) reçoit un avertissement — quota réalisé à **${pcA}%** cette semaine.${row?`\nTotal d'avertissements : **${tot}**`:''}`,0xffa500);
+}
+function avertirGhost(nom){
+  // avertissement pour un intérimaire présent uniquement en fiche RH (aucune prise de service)
+  if(isMembre()) return toast('👀 Consultation seule pour les membres');
+  const row=((S.sheets&&S.sheets.rh)||[]).find(x=>String(x.nom||'').toLowerCase().trim()===String(nom).toLowerCase().trim());
+  if(!row) return;
+  if(absDe(nom)) return toast('🌴 Absence déclarée — pas d\'avertissement');
+  if(estNouveau(nom)) return toast('🌱 Arrivé cette semaine — pas d\'avertissement');
+  if(!confirm(`Donner un avertissement à ${row.nom} ?\n(Intérimaire · aucune prise de service cette semaine)\n\nL'avertissement sera compté dans la colonne « Avert. » de sa fiche RH.`)) return;
+  const n=(parseInt(String(row.avert||'').replace(/\D/g,''),10)||0)+1; row.avert=String(n);
+  jlog(`Avertissement : ${row.nom} (intérimaire, aucune prise de service) — total : ${n}`);
+  save(); sbPushNow(); rerender();
+  toast(`⚠ Avertissement donné à ${row.nom} (total : ${n})`);
+  sendLog('⚠️ Avertissement',`**${row.nom}** (Intérimaire) reçoit un avertissement — **aucune prise de service** cette semaine.\nTotal d'avertissements : **${n}**`,0xffa500);
 }
 function demoteGhost(nom){
   // descente de grade pour le personnel présent uniquement en feuille RH (aucune prise de service)
