@@ -3064,7 +3064,10 @@ function absModal(){
   ${enCours.length?`<label class="f-lbl">Absences enregistrées</label>
   ${enCours.map(a=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:.85rem">
     <span>🌴 <b>${esc(a.nom)}</b> · du ${frDate(a.du)} au ${frDate(a.au)}${a.au<auj?' <small style="color:var(--muted)">(terminée)</small>':''}</span>
-    <button class="btn btn-sm btn-red" onclick="absDel(${a.id})">✕</button>
+    <span style="white-space:nowrap">
+      ${(a.du<=auj&&auj<=a.au)?`<button class="btn btn-sm btn-gold" onclick="absRetour(${a.id})" title="Clôt l'absence à hier : la personne redevient active dès maintenant">✔ De retour</button> `:''}
+      <button class="btn btn-sm btn-red" onclick="absDel(${a.id})">✕</button>
+    </span>
   </div>`).join('')}`:'<div class="empty" style="padding:10px">Aucune absence enregistrée</div>'}`);
 }
 function absAdd(){
@@ -3076,6 +3079,17 @@ function absAdd(){
   save(); sbPushNow(); absModal(); rerender();
   toast(`🌴 Absence de ${nom} enregistrée`);
   sendLog('🌴 Absence déclarée',`**${nom}** sera absent(e) du **${frDate(du)}** au **${frDate(au)}** (inclus).\nDescente de grade bloquée sur la période.`,0x22d3ee);
+}
+function absRetour(id){
+  const a=(S.absences||[]).find(x=>x.id===id); if(!a) return;
+  const hier=new Date(Date.now()-86400000), h=`${hier.getFullYear()}-${String(hier.getMonth()+1).padStart(2,'0')}-${String(hier.getDate()).padStart(2,'0')}`;
+  if(!confirm(`Marquer ${a.nom} comme de retour aujourd'hui ?\n(l'absence sera close à hier, il redevient actif : quotas, salaire, descentes)`)) return;
+  if(h<a.du){ S.absences=S.absences.filter(x=>x.id!==id); } // revenu le jour même du départ : l'absence n'a pas eu lieu
+  else a.au=h;
+  jlog(`Retour anticipé : ${a.nom}${h<a.du?' (absence annulée)':` (absence close au ${frDate(h)})`}`);
+  save(); sbPushNow(); absModal(); rerender();
+  toast(`✔ ${a.nom} est de retour — de nouveau compté partout`);
+  sendLog('✔ Retour anticipé',`**${a.nom}** est de retour — son absence est close au **${frDate(a.au)}**.`,0x3ddc84);
 }
 function absDel(id){
   const a=(S.absences||[]).find(x=>x.id===id); if(!a) return;
