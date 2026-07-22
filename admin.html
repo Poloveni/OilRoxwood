@@ -1176,7 +1176,21 @@ function delRun(rid,t){
 function prixRecrue(){ return S.settings.prixRecrue??4000; }
 /* ---- rémunération commerciale : 45 $/bidon produit ---- */
 function estCommercial(r){ return !!(r.poste&&/commercial/i.test(r.poste)); }
-function commerciauxActifs(){ return S.runners.filter(r=>estCommercial(r)&&!r.absent&&!absDe(r.nom)); }
+function commerciauxActifs(){
+  // effectif tablette ∪ fiche RH (grade contenant « commercial ») — hors absents
+  const low=s=>String(s||'').toLowerCase().trim();
+  const m=new Map();
+  S.runners.filter(r=>estCommercial(r)&&!r.absent&&!absDe(r.nom)).forEach(r=>m.set(low(r.nom),r));
+  ((S.sheets&&S.sheets.rh)||[]).forEach(x=>{
+    if(!/commercial/i.test(String(x.grade||''))) return;
+    const k=low(x.nom); if(!k||m.has(k)) return;
+    const run=S.runners.find(r=>low(r.nom)===k);
+    if(run&&(run.absent||!estCommercial(run))) return; // présent en effectif mais absent ou autre poste
+    if(absDe(x.nom)) return;
+    m.set(k,run||{nom:x.nom,poste:x.grade,_ghost:true});
+  });
+  return [...m.values()];
+}
 function bidonsVendusSem(){ return ((S.sheets&&S.sheets.ventesSem)||[]).reduce((a,v)=>a+nn(v.quantite),0); }
 function salaireProdCom(r){
   if(!estCommercial(r)||r.absent||absDe(r.nom)) return 0;
@@ -2281,7 +2295,11 @@ function bilanData(){
     // tout est automatique : prod. bidons, recrues, salaire fixe, prime hebdo + TOP 3
     const run=S.runners.find(x=>x.nom.toLowerCase()===low(r.nom));
     const rec=(run&&run.poste)?nn(run.recrues)*prixRecrue():0;
-    const prodCom=run?salaireProdCom(run):0;
+    // part production des commerciaux : basée sur le rang (fiche RH), même sans pointage tablette
+    const estCom=/commercial/i.test(String(r.rang||''));
+    const absCom=(run&&run.absent)||!!absDe(r.nom);
+    const nCom=commerciauxActifs().length;
+    const prodCom=(estCom&&!absCom&&nCom)?Math.round(bidonsVendusSem()/nCom)*(S.settings.prixBidonCom??45):0;
     const base=salFixeDe(r.rang)+prodCom+rec; // additif, comme la feuille Excel d'origine
     const sal=Math.min(base, isPatron(r)?C.patSal:C.empSal);
     const topB=(!PRIMES_OFF&&run&&rangTop.get(run.id)<3&&run.barils>0)?S.settings.top[rangTop.get(run.id)]:0;
