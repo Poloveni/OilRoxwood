@@ -1,7 +1,11 @@
 {
- "ca": 259250,
- "maj": "2026-07-22T19:37:07.734Z",
+ "ca": 287725,
+ "maj": "2026-07-22T20:43:45.734Z",
  "top3": [
+  {
+   "nom": "Scott Ramirez",
+   "barils": 8301
+  },
   {
    "nom": "Ashley Cooper",
    "barils": 8146
@@ -9,10 +13,6 @@
   {
    "nom": "Marcus Johnson",
    "barils": 5886
-  },
-  {
-   "nom": "Scott Ramirez",
-   "barils": 5637
   }
  ],
  "runners": [
@@ -76,17 +76,17 @@
    "poste": null,
    "prime": 0,
    "quota": 5000,
-   "total": 3238,
-   "barils": 3238
+   "total": 4535,
+   "barils": 4535
   },
   {
    "nom": "Scott Ramirez",
    "grade": 2,
    "poste": null,
-   "prime": 11274,
+   "prime": 16602,
    "quota": 5000,
-   "total": 2619,
-   "barils": 5637
+   "total": 5283,
+   "barils": 8301
   },
   {
    "nom": "Marcus Johnson",
@@ -263,10 +263,10 @@
    "nom": "John Roy",
    "grade": 0,
    "poste": null,
-   "prime": 3304,
+   "prime": 3784,
    "quota": 3000,
-   "total": 3022,
-   "barils": 3304
+   "total": 3502,
+   "barils": 3784
   },
   {
    "nom": "Nikko Mount",
@@ -325,9 +325,9 @@
   {
    "nom": "Tony Doe",
    "grade": 0,
-   "poste": "Stagiaire",
-   "prime": 2170,
-   "quota": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
    "total": 0,
    "barils": 868
   },
@@ -348,11 +348,56 @@
    "quota": 3000,
    "total": 0,
    "barils": 0
+  },
+  {
+   "nom": "Stella Collins",
+   "grade": 0,
+   "poste": "Patron",
+   "prime": 0,
+   "quota": 0,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Tyler Collins",
+   "grade": 0,
+   "poste": "Co Patron",
+   "prime": 0,
+   "quota": 0,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Emilio Stolichnaya",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 470
+  },
+  {
+   "nom": "José Gomez",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 784
+  },
+  {
+   "nom": "Robin Cannella",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 0
   }
  ],
  "semaine": 30,
- "effectif": 37,
+ "effectif": 42,
  "objectif": 200000,
- "totalBarils": 51850,
- "clientsServis": 12
+ "totalBarils": 57545,
+ "clientsServis": 13
 }
