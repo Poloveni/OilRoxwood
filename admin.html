@@ -96,6 +96,8 @@
   table tbody tr:nth-child(even){background:rgba(255,255,255,.022)}
   table tbody tr:hover{background:rgba(232,160,32,.055)}
   .vsep{display:inline-block;width:1px;background:var(--line);align-self:stretch;margin:0 5px}
+  .fact-wrap{display:grid;grid-template-columns:1fr 280px;gap:16px;align-items:start}
+  @media(max-width:1100px){.fact-wrap{grid-template-columns:1fr}}
   .kpi.link{cursor:pointer;transition:border-color .15s,transform .15s}
   .kpi.link:hover{border-color:var(--accent);transform:translateY(-2px)}
   th{text-align:left;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:1.2px;padding:10px 12px;border-bottom:1px solid var(--line)}
@@ -368,7 +370,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-22</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-23</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -469,9 +471,52 @@ function load(){
 /* ---- synchro par sections : chaque famille de données a sa propre date ----
    Évite qu'un admin qui touche l'effectif écrase la facture qu'un autre vient de créer. */
 const SEC_KEYS=['runners','weeks','sheets','fact','users','pending','fer','settings','absences','primesExtra','quotasCom','quotasComHist','journal','bilanExtra','closeUndo'];
+/* ---- heure de référence : celle du serveur Supabase, pas celle du PC ----
+   Un utilisateur avec une horloge décalée datait ses modifs « dans le futur » et écrasait tout. */
+let CLOCK_SKEW=0;
+function nowSrv(){ return Date.now()+CLOCK_SKEW; }
+function syncClock(){
+  try{
+    fetch(SB_URL+'/rest/v1/',{method:'HEAD',headers:{apikey:SB_KEY}}).then(r=>{
+      const d=Date.parse(r.headers.get('Date')||'');
+      if(d){ CLOCK_SKEW=d-Date.now();
+        if(Math.abs(CLOCK_SKEW)>120000) console.warn('[OilRoxwood] horloge locale décalée de',Math.round(CLOCK_SKEW/60000),'min — corrigé via l\'heure serveur');
+        // assainit les dates locales héritées d'une horloge en avance
+        const lim=nowSrv()+60000;
+        if(S._maj>lim) S._maj=nowSrv();
+        Object.keys(S._majSec||{}).forEach(k=>{ if(S._majSec[k]>lim) S._majSec[k]=nowSrv(); });
+      }
+    }).catch(()=>{});
+  }catch(e){}
+}
 function fpOf(v){ const s=JSON.stringify(v)||''; let h=0; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))|0; } return s.length+':'+h; }
+/* ---- retour en arrière sur les feuilles RH & Tablette (15 niveaux, session en cours) ---- */
+const SHEET_UNDO={rh:[],tablette:[]}, SHEET_PREV={};
+function sheetUndoTrack(){
+  if(!S.sheets) return;
+  ['rh','tablette'].forEach(k=>{
+    const cur=JSON.stringify(S.sheets[k]||[]);
+    if(SHEET_PREV[k]!==undefined&&SHEET_PREV[k]!==cur){
+      SHEET_UNDO[k].push(SHEET_PREV[k]);
+      if(SHEET_UNDO[k].length>15) SHEET_UNDO[k].shift();
+    }
+    SHEET_PREV[k]=cur;
+  });
+}
+function sheetUndo(){
+  const k=curSheet;
+  if(!SHEET_UNDO[k]) return;
+  if(!SHEET_UNDO[k].length) return toast('Rien à annuler sur cette feuille (dans cette session)');
+  const snap=SHEET_UNDO[k].pop();
+  S.sheets[k]=JSON.parse(snap);
+  SHEET_PREV[k]=snap; // évite de ré-empiler l'état qu'on vient de restaurer
+  jlog(`↩ Retour en arrière sur la feuille ${k==='rh'?'RH':'Tablette'}`);
+  save(); sbPushNow(); if(k==='tablette') syncRunners(false); feuilles();
+  toast(`↩ Feuille restaurée · ${SHEET_UNDO[k].length} annulation(s) encore possible(s)`);
+}
 function save(){
-  S._maj=Date.now();
+  sheetUndoTrack(); // historise RH & Tablette avant d'écraser (retour en arrière)
+  S._maj=nowSrv();
   S._majSec=S._majSec||{}; S._fp=S._fp||{};
   SEC_KEYS.forEach(k=>{
     const fp=fpOf(S[k]);
@@ -483,9 +528,12 @@ function mergeRemote(rem){
   // fusion section par section : pour chacune, la plus récente gagne
   let changed=false, localNewer=false;
   S._majSec=S._majSec||{}; S._fp=S._fp||{};
+  const lim=nowSrv()+120000; // les dates « du futur » (horloge décalée) sont ramenées à maintenant
   SEC_KEYS.forEach(k=>{
-    const rt=(rem._majSec&&rem._majSec[k])||rem._maj||0;
-    const lt=S._majSec[k]||S._maj||0;
+    let rt=(rem._majSec&&rem._majSec[k])||rem._maj||0;
+    let lt=S._majSec[k]||S._maj||0;
+    if(rt>lim) rt=nowSrv();
+    if(lt>lim){ lt=nowSrv(); S._majSec[k]=lt; }
     if(rt>lt){ if(rem[k]!==undefined) S[k]=rem[k]; S._majSec[k]=rt; S._fp[k]=fpOf(S[k]); changed=true; }
     else if(lt>rt) localNewer=true;
   });
@@ -505,6 +553,7 @@ function initSync(){
   if(SYNC.on||!SB_URL||!SB_KEY||typeof supabase==='undefined') return;
   SYNC.cli=supabase.createClient(SB_URL,SB_KEY);
   SYNC.on=true;
+  syncClock(); setInterval(syncClock,10*60*1000); // heure serveur = référence, revérifiée régulièrement
   // dès que la session Discord est établie (même après l'échange du code), on tente l'entrée
   SYNC.cli.auth.onAuthStateChange((event,session)=>{
     if(session && sessionStorage.getItem('orx_auth')!=='1') checkDiscordAuth();
@@ -678,7 +727,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-22';
+const APP_VERSION='C-23';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -1337,6 +1386,7 @@ function closeWeek(){
   S.runners.forEach(r=>{ r.barils=0; r.runs=[]; r.recrues=0; r.lastSync=0; });
   S.settings.semaine=isoWeek();
   qcArchive(); // quotas commerciaux : la semaine close part dans l'historique
+  if(S.sheets&&S.sheets.ventesSem) S.sheets.ventesSem=S.sheets.ventesSem.filter(v=>!/^employ/i.test(String(v.client||''))); // commandes employés remises à zéro
   save(); rerender();
   toast(`🗓️ Semaine clôturée — ${money(primes)} de primes${promus.length?` · promus : ${promus.join(', ')}`:''} · éligibilité regénérée (${eligN} noms). Annulation possible.`);
 }
@@ -1485,6 +1535,7 @@ async function feuilles(){
       ${curSheet==='tablette'?'<button class="btn btn-ghost" onclick="openPasteModal()">📋 Coller depuis Excel</button>':''}
       ${curSheet==='rh'?'<button class="btn btn-ghost" onclick="rhPasteModal()">🕒 Coller le pointage</button><button class="btn btn-ghost" onclick="rhTriGrade()" title="Réordonne les lignes : Patron → Co Patron → … → Intérimaire">⇅ Trier par grade</button>':''}
       ${curSheet==='eligibilite'?'<button class="btn btn-ghost" onclick="eligTriGrade()" title="Complète les grades manquants et réordonne : Patron → Co Patron → … → Intérimaire">⇅ Trier par grade</button><button class="btn btn-ghost" onclick="eligCopyNoms()" title="Copie uniquement les noms, un par ligne — prêt à coller sur Discord">📋 Copier les noms</button>':''}
+      ${(curSheet==='rh'||curSheet==='tablette')?`<button class="btn btn-ghost" onclick="sheetUndo()" title="Annule la dernière modification de cette feuille (15 niveaux, session en cours)">↩ Annuler${(SHEET_UNDO[curSheet]||[]).length?` (${SHEET_UNDO[curSheet].length})`:''}</button>`:''}
       <span class="vsep"></span>
       ${def.lite?`<button class="btn btn-ghost" onclick="sheetFull=!sheetFull;feuilles()">${sheetFull?'👁 Colonnes essentielles':'👁 Toutes les colonnes'}</button>`:''}
       <button class="btn btn-ghost" onclick="sheetCsv()">⬇ CSV</button>
@@ -1496,10 +1547,12 @@ async function feuilles(){
   <div class="tabs">${Object.entries(SHEETS_DEF).filter(([k])=>sheetAllowed(k)).map(([k,d])=>`<button class="tab ${k===curSheet?'on':''}" onclick="curSheet='${k}';sheetSearch='';feuilles()">${d.ico} ${d.label} <span style="opacity:.6">(${S.sheets[k].length})</span></button>`).join('')}</div>
   ${def.note?`<div class="warn" style="border-color:rgba(232,160,32,.35);background:rgba(232,160,32,.07);color:var(--accent)">ℹ️ ${def.note}</div>`:''}
   <div class="panel" style="padding:10px 16px;overflow-x:auto">
-    <input class="field" style="max-width:240px;margin:6px 0 10px" placeholder="🔍 Rechercher…" value="${esc(sheetSearch)}" oninput="sheetSearch=this.value;feuilles()">
+    <input class="field" id="sheetSearchInput" style="max-width:240px;margin:6px 0 10px" placeholder="🔍 Rechercher…" value="${esc(sheetSearch)}" oninput="sheetSearch=this.value;feuilles()">
     <table class="sheet"><thead><tr>${head}<th></th></tr></thead><tbody>${body||`<tr><td colspan="${cols.length+2}"><div class="empty">Aucune ligne</div></td></tr>`}</tbody>${foot}</table>
   </div>
   <datalist id="dlSheetClients">${((S.fact&&S.fact.clients)||[]).map(c=>`<option value="${esc(c.nom)}">`).join('')}</datalist>`;
+  // frappe fluide : le curseur reste dans la recherche
+  if(sheetSearch){ const el=document.getElementById('sheetSearchInput'); if(el){ el.focus(); el.setSelectionRange(el.value.length,el.value.length); } }
 }
 let dragI=null;
 function dropRow(j){
@@ -1768,9 +1821,29 @@ async function factures(){
   <div class="topbar"><div><h2>Facturation</h2><div class="sub">${SOCIETE.nom} · Téléphone ${SOCIETE.tel} · RIB ${SOCIETE.rib}</div></div>
     <button class="btn btn-ghost" onclick="venteRapide()">⚡ Vente rapide (sans facture)</button></div>
   <div class="tabs">${tabs.map(([k,l])=>`<button class="tab ${factTab===k?'on':''}" onclick="factTab='${k}';factures()">${l}</button>`).join('')}</div>
-  <div id="factBody"></div>`;
+  <div class="fact-wrap">
+    <div id="factBody" style="min-width:0"></div>
+    <div class="panel" style="padding:14px 16px">${vrSideHtml()}</div>
+  </div>`;
   ({new:fNew,hist:fHist,clients:fClients,articles:fArticles})[factTab]();
 }
+/* ---- panneau latéral : commandes employés de la semaine ---- */
+function vrSideHtml(){
+  const V=((S.sheets&&S.sheets.ventesSem)||[]).filter(v=>/^employ/i.test(String(v.client||'')));
+  const agg={};
+  V.forEach(v=>{
+    const nom=String(v.client).replace(/^employ[ée]s?\s*(?:—|-)?\s*/i,'').replace(/⚡/g,'').replace(/\(vente rapide\)/i,'').trim()||'(sans nom)';
+    agg[nom]=(agg[nom]||0)+nn(v.quantite);
+  });
+  const rows=Object.entries(agg).sort((a,b)=>b[1]-a[1]);
+  return `<h3 style="margin-bottom:4px">⚡ Commandes employés</h3>
+  <p style="color:var(--muted);font-size:.72rem;margin-bottom:10px">Ventes rapides « Employé » · remises à zéro à la clôture du lundi</p>
+  ${rows.length?rows.map(([n,q])=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:.84rem">
+    <span>${esc(n)}</span><b style="color:var(--accent);white-space:nowrap">${fmt(q)} bidons</b></div>`).join('')
+    +`<div style="display:flex;justify-content:space-between;padding:9px 0 0;font-weight:800;font-size:.9rem"><span>Total</span><span>${fmt(rows.reduce((a,[,q])=>a+q,0))} bidons</span></div>`
+  :'<div class="empty" style="padding:8px">Aucune commande employé cette semaine</div>'}`;
+}
+
 /* ---- vente rapide sans facture (commande employé / citoyen) ---- */
 function venteRapide(){
   openModal(`<h3>⚡ Vente rapide (sans facture)</h3>
@@ -2638,6 +2711,13 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-23',d:'17/07/2026',t:'Heure serveur, retours arrière & commandes employés',items:[
+   ['🕰️','Horloge serveur','Les modifications sont datées avec l\'heure du serveur, plus celle du PC : un utilisateur à l\'horloge décalée ne peut plus écraser le travail des autres.'],
+   ['↩','Retour en arrière RH & Tablette','Bouton « Annuler » sur ces deux feuilles : jusqu\'à 15 modifications annulables (session en cours).'],
+   ['⚡','Commandes employés visibles','Panneau à droite de la Facturation : qui a commandé combien de bidons en vente rapide — remis à zéro à la clôture.'],
+   ['🔍','Recherche fluide des feuilles','Plus besoin de recliquer dans la barre de recherche à chaque caractère.'],
+   ['🛒','Commerciaux sans pointage comptés','Un commercial présent en fiche RH compte dans les quotas et le bilan même sans pointage tablette.'],
+   ['✔','Retour anticipé d\'absence','Bouton « De retour » qui clôt une absence à hier sans perdre l\'historique.']]},
  {v:'C-22',d:'16/07/2026',t:'To-do, quotas 3 semaines & avertissements',items:[
    ['✅','Ma to-do','Liste de tâches personnelle (comme l\'agenda) : ajoute, coche, supprime — visible uniquement par toi.'],
    ['📊','Quotas 3 semaines','Vue lecture seule pour tous : qui a atteint son quota sur les 3 dernières semaines clôturées (✔/✗ + barils).'],
