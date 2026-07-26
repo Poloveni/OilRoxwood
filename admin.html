@@ -370,7 +370,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-23</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-24</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -475,6 +475,14 @@ const SEC_KEYS=['runners','weeks','sheets','fact','users','pending','fer','setti
    Un utilisateur avec une horloge décalée datait ses modifs « dans le futur » et écrasait tout. */
 let CLOCK_SKEW=0;
 function nowSrv(){ return Date.now()+CLOCK_SKEW; }
+/* la semaine de l'entreprise est celle de PARIS (heure serveur) — pas du fuseau de chacun :
+   un admin chez qui il est déjà lundi ne fait plus basculer la semaine pour tout le monde */
+function dateParis(ts){
+  const s=new Date(ts===undefined?nowSrv():ts).toLocaleString('en-CA',{timeZone:'Europe/Paris',year:'numeric',month:'2-digit',day:'2-digit'});
+  const m=s.slice(0,10).split('-');
+  return new Date(+m[0],+m[1]-1,+m[2]);
+}
+function semaineCal(){ return isoWeek(dateParis()); }
 function syncClock(){
   try{
     fetch(SB_URL+'/rest/v1/',{method:'HEAD',headers:{apikey:SB_KEY}}).then(r=>{
@@ -709,14 +717,14 @@ function enter(){
   if(wu) wu.innerHTML=cu?`👤 <b style="color:var(--ink)">${esc(cu.user)}</b> · ${ROLES[cu.role]||cu.role}`:'';
   applyPerms(); navBadges();
   let _rsz; addEventListener('resize',()=>{ clearTimeout(_rsz); _rsz=setTimeout(applyPerms,200); });
-  const wk=isoWeek(); if(S.settings.semaine!==wk){ S.settings.semaine=wk; save(); } // semaine calendaire — save uniquement si elle change (évite d'écraser les modifs des autres admins)
+  const wk=semaineCal(); if(S.settings.semaine!==wk){ S.settings.semaine=wk; save(); } // semaine calendaire (heure de Paris) — save uniquement si elle change
   show('overview');
   // effectif ← tablette (le pull Supabase a déjà eu lieu au chargement de la page)
   setTimeout(async()=>{
     initSync();
     await ensureSheets();
     const r=isMembre()?null:syncRunners(true);
-    S.settings.semaine=isoWeek();
+    S.settings.semaine=semaineCal();
     rerender();
   }, 50);
 }
@@ -727,7 +735,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-23';
+const APP_VERSION='C-24';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -1352,8 +1360,8 @@ async function semaine(){
 }
 function closeWeek(){
   if(!S.runners.length) return toast('Aucun runner à clôturer');
-  // la semaine qu'on clôture = celle d'HIER : une clôture le lundi 13/07 (S29) ferme la semaine 28
-  const semClose=isoWeek(new Date(Date.now()-86400000));
+  // la semaine qu'on clôture = celle d'HIER (heure de Paris) : une clôture le lundi 13/07 (S29) ferme la semaine 28
+  const semClose=isoWeek(dateParis(nowSrv()-86400000));
   if(!confirm(`Clôturer la semaine ${semClose} ?\n\n• Les primes sont figées (quota + TOP 3)\n• Les montées de grade éligibles sont appliquées\n• La feuille Éligibilité est regénérée (quotas réussis + direction)\n• Les compteurs hebdo repartent à zéro\n\n↩ Tu pourras ANNULER cette clôture juste après en cas d'oubli.`)) return;
   // instantané complet AVANT clôture — permet d'annuler intégralement
   S.closeUndo={ date:new Date().toISOString(), semaine:semClose,
@@ -1384,7 +1392,7 @@ function closeWeek(){
     eligN=eligibles.length;
   }
   S.runners.forEach(r=>{ r.barils=0; r.runs=[]; r.recrues=0; r.lastSync=0; });
-  S.settings.semaine=isoWeek();
+  S.settings.semaine=semaineCal();
   qcArchive(); // quotas commerciaux : la semaine close part dans l'historique
   if(S.sheets&&S.sheets.ventesSem) S.sheets.ventesSem=S.sheets.ventesSem.filter(v=>!/^employ/i.test(String(v.client||''))); // commandes employés remises à zéro
   save(); rerender();
@@ -2711,6 +2719,10 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-24',d:'19/07/2026',t:'Semaine sur l\'heure de Paris',items:[
+   ['🌍','Fuseau horaire neutralisé','Le numéro de semaine est calculé sur l\'heure de Paris (côté serveur) : un admin chez qui il est déjà lundi ne fait plus basculer la semaine de toute l\'entreprise.'],
+   ['⚖️','Quotas commerciaux : archivage à la clôture uniquement','Un changement de numéro de semaine ne vide plus les achats de fer notés — seul le bouton Clôturer archive et remet à zéro.'],
+   ['🩹','Réparation automatique','Les achats de fer emportés par le faux changement de semaine du 19/07 sont rapatriés tout seuls à la première ouverture de la vue.']]},
  {v:'C-23',d:'17/07/2026',t:'Heure serveur, retours arrière & commandes employés',items:[
    ['🕰️','Horloge serveur','Les modifications sont datées avec l\'heure du serveur, plus celle du PC : un utilisateur à l\'horloge décalée ne peut plus écraser le travail des autres.'],
    ['↩','Retour en arrière RH & Tablette','Bouton « Annuler » sur ces deux feuilles : jusqu\'à 15 modifications annulables (session en cours).'],
@@ -3076,9 +3088,25 @@ function qcArchive(){
   S.quotasCom={sem:S.settings.semaine,achats:{}};
 }
 function quotascom(){
-  // changement de semaine → la semaine écoulée part dans l'historique
+  // l'archivage/remise à zéro ne se fait plus QU'À LA CLÔTURE — un simple changement de numéro de semaine ne vide plus la feuille
   S.quotasCom=S.quotasCom||{sem:S.settings.semaine,achats:{}};
-  if(S.quotasCom.sem!==S.settings.semaine){ qcArchive(); save(); }
+  S.quotasCom.sem=S.settings.semaine; // suit l'étiquette de semaine sans rien effacer
+  // réparation unique : rapatrie les achats emportés par le faux changement de semaine du 19/07 (fuseau horaire)
+  if(!S._qcFix1){
+    S._qcFix1=true;
+    const cur=semaineCal();
+    let best=null;
+    S.quotasComHist=(S.quotasComHist||[]).filter(h=>{
+      if(h.sem>=cur){ if(Object.values(h.achats||{}).some(v=>+v>0)) best=h; return false; } // entrées fantômes ≥ semaine courante : retirées
+      return true;
+    });
+    if(best&&!Object.values(S.quotasCom.achats||{}).some(v=>+v>0)){
+      S.quotasCom={sem:cur,achats:best.achats,vendus:best.vendus,parPers:best.parPers,ferPers:best.ferPers};
+      toast('🩹 Achats de fer de la semaine récupérés (faux changement de semaine annulé)');
+      jlog('Quotas commerciaux : achats de la semaine récupérés après un faux changement de semaine (fuseau horaire)');
+    }
+    save();
+  }
   const coms=commerciauxActifs();
   const vendus=bidonsVendusSem();
   const parPers=coms.length?Math.ceil(vendus/coms.length):0; // bidons à reproduire par commercial
@@ -3730,7 +3758,7 @@ function saveParams(){
   S.settings.prixBidonCom=numOr($('#p_bid').value,45);
   S.settings.primeWebmaster=numOr($('#p_wm').value,0);
   S.settings.limite=numOr($('#p_lim').value,24000);
-  S.settings.semaine=+$('#p_sem').value||isoWeek();
+  S.settings.semaine=+$('#p_sem').value||semaineCal();
   S.settings.top=[numOr($('#p_t1').value,15000),numOr($('#p_t2').value,10000),numOr($('#p_t3').value,5000)];
   S.settings.objectif=numOr($('#p_obj').value,0);
   jlog('Modification des paramètres');
