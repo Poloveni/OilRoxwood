@@ -1,18 +1,18 @@
 {
- "ca": 7840,
- "maj": "2026-07-27T01:24:13.193Z",
+ "ca": 35780,
+ "maj": "2026-07-27T10:48:29.377Z",
  "top3": [
   {
+   "nom": "Thomas Boyer",
+   "barils": 2856
+  },
+  {
+   "nom": "Julio Collins",
+   "barils": 1516
+  },
+  {
    "nom": "Araceli Vega",
-   "barils": 618
-  },
-  {
-   "nom": "Rachild Badoury",
-   "barils": 482
-  },
-  {
-   "nom": "Loki Balboha",
-   "barils": 468
+   "barils": 1054
   }
  ],
  "runners": [
@@ -29,10 +29,10 @@
    "nom": "Thomas Boyer",
    "grade": 0,
    "poste": "RH",
-   "prime": 0,
+   "prime": 7140,
    "quota": 0,
-   "total": 0,
-   "barils": 0
+   "total": 2856,
+   "barils": 2856
   },
   {
    "nom": "Juan Sanchez",
@@ -47,10 +47,10 @@
    "nom": "Julio Collins",
    "grade": 0,
    "poste": "Commercial",
-   "prime": 0,
+   "prime": 3790,
    "quota": 0,
-   "total": 0,
-   "barils": 0
+   "total": 1516,
+   "barils": 1516
   },
   {
    "nom": "Ashley Cooper",
@@ -94,8 +94,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 0,
-   "barils": 618
+   "total": 436,
+   "barils": 1054
   },
   {
    "nom": "Loki Balboha",
@@ -103,22 +103,49 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 0,
-   "barils": 468
+   "total": 480,
+   "barils": 948
   },
   {
    "nom": "Luiz Gonzalez",
    "grade": 0,
-   "poste": "Stagiaire",
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 300,
+   "barils": 300
+  },
+  {
+   "nom": "Stella Collins",
+   "grade": 0,
+   "poste": "Patron",
    "prime": 0,
    "quota": 0,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Morino Collins",
+   "grade": 2,
+   "poste": null,
+   "prime": 0,
+   "quota": 5000,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Helena Rhosé",
+   "grade": 1,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
    "total": 0,
    "barils": 0
   }
  ],
  "semaine": 31,
- "effectif": 11,
+ "effectif": 14,
  "objectif": 200000,
- "totalBarils": 1568,
+ "totalBarils": 7156,
  "clientsServis": 19
 }
