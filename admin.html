@@ -382,7 +382,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-25</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-26</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -483,7 +483,7 @@ function load(){
 }
 /* ---- synchro par sections : chaque famille de données a sa propre date ----
    Évite qu'un admin qui touche l'effectif écrase la facture qu'un autre vient de créer. */
-const SEC_KEYS=['runners','weeks','sheets','fact','users','pending','fer','settings','absences','primesExtra','quotasCom','quotasComHist','journal','bilanExtra','closeUndo'];
+const SEC_KEYS=['runners','weeks','sheets','fact','users','pending','fer','settings','absences','primesExtra','quotasCom','quotasComHist','journal','bilanExtra','closeUndo','bilanForce'];
 /* ---- heure de référence : celle du serveur Supabase, pas celle du PC ----
    Un utilisateur avec une horloge décalée datait ses modifs « dans le futur » et écrasait tout. */
 let CLOCK_SKEW=0;
@@ -537,6 +537,7 @@ function sheetUndo(){
 }
 function save(){
   sheetUndoTrack(); // historise RH & Tablette avant d'écraser (retour en arrière)
+  palDirty();       // le palier fiscal sera recalculé à la prochaine lecture
   S._maj=nowSrv();
   S._majSec=S._majSec||{}; S._fp=S._fp||{};
   SEC_KEYS.forEach(k=>{
@@ -559,6 +560,7 @@ function mergeRemote(rem){
     else if(lt>rt) localNewer=true;
   });
   S._maj=Math.max(S._maj||0,rem._maj||0);
+  palDirty();
   return {changed,localNewer};
 }
 
@@ -748,7 +750,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-25';
+const APP_VERSION='C-26';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -896,10 +898,54 @@ function salFixeDe(rang){
   const k=Object.keys(sp).find(x=>x.toLowerCase()===String(rang||'').toLowerCase().trim());
   return k ? (+sp[k]||0) : 0;
 }
-function caps(){
-  if(!S.settings.caps) S.settings.caps={empSal:85000,empPrime:42500,patSal:90000,patPrime:45000};
-  return S.settings.caps;
+/* ================== BARÈME PROGRESSIF (impôts & plafonds automatiques) ==================
+   Le taux d'imposition et les plafonds salaire/prime sont déduits du bénéfice APRÈS PRIMES,
+   par itération (les plafonds influencent les primes, qui influencent le bénéfice). */
+const BAREME_DEF=[
+ {min:100,max:9999,taux:.06,se:5000,sp:8000,pe:2500,pp:4000},
+ {min:10000,max:29999,taux:.08,se:10000,sp:15000,pe:5000,pp:7500},
+ {min:30000,max:49999,taux:.13,se:20000,sp:25000,pe:10000,pp:12500},
+ {min:50000,max:99999,taux:.18,se:35000,sp:40000,pe:17500,pp:20000},
+ {min:100000,max:249999,taux:.20,se:55000,sp:60000,pe:27500,pp:30000},
+ {min:250000,max:449999,taux:.24,se:65000,sp:70000,pe:32500,pp:35000},
+ {min:450000,max:599999,taux:.26,se:75000,sp:80000,pe:37500,pp:40000},
+ {min:600000,max:899999,taux:.29,se:85000,sp:90000,pe:42500,pp:45000},
+ {min:900000,max:1499999,taux:.32,se:95000,sp:100000,pe:47500,pp:50000},
+ {min:1500000,max:1799999,taux:.35,se:105000,sp:110000,pe:52500,pp:55000},
+ {min:1800000,max:2499999,taux:.39,se:115000,sp:125000,pe:57500,pp:62500},
+ {min:2500000,max:4999999,taux:.42,se:145000,sp:150000,pe:72500,pp:75000},
+ {min:5000000,max:99000000,taux:.45,se:155000,sp:170000,pe:77500,pp:85000}
+];
+function bareme(){ const b=S.settings&&S.settings.bareme; return (Array.isArray(b)&&b.length)?b:BAREME_DEF; }
+function palIdxFor(v){ const B=bareme(); for(let i=B.length-1;i>=0;i--) if(v>=B[i].min) return i; return 0; }
+let PAL_CACHE=null, PAL_BUSY=false;
+function palDirty(){ if(!PAL_BUSY) PAL_CACHE=null; }
+function palierAuto(){
+  if(PAL_BUSY) return PAL_CACHE??0;
+  if(PAL_CACHE!=null&&PAL_CACHE>=0) return PAL_CACHE;
+  PAL_BUSY=true;
+  const B=bareme(); const fixes=[], scores=[];
+  try{
+    // balayage exhaustif : pour chaque palier, on calcule le bilan AVEC ses plafonds/taux,
+    // et on garde le palier cohérent avec le bénéfice après primes qu'il produit
+    for(let i=0;i<B.length;i++){
+      PAL_CACHE=i;
+      const net=Math.max(0,bilanData().apresPrimes);
+      const j=palIdxFor(net);
+      if(j===i) fixes.push(i);
+      scores.push(Math.abs(j-i));
+    }
+  }catch(e){}
+  let idx=0;
+  if(fixes.length) idx=fixes[fixes.length-1];                    // point stable (le plus élevé si plusieurs)
+  else if(scores.length) idx=scores.indexOf(Math.min(...scores)); // sinon : le plus proche de la cohérence
+  PAL_CACHE=idx; PAL_BUSY=false;
+  return idx;
 }
+function palierIdx(){ return (S.bilanForce&&Number.isInteger(S.bilanForce.idx))?Math.min(S.bilanForce.idx,bareme().length-1):palierAuto(); }
+function palierCur(){ const B=bareme(); const i=PAL_BUSY?Math.min(PAL_CACHE??0,B.length-1):palierIdx(); return B[i]||BAREME_DEF[0]; }
+function tauxActuel(){ return palierCur().taux; }
+function caps(){ const t=palierCur(); return {empSal:t.se,patSal:t.sp,empPrime:t.pe,patPrime:t.pp}; }
 const PRIMES_OFF=false; // ▶️ primes actives (passer à true pour tout suspendre)
 function primeProj(r){
   if(PRIMES_OFF) return 0;
@@ -2381,6 +2427,37 @@ function annuleRelance(i){
 }
 
 /* ================== BILAN COMPTABLE ================== */
+/* ---- table du barème (page Bilan) + forçage manuel ---- */
+let BAR_OPEN=false;
+function barTableHtml(){
+  const auto=palierAuto(), cur=palierIdx(), forced=!!S.bilanForce;
+  return `<div class="panel" style="margin-bottom:16px;overflow-x:auto">
+  <h3>Barème progressif — palier actuel : ${cur+1}/${bareme().length}</h3>
+  <table><thead><tr><th></th><th>Bénéfice min</th><th>Bénéfice max</th><th>Taux</th><th>Sal. max emp.</th><th>Sal. max dir.</th><th>Prime max emp.</th><th>Prime max dir.</th><th></th></tr></thead><tbody>
+  ${bareme().map((t,i)=>`<tr style="${i===cur&&forced?'background:rgba(90,160,255,.10)':i===auto?'background:rgba(232,98,44,.10)':''}">
+    <td><input type="radio" name="barSel" ${i===cur?'checked':''} style="accent-color:${forced?'#5aa0ff':'var(--accent)'};cursor:pointer" onchange="barForce(${i})" title="Forcer ce palier"></td>
+    <td>${money(t.min)}</td><td>${money(t.max)}</td><td><b>${Math.round(t.taux*100)} %</b></td>
+    <td>${money(t.se)}</td><td>${money(t.sp)}</td><td>${money(t.pe)}</td><td>${money(t.pp)}</td>
+    <td style="font-size:.72rem;white-space:nowrap">${i===auto?`<span style="color:var(--accent);font-weight:700">${forced?'palier auto attendu':'palier détecté automatiquement'}</span>`:''}${i===cur&&forced?'<span style="color:#5aa0ff;font-weight:700"> sélectionné manuellement</span>':''}</td>
+  </tr>`).join('')}</tbody></table>
+  <p style="color:var(--muted);font-size:.75rem;margin-top:8px">Palier déterminé par le <b>bénéfice après primes</b> (calcul itératif : plafonds → primes → bénéfice → palier, jusqu'à stabilité). Le barème de référence s'édite dans Paramètres.</p>
+  </div>`;
+}
+function barForce(i){
+  const auto=palierAuto();
+  if(i<0||i===auto){ delete S.bilanForce; jlog('Palier fiscal : retour au calcul automatique'); }
+  else{
+    S.bilanForce={idx:i,par:(currentUser()||{}).user||'?',quand:new Date().toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),attendu:auto};
+    jlog(`Palier fiscal forcé : palier ${i+1} (automatique attendu : ${auto+1})`);
+  }
+  palDirty(); save(); sbPushNow(); bilan();
+}
+function barEdit(i,k,v){
+  if(!Array.isArray(S.settings.bareme)||!S.settings.bareme.length) S.settings.bareme=JSON.parse(JSON.stringify(BAREME_DEF));
+  const t=S.settings.bareme[i]; if(!t) return;
+  t[k]=k==='taux'?Math.max(0,(+v||0)/100):Math.max(0,+v||0);
+  palDirty(); jlog(`Barème d'imposition modifié : tranche ${i+1} (${k})`); save(); sbPushNow();
+}
 function bilanOrdGrade(rang){
   // ordre : Patron / Co Patron / Comptable / RH / Resp. Commercial / Commerciaux / Web Master / Expert / Confirmé / Raffineur / Intérimaire / —
   const s=String(rang||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
@@ -2449,7 +2526,7 @@ function bilanData(){
   // méthode compta FBFA : impôt sur (CA − salaires − dépenses), primes déduites APRÈS impôt
   const depenses=masseSal+depDed;
   const benefice=caBrut-depenses;
-  const taux=S.settings.impot??0.29;
+  const taux=tauxActuel(); // barème progressif — voir palier sur la page Bilan
   const impots=Math.max(0,benefice*taux);
   const apresImpot=benefice-impots;
   const apresPrimes=apresImpot-totalPrimes;
@@ -2463,19 +2540,18 @@ async function bilan(){
   $('#main').innerHTML=`
   <div class="topbar">
     <div><h2>Bilan comptable</h2><div class="sub">Calculé en direct depuis les feuilles Tablette, Budget & salaires et Compta</div></div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <span class="chip">Taux d'imposition :
-        <input class="field" type="number" step="1" min="0" max="100" value="${Math.round(B.taux*100)}"
-          style="width:64px;display:inline-block;padding:4px 8px;margin:0 4px"
-          onchange="S.settings.impot=(+this.value||0)/100;save();bilan()"> <b>%</b></span>
-      <span class="chip">Plafond salaire :
-        <input class="field" type="number" value="${caps().empSal}" title="Employé" style="width:86px;display:inline-block;padding:4px 8px;margin:0 4px" onchange="caps().empSal=+this.value||0;save();bilan()">
-        / <input class="field" type="number" value="${caps().patSal}" title="Direction" style="width:86px;display:inline-block;padding:4px 8px;margin:0 4px" onchange="caps().patSal=+this.value||0;save();bilan()"> <b>emp / dir</b></span>
-      <span class="chip">Plafond prime :
-        <input class="field" type="number" value="${caps().empPrime}" title="Employé" style="width:86px;display:inline-block;padding:4px 8px;margin:0 4px" onchange="caps().empPrime=+this.value||0;save();bilan()">
-        / <input class="field" type="number" value="${caps().patPrime}" title="Direction" style="width:86px;display:inline-block;padding:4px 8px;margin:0 4px" onchange="caps().patPrime=+this.value||0;save();bilan()"> <b>emp / dir</b></span>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <span class="chip">Taux : <b>${Math.round(B.taux*100)} %</b></span>
+      <span class="chip">Plafond salaire : <b>${fmt(caps().empSal)} / ${fmt(caps().patSal)}</b> emp/dir</span>
+      <span class="chip">Plafond prime : <b>${fmt(caps().empPrime)} / ${fmt(caps().patPrime)}</b> emp/dir</span>
+      ${S.bilanForce?'<span class="chip" style="color:#5aa0ff;border-color:rgba(90,160,255,.45)">🔵 forcé manuellement</span>':'<span class="chip" style="color:var(--accent)">palier détecté automatiquement</span>'}
+      <button class="btn btn-ghost btn-sm" onclick="BAR_OPEN=!BAR_OPEN;bilan()">${BAR_OPEN?'▾ Masquer':'▸ Voir'} le barème</button>
     </div>
   </div>
+  ${S.bilanForce?`<div class="panel" style="margin-bottom:14px;font-size:.82rem;color:#9fc3ff;border-color:rgba(90,160,255,.35)">
+    🔵 Palier <b>${palierIdx()+1}</b> forcé par <b>${esc(S.bilanForce.par)}</b> le ${esc(S.bilanForce.quand)} — palier automatique attendu : <b>${S.bilanForce.attendu+1}</b>.
+    <button class="btn btn-sm btn-ghost" style="margin-left:8px" onclick="barForce(-1)">↺ Revenir à l'automatique</button></div>`:''}
+  ${BAR_OPEN?barTableHtml():''}
   <div class="grid g4" style="margin-bottom:18px">
     <div class="panel kpi"><div class="lbl">CA brut réalisé</div><div class="val gold">${money(B.caBrut)}</div><div class="delta">runs + factures + ventes</div></div>
     <div class="panel kpi"><div class="lbl">Dépenses déductibles</div><div class="val">${money(B.depenses)}</div><div class="delta">salaires ${money(B.masseSal)} · autres ${money(B.depDed)}</div></div>
@@ -2764,6 +2840,10 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-26',d:'20/07/2026',t:'Barème fiscal progressif',items:[
+   ['🧮','Impôts & plafonds automatiques','Le taux d\'imposition et les plafonds salaire/prime ne se règlent plus à la main : ils sont déduits du bénéfice après primes selon le barème progressif de Thomas (13 tranches, 6 % → 45 %), par calcul itératif jusqu\'à stabilité.'],
+   ['📐','Barème visible et traçable','Sur le Bilan compta : « Voir le barème » affiche les tranches avec le palier détecté surligné en orange. Un clic sur un bouton radio force un autre palier (affiché en bleu, tracé : qui, quand, palier attendu), « ↺ Revenir à l\'automatique » à tout moment.'],
+   ['⚙️','Barème éditable','Les tranches de référence se modifient dans Paramètres, avec retour aux valeurs par défaut en un clic.']]},
  {v:'C-25',d:'20/07/2026',t:'Nouvelle identité visuelle',items:[
    ['🎨','Charte graphique refondue','Une seule couleur d\'accent : l\'orange pétrole (dégradé doré → brique) remplace le rose/violet. Fond anthracite, palette industrielle validée par la Direction.'],
    ['🔤','Nouvelles typographies','Oswald pour les titres (style industriel), Inter pour le texte, JetBrains Mono pour les chiffres clés — alignement net des montants.'],
@@ -3792,6 +3872,15 @@ async function params(){
         <input type="file" id="impFile" accept=".json" style="display:none" onchange="importData(this)">
       </div>
     </div>
+  </div>
+  <div class="panel" style="margin-top:18px;overflow-x:auto">
+    <h3 style="display:flex;justify-content:space-between;align-items:center">📐 Barème progressif d'imposition (référence)
+      <button class="btn btn-sm btn-ghost" onclick="if(confirm('Restaurer le barème par défaut (valeurs de Thomas) ?')){S.settings.bareme=JSON.parse(JSON.stringify(BAREME_DEF));palDirty();jlog('Barème d\\'imposition restauré aux valeurs par défaut');save();sbPushNow();params();}">↺ Valeurs par défaut</button></h3>
+    <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px">Le palier actif est choisi automatiquement selon le bénéfice après primes (visible sur la page Bilan compta). Modifie ici les tranches de référence si les règles du serveur changent.</p>
+    <table><thead><tr><th>#</th><th>Bénéfice min</th><th>Bénéfice max</th><th>Taux %</th><th>Sal. max emp.</th><th>Sal. max dir.</th><th>Prime max emp.</th><th>Prime max dir.</th></tr></thead><tbody>
+    ${bareme().map((t,i)=>`<tr><td style="color:var(--muted)">${i+1}</td>
+      ${[['min',t.min],['max',t.max],['taux',Math.round(t.taux*100)],['se',t.se],['sp',t.sp],['pe',t.pe],['pp',t.pp]].map(([k,v])=>`<td><input class="field" type="number" style="padding:5px 8px;min-width:86px;text-align:right" value="${v}" onchange="barEdit(${i},'${k}',this.value)"></td>`).join('')}
+    </tr>`).join('')}</tbody></table>
   </div>
   <div class="panel" style="margin-top:18px">
     <h3>📐 Règles de grades (rappel)</h3>
