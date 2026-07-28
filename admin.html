@@ -72,6 +72,12 @@
   .nav-item svg{flex:none}
   #whoami{display:flex;gap:10px;align-items:center}
   .avat{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--or3),var(--or1));color:#1c0f06;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.78rem;flex:none;font-family:'Oswald',sans-serif;letter-spacing:.5px}
+  #nfBell{position:fixed;top:16px;right:22px;z-index:160;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);color:var(--muted);display:none;align-items:center;justify-content:center;transition:color .15s,border-color .15s}
+  #nfBell:hover{color:var(--accent);border-color:var(--accent)}
+  #nfBadge{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:.6rem;font-weight:800;border-radius:99px;min-width:16px;height:16px;padding:0 4px;display:none;align-items:center;justify-content:center}
+  #nfPanel{position:fixed;top:66px;right:22px;width:min(360px,92vw);max-height:70vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;z-index:160;display:none;box-shadow:0 24px 70px rgba(0,0,0,.55);padding:14px}
+  #gkOv{position:fixed;inset:0;background:rgba(5,8,14,.72);backdrop-filter:blur(4px);z-index:300;display:none;align-items:flex-start;justify-content:center;padding-top:14vh}
+  #gkBox{background:var(--panel);border:1px solid var(--line);border-radius:16px;width:min(560px,92vw);padding:14px;box-shadow:0 30px 90px rgba(0,0,0,.6)}
   .nvb{margin-left:auto;background:var(--red,#ff5c5c);color:#fff;font-size:.66rem;font-weight:800;border-radius:99px;padding:1px 7px;line-height:1.5}
   .nvb.dot{width:9px;height:9px;padding:0;border-radius:50%}
   .nav-item:hover{background:var(--panel-2);color:var(--ink)}
@@ -122,6 +128,7 @@
   .bg2{background:linear-gradient(135deg,#E8622C,#f2873e);color:#241105}
   .bg3{background:linear-gradient(135deg,#F2B705,#ffd44f);color:#3a2a05}
   .bgrole{background:rgba(255,255,255,.09);color:#c6ccd4;border:1px solid rgba(255,255,255,.14)}
+  .bgstg{background:linear-gradient(135deg,#54400f,#8a6a1e);color:#ecdcae;border:1px solid rgba(236,220,174,.25)}
   .zone-tag{display:inline-block;width:26px;height:26px;border-radius:8px;text-align:center;line-height:26px;font-weight:800;font-size:.8rem}
   .zA{background:rgba(232,98,44,.16);color:var(--accent)}
   .zB{background:rgba(90,160,255,.14);color:var(--blue)}
@@ -382,7 +389,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-26</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-27</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -440,6 +447,12 @@
   ⚠️ Une nouvelle version du dashboard est disponible — <a href="#" onclick="location.reload(true);return false" style="color:#fff;text-decoration:underline">recharger maintenant (Ctrl+F5)</a>
 </div>
 <div id="printZone"></div>
+<button id="nfBell" onclick="nfToggle()" title="Notifications"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-2 8-2 8h16s-2-1-2-8"/><path d="M10.5 20a1.8 1.8 0 0 0 3 0"/></svg><span id="nfBadge"></span></button>
+<div id="nfPanel"></div>
+<div id="gkOv" onclick="if(event.target===this)gkClose()"><div id="gkBox">
+  <input class="field" id="gkIn" placeholder="🔍 Employé, client, facture, page…  (↑↓ naviguer · ↵ ouvrir · Échap fermer)" oninput="gkList()" onkeydown="gkKey(event)" autocomplete="off">
+  <div id="gkRes" style="margin-top:8px"></div>
+</div></div>
 <div id="modalBg" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalBox"></div></div>
 <div id="toast"></div>
 
@@ -731,6 +744,8 @@ function enter(){
   const cu=currentUser(), wu=document.getElementById('whoami');
   if(wu) wu.innerHTML=cu?`<span class="avat">${esc((cu.user||'?').trim().split(/\s+/).map(w=>w[0]||'').slice(0,2).join('').toUpperCase())}</span><span style="min-width:0"><b style="color:var(--ink);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(cu.user)}</b><small>${ROLES[cu.role]||cu.role}</small></span>`:'';
   applyPerms(); navBadges();
+  const bell=document.getElementById('nfBell'); if(bell) bell.style.display='flex';
+  nfRefresh();
   let _rsz; addEventListener('resize',()=>{ clearTimeout(_rsz); _rsz=setTimeout(applyPerms,200); });
   const wk=semaineCal(); if(S.settings.semaine!==wk){ S.settings.semaine=wk; save(); } // semaine calendaire (heure de Paris) — save uniquement si elle change
   show('overview');
@@ -750,7 +765,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-26';
+const APP_VERSION='C-27';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -880,9 +895,12 @@ function weekRange(){
   return `du ${f(mon)} au ${f(sun)}`;
 }
 const DIR_GRADE={nom:'Direction',quota:0,mult:2.5,montee:null,cls:'bg3'}; // postes : quota 0, ×2.5, pas de montée
-const WM_GRADE={nom:'Web Master',quota:0,mult:2,montee:null,cls:'bg2'};   // sous-direction : quota 0, ×2 + prime fixe
+const WM_GRADE={nom:'Web Master',quota:0,mult:2,montee:null,cls:'bgrole'};   // sous-direction : quota 0, ×2 + prime fixe
+const STG_GRADE={nom:'Stagiaire',quota:3000,mult:1,montee:null,cls:'bgstg'}; // période d'essai : règles d'Intérimaire, titularisation manuelle
+function rhRowOf(nom){ const l=String(nom||'').toLowerCase().trim(); return ((S.sheets&&S.sheets.rh)||[]).find(x=>String(x.nom||'').toLowerCase().trim()===l)||null; }
+function estStagiaire(r){ if(!r||r.poste) return false; if(r.stagiaire) return true; const row=rhRowOf(r.nom); return !!(row&&/stagiaire/i.test(String(row.grade||''))); }
 function estWebmaster(r){ return !!(r.poste&&/web\s*master/i.test(r.poste)); }
-function grade(r){ return estWebmaster(r)?WM_GRADE:(r.poste?DIR_GRADE:GRADES[r.grade]); }
+function grade(r){ return estWebmaster(r)?WM_GRADE:estStagiaire(r)?STG_GRADE:(r.poste?DIR_GRADE:GRADES[r.grade]); }
 function gTitle(r){ return r.poste||grade(r).nom; } // rang réel (Patron, Commercial…) ou grade raffineur
 function gCls(r){ return r.poste?'bgrole':grade(r).cls; } // rôles spéciaux (Direction, RH, Commercial…) = badge gris neutre
 function quotaOK(r){ return r.barils >= grade(r).quota; }
@@ -955,7 +973,7 @@ function primeProj(r){
   return Math.min(r.barils * grade(r).mult + fixe, cap);
 }
 function seuilMontee(r){ const next=GRADES[r.grade+1]; return next?next.montee:null; } // seuil = montée du grade VISÉ
-function eligible(r){ const s=seuilMontee(r); return !r.poste && s!==null && r.barils >= s; } // montée hebdo, jamais pour la direction
+function eligible(r){ const s=seuilMontee(r); return !r.poste && !estStagiaire(r) && s!==null && r.barils >= s; } // montée hebdo — jamais pour la direction ni les stagiaires (titularisation manuelle)
 let charts = [];
 function destroyCharts(){ charts.forEach(c=>c.destroy()); charts=[]; }
 function mkChart(id, cfg){
@@ -1009,6 +1027,7 @@ function show(v){
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
   ({overview,effectif,runs,semaine,historique,cloture,feuilles,factures,relances,bilan,retention,quotascom,fer,frecues,moi,quotashist,todo,acces,agenda,feedback,maj,dlogs,journal,params})[v]();
+  try{ nfRefresh(); }catch(e){}
 }
 function rerender(){ show(VIEW); }
 
@@ -1091,7 +1110,8 @@ function effectif(){
       let gi=GRADES.findIndex(g=>deacc(g.nom)===gn);
       if(gi<0){ const m=[3,2,1,0].find(i=>gn&&gn.includes(deacc(GRADES[i].nom))); gi=m===undefined?-1:m; }
       const r={nom:x.nom,discord:x.discord||'',barils:0,total:0,runs:[],_ghost:true,grade:gi>=0?gi:0};
-      if(gi<0&&String(x.grade||'').trim()) r.poste=x.grade; // grade RH inconnu → traité comme poste
+      if(/stagiaire/.test(gn)){ r.stagiaire=true; r.grade=0; }
+      else if(gi<0&&String(x.grade||'').trim()) r.poste=x.grade; // grade RH inconnu → traité comme poste
       return r;
     }).sort((a,b)=>String(a.nom).localeCompare(String(b.nom)));
   R=R.concat(GH);
@@ -1130,23 +1150,25 @@ function rowRunner(r){
   const g=grade(r), pc=g.quota?Math.min(100,Math.round(r.barils/g.quota*100)):100;
   const ab=absDe(r.nom); // absence déclarée en cours ?
   if(r._ghost) return `<tr style="opacity:.55">
-    <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
+    <td style="cursor:pointer" title="Ouvrir la fiche employé" onclick="ficheEmp(decodeURIComponent('${encodeURIComponent(r.nom)}'))"><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
     <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span><div style="font-size:.7rem;color:var(--muted);font-weight:700;margin-top:3px">💤 aucune prise de service</div>${ab?`<div style="font-size:.7rem;color:#22d3ee;font-weight:700;margin-top:3px">💤 absent jusqu'au ${frDate(ab.au)}</div>`:''}</td>
     <td><div class="prog"><i style="width:0%"></i></div><div class="pct">0 / ${fmt(g.quota)} (0%)</div></td>
     ${isMembre()?'':`<td>0</td><td style="text-align:right;white-space:nowrap;color:var(--muted);font-size:.78rem">
       ${!r.poste&&r.grade>0&&!ab?`<button class="btn btn-sm btn-red" onclick="demoteGhost(decodeURIComponent('${encodeURIComponent(r.nom)}'))" title="Descendre de grade (aucune prise de service)">▼</button> `:''}
-      ${!r.poste&&r.grade===0&&!ab&&!estNouveau(r.nom)?`<button class="btn btn-sm btn-ghost" style="color:#ffa500;border-color:rgba(255,165,0,.4)" onclick="avertirGhost(decodeURIComponent('${encodeURIComponent(r.nom)}'))" title="Intérimaire sans prise de service — donner un avertissement">⚠</button> `:''}
+      ${!r.poste&&r.grade===0&&!ab&&!estNouveau(r.nom)?`<button class="btn btn-sm btn-ghost" style="color:#ffa500;border-color:rgba(255,165,0,.4)" onclick="avertirGhost(decodeURIComponent('${encodeURIComponent(r.nom)}'))" title="Sans prise de service — donner un avertissement">⚠</button> `:''}
+      ${estStagiaire(r)?`<button class="btn btn-sm btn-gold" onclick="titulariser(decodeURIComponent('${encodeURIComponent(r.nom)}'))" title="Titulariser (Stagiaire → Intérimaire)">🎓</button> `:''}
       apparaîtra ici après son 1ᵉʳ pointage</td>`}
   </tr>`;
   return `<tr>
-    <td><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
+    <td style="cursor:pointer" title="Ouvrir la fiche employé" onclick="ficheEmp(decodeURIComponent('${encodeURIComponent(r.nom)}'))"><b>${esc(r.nom)}</b><div style="color:var(--muted);font-size:.76rem">@${esc(r.discord)}</div></td>
     <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span>${(r.absent||ab)?`<div style="font-size:.7rem;color:#22d3ee;font-weight:700;margin-top:3px">💤 ${ab?`absent du ${frDate(ab.du)} au ${frDate(ab.au)}`:'Congé / absence'}</div>`:''}${!r.poste&&eligible(r)?`<span class="promo-flag">▲ Montée dispo (${fmt(seuilMontee(r))} barils atteints)</span>`:''}</td>
     <td><div class="prog"><i class="${pc>=100?'full':pc<40?'low':''}" style="width:${pc}%"></i></div><div class="pct">${fmt(r.barils)} / ${fmt(g.quota)} (${pc}%)</div></td>
     ${isMembre()?'':`<td>${fmt(r.total)}</td>
     <td style="text-align:right;white-space:nowrap">
       ${eligible(r)?`<button class="btn btn-sm btn-gold" onclick="promote(${r.id})" title="Monter de grade">▲</button>`:''}
       ${!r.poste&&r.grade>0&&r.barils<g.quota*0.95&&!r.absent&&!ab?`<button class="btn btn-sm btn-red" onclick="demote(${r.id})" title="Descendre de grade (quota réalisé à ${pc}% — sous les 95%)">▼</button>`:''}
-      ${!r.poste&&r.grade===0&&r.barils<g.quota*0.95&&!r.absent&&!ab&&!estNouveau(r.nom)?`<button class="btn btn-sm btn-ghost" style="color:#ffa500;border-color:rgba(255,165,0,.4)" onclick="avertir(${r.id})" title="Intérimaire sous quota (${pc}%) — donner un avertissement">⚠</button>`:''}
+      ${!r.poste&&r.grade===0&&r.barils<g.quota*0.95&&!r.absent&&!ab&&!estNouveau(r.nom)?`<button class="btn btn-sm btn-ghost" style="color:#ffa500;border-color:rgba(255,165,0,.4)" onclick="avertir(${r.id})" title="Sous quota (${pc}%) — donner un avertissement">⚠</button>`:''}
+      ${estStagiaire(r)?`<button class="btn btn-sm btn-gold" onclick="titulariser(decodeURIComponent('${encodeURIComponent(r.nom)}'))" title="Titulariser (Stagiaire → Intérimaire)">🎓</button>`:''}
       <button class="btn btn-sm btn-ghost" onclick="toggleAbsent(${r.id})" title="${r.absent?'Marquer de retour':'Mettre en congé / absence'}">${r.absent?'💼':'🌴'}</button>
       <button class="btn btn-sm btn-ghost" onclick="openRunnerModal(${r.id})">✎</button>
       <button class="btn btn-sm btn-red" onclick="delRunner(${r.id})">✕</button>
@@ -1257,6 +1279,18 @@ function avertirGhost(nom){
   toast(`⚠ Avertissement donné à ${row.nom} (total : ${n})`);
   sendLog('⚠️ Avertissement',`**${row.nom}** (Intérimaire) reçoit un avertissement — **aucune prise de service** cette semaine.\nTotal d'avertissements : **${n}**`,0xffa500);
 }
+function titulariser(nom){
+  if(isMembre()) return toast('👀 Consultation seule pour les membres');
+  const row=rhRowOf(nom);
+  const run=S.runners.find(x=>String(x.nom||'').toLowerCase().trim()===String(nom||'').toLowerCase().trim());
+  if(!confirm(`Titulariser ${nom} ?\n(Stagiaire → Intérimaire : fin de la période d'essai)`)) return;
+  if(row) row.grade='Intérimaire';
+  if(run){ run.stagiaire=false; run.grade=0; }
+  jlog(`Titularisation : ${nom} (Stagiaire → Intérimaire)`);
+  save(); sbPushNow(); rerender();
+  toast(`🎓 ${nom} est titularisé — bienvenue chez les Intérimaires !`);
+  sendLog('🎓 Titularisation',`**${nom}** termine sa période d'essai et passe **Intérimaire** !`,0x4A9D6F);
+}
 function demoteGhost(nom){
   // descente de grade pour le personnel présent uniquement en feuille RH (aucune prise de service)
   if(isMembre()) return toast('👀 Consultation seule pour les membres');
@@ -1357,10 +1391,19 @@ function toggleAbsent(id){
 function salaireDe(r){
   // 100 % automatique et additif : salaire fixe du poste + production bidons (commerciaux) + recrues (direction)
   if(r.absent||absDe(r.nom)) return 0; // absent déclaré → pas de salaire cette semaine
-  const rec=r.poste?nn(r.recrues)*prixRecrue():0;
+  const rec=r.poste?recruesAuto(r.nom)*prixRecrue():0; // recrues comptées automatiquement (colonne Recruteur de la RH)
   const base=salFixeDe(r.poste||'')+salaireProdCom(r)+rec;
   const C=caps();
   return Math.min(base, r.poste&&/patron/i.test(r.poste)?C.patSal:C.empSal);
+}
+function recruesAuto(nom){
+  // recrues comptées automatiquement : fiches RH où la personne est « Recruteur » et dont l'arrivée tombe dans la semaine en cours (heure de Paris)
+  const base=dateParis(), dw=(base.getDay()+6)%7;
+  const lun=new Date(base.getFullYear(),base.getMonth(),base.getDate()-dw);
+  const dim=new Date(lun.getTime()+6*86400000);
+  const f=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const fl=f(lun), fd=f(dim), low=String(nom||'').toLowerCase().trim();
+  return ((S.sheets&&S.sheets.rh)||[]).filter(x=>String(x.recrut||'').toLowerCase().trim()===low&&x.arrivee&&String(x.arrivee)>=fl&&String(x.arrivee)<=fd).length;
 }
 function setRecrues(id,v){
   const r=S.runners.find(x=>x.id===id);
@@ -1428,7 +1471,7 @@ async function semaine(){
       <td>${okk?'<span class="up">✔ atteint</span>':`<span class="down">${fmt(g.quota-r.barils)} restants</span>`}</td>
       <td>×${g.mult}</td>
       <td class="${okk?'gold':''}" style="font-weight:700">${okk?money(pr):'—'}${okk&&i<3?`<div style="font-size:.7rem;color:var(--muted)">dont TOP ${i+1} : ${money(S.settings.top[i])}</div>`:''}</td>
-      <td>${r.poste?`<input class="field" type="number" min="0" value="${nn(r.recrues)}" style="width:72px;padding:5px 8px;text-align:right" onchange="setRecrues(${r.id},+this.value||0)">`:'<span style="color:var(--muted)">—</span>'}</td>
+      <td>${r.poste?`<b>${recruesAuto(r.nom)}</b> <small style="color:var(--muted)" title="Compté automatiquement : fiches RH où ${esc(r.nom)} est Recruteur, arrivées cette semaine">auto</small>`:'<span style="color:var(--muted)">—</span>'}</td>
       <td>${sal?money(sal):'—'}</td>
       <td style="font-weight:700">${sal+pr?money(sal+pr):'—'}</td>
     </tr>`}).join('')}
@@ -1557,7 +1600,7 @@ const SHEETS_DEF = {
     {k:'idU',l:'ID unique',t:'text'},{k:'nom',l:'Employé',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
     {k:'rib',l:'RIB',t:'text'},{k:'arrivee',l:'Arrivée',t:'date'},
     {k:'discord',l:'Discord',t:'text'},{k:'avert',l:'Avert.',t:'text'},{k:'contrat',l:'Contrat signé',t:'bool'},
-    {k:'recrut',l:'Recruté par',t:'text'},{k:'dernierService',l:'Dernière prise de service',t:'date'},
+    {k:'recrut',l:'Recruteur',t:'choice',opts:()=>['',...[...new Set(S.runners.filter(r=>r.poste).map(r=>r.nom))].sort()]},{k:'dernierService',l:'Dernière prise de service',t:'date'},
     {k:'_actif',l:'Actif',t:'html',f:r=>{
       // alerte si l'ID unique figure aussi dans la feuille Blacklist
       const idu=String(r.idU||'').trim();
@@ -1572,7 +1615,7 @@ const SHEETS_DEF = {
       const col=j<=2?'var(--green)':j<=6?'var(--accent)':'var(--red)';
       return warn+abs+`<span style="color:${col};font-weight:700">${j} j sans service</span>`;
     }}],
-    lite:['idU','nom','grade','tel','rib','discord','dernierService','_actif'],
+    lite:['idU','nom','grade','tel','rib','discord','recrut','dernierService','_actif'],
     tot:[], nouveau:{nom:'',grade:'Intérimaire',tel:'',rib:'',idU:'',arrivee:'',discord:'',avert:'',contrat:false,recrut:'',dernierService:'',flagOut:false}},
   blacklist:{ico:'⛔',label:'Blacklist',cols:[
     {k:'nom',l:'Nom',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
@@ -1614,7 +1657,7 @@ async function feuilles(){
       if(c.t==='num')  return `<td><input type="number" value="${nn(r[c.k])}" onchange="cellEdit(${i},'${c.k}',+this.value||0)"></td>`;
       if(c.t==='client') return `<td><input type="text" list="dlSheetClients" value="${esc(r[c.k])}" placeholder="Client…" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`;
       if(c.t==='html') return `<td>${c.f(r)}</td>`;
-      if(c.t==='choice') return `<td><select style="background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:6px 8px;font-size:.82rem" onchange="cellEdit(${i},'${c.k}',this.value)">${c.opts.map(o=>`<option ${r[c.k]===o?'selected':''}>${o}</option>`).join('')}</select></td>`;
+      if(c.t==='choice') return `<td><select style="background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:6px 8px;font-size:.82rem" onchange="cellEdit(${i},'${c.k}',this.value)">${(typeof c.opts==='function'?c.opts():c.opts).map(o=>`<option ${r[c.k]===o?'selected':''}>${esc(o)}</option>`).join('')}</select></td>`;
       if(c.t==='date'){ const d=/^\d{4}-\d{2}-\d{2}/.test(r[c.k]||'')?String(r[c.k]).slice(0,10):'';
         return `<td><input type="date" value="${d}" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`; }
       return `<td><input type="text" value="${esc(r[c.k])}" onchange="cellEdit(${i},'${c.k}',this.value)"></td>`;
@@ -2472,6 +2515,7 @@ function bilanOrdGrade(rang){
   if(/expert/.test(s)) return 7;
   if(/confirme/.test(s)) return 8;
   if(/raffineur/.test(s)) return 9;
+  if(/stagiaire/.test(s)) return 10.5; // après Intérimaire
   if(/interimaire/.test(s)) return 10;
   return 11; // poste inconnu → juste avant les sans-grade
 }
@@ -2497,7 +2541,7 @@ function bilanData(){
     const C=caps();
     // tout est automatique : prod. bidons, recrues, salaire fixe, prime hebdo + TOP 3
     const run=S.runners.find(x=>x.nom.toLowerCase()===low(r.nom));
-    const rec=(run&&run.poste)?nn(run.recrues)*prixRecrue():0;
+    const rec=(run&&run.poste)?recruesAuto(r.nom)*prixRecrue():0; // recrues automatiques (colonne Recruteur)
     // part production des commerciaux : basée sur le rang (fiche RH), même sans pointage tablette
     const estCom=/commercial/i.test(String(r.rang||''));
     const absCom=(run&&run.absent)||!!absDe(r.nom);
@@ -2840,6 +2884,13 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-27',d:'21/07/2026',t:'Notifications, Ctrl+K, fiche employé & Stagiaires',items:[
+   ['🔔','Centre de notifications','Cloche en haut à droite : factures en retard, runners sous quota, employés sans service 5 j+, contrats non signés, fins d\'absence — avec lien direct vers la page concernée et « tout marquer lu ».'],
+   ['⌨️','Recherche globale Ctrl+K','Un raccourci pour tout retrouver : employé (ouvre sa fiche), client (ouvre ses relances), facture, page — navigation au clavier ↑↓ ↵.'],
+   ['🪪','Fiche employé unifiée','Clique sur un nom dans l\'Effectif : KPI, coordonnées RH, contrat, avertissements, 4 dernières semaines de quota et journal personnel — tout au même endroit.'],
+   ['🎓','Grade Stagiaire','Période d\'essai aux règles d\'Intérimaire (badge brun/doré distinct, pas de montée automatique) — titularisation en un clic 🎓 vers Intérimaire.'],
+   ['👥','Recrues comptées automatiquement','Nouvelle colonne « Recruteur » (menu déroulant) en fiche RH : la colonne Recrues de Semaine & Primes compte seule les arrivées de la semaine — fini la saisie manuelle.'],
+   ['🔐','Permissions documentées','Table récapitulative rôle × onglet dans Paramètres.']]},
  {v:'C-26',d:'20/07/2026',t:'Barème fiscal progressif',items:[
    ['🧮','Impôts & plafonds automatiques','Le taux d\'imposition et les plafonds salaire/prime ne se règlent plus à la main : ils sont déduits du bénéfice après primes selon le barème progressif de Thomas (13 tranches, 6 % → 45 %), par calcul itératif jusqu\'à stabilité.'],
    ['📐','Barème visible et traçable','Sur le Bilan compta : « Voir le barème » affiche les tranches avec le palier détecté surligné en orange. Un clic sur un bouton radio force un autre palier (affiché en bleu, tracé : qui, quand, palier attendu), « ↺ Revenir à l\'automatique » à tout moment.'],
@@ -3456,6 +3507,148 @@ async function acces(){
   </div>`;
 }
 
+/* ================== FICHE EMPLOYÉ UNIFIÉE ================== */
+function ficheEmp(nom){
+  const low=String(nom||'').toLowerCase().trim();
+  const run=S.runners.find(x=>String(x.nom||'').toLowerCase().trim()===low)||null;
+  const row=rhRowOf(nom);
+  if(!run&&!row) return;
+  const g=run?grade(run):null, q=g?g.quota:0;
+  const pcE=run&&q?Math.round(run.barils/q*100):null;
+  const anc=row&&row.arrivee&&!isNaN(Date.parse(row.arrivee))?Math.floor((nowSrv()-Date.parse(row.arrivee))/86400000):null;
+  const ab=absDe(nom);
+  const gradeTxt=run?gTitle(run):(row&&row.grade)||'—';
+  const gradeCls=run?gCls(run):(row&&/stagiaire/i.test(row.grade||'')?'bgstg':'bgrole');
+  const hist=(S.weeks||[]).filter(w=>w.detail).slice(-4).map(w=>({num:w.num,x:w.detail.find(d=>String(d.nom||'').toLowerCase().trim()===low)}));
+  const J=(S.journal||[]).filter(e=>String(e.a||'').toLowerCase().includes(low)).slice(0,8);
+  const ds=row&&row.dernierService, dj=ds&&!isNaN(Date.parse(ds))?Math.floor((nowSrv()-Date.parse(ds))/86400000):null;
+  openModal(`
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+    <span class="avat" style="width:46px;height:46px;font-size:1rem">${esc(String(nom).trim().split(/\s+/).map(w=>w[0]||'').slice(0,2).join('').toUpperCase())}</span>
+    <div style="min-width:0">
+      <h3 style="margin:0">${esc(nom)}</h3>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px">
+        <span class="badge ${gradeCls}">${esc(gradeTxt)}</span>
+        ${ab?`<span style="color:#22d3ee;font-size:.75rem;font-weight:700">💤 absent jusqu'au ${frDate(ab.au)}</span>`
+          :dj===null?'<span style="color:var(--muted);font-size:.75rem">jamais pointé</span>'
+          :`<span style="color:${dj<=2?'var(--green)':dj<=6?'var(--accent)':'var(--red)'};font-size:.75rem;font-weight:700">${dj===0?'pointé aujourd\'hui':dj+' j sans service'}</span>`}
+      </div>
+    </div>
+  </div>
+  <div class="grid g2" style="gap:10px;margin-bottom:14px">
+    <div class="panel kpi" style="padding:12px 14px"><div class="lbl">Barils · semaine</div><div class="val" style="font-size:1.3rem">${run?fmt(run.barils):'0'}</div><div class="delta">${pcE!==null?pcE+' % du quota':'aucun quota'}</div></div>
+    <div class="panel kpi" style="padding:12px 14px"><div class="lbl">Total carrière</div><div class="val" style="font-size:1.3rem">${run?fmt(run.total):'0'}</div></div>
+    <div class="panel kpi" style="padding:12px 14px"><div class="lbl">Prime projetée</div><div class="val gold" style="font-size:1.3rem">${run?money(primeProj(run)+primeExtraDe(nom)):'0 $'}</div></div>
+    <div class="panel kpi" style="padding:12px 14px"><div class="lbl">Ancienneté</div><div class="val" style="font-size:1.3rem">${anc!==null?anc+' j':'—'}</div><div class="delta">${row&&row.arrivee?'arrivé le '+frDate(row.arrivee):'date inconnue'}</div></div>
+  </div>
+  ${row?`<div style="font-size:.84rem;line-height:2;margin-bottom:14px;border-top:1px solid var(--line);padding-top:10px">
+    📞 ${esc(row.tel||'—')} · 🏦 RIB ${esc(row.rib||'—')} · 🎮 ${esc(row.discord||'—')}<br>
+    Contrat : ${row.contrat===true?'<span style="color:var(--green);font-weight:700">✔ signé</span>':'<span style="color:var(--accent);font-weight:700">non signé</span>'}
+    · Avertissements : <b>${esc(String(row.avert||'0'))}</b>
+    · Recruteur : ${esc(row.recrut||'—')}
+  </div>`:''}
+  ${hist.some(h=>h.x)?`<div style="margin-bottom:14px"><label class="f-lbl">4 dernières semaines</label>
+    ${hist.map(h=>h.x?`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);font-size:.83rem">
+      <span>S${h.num}</span><span>${fmt(h.x.barils)} / ${fmt(h.x.quota)}</span><b style="color:${h.x.ok?'var(--green)':'var(--red)'}">${h.x.ok?'✔':'✗'}</b></div>`:'').join('')}
+  </div>`:''}
+  ${J.length?`<div style="margin-bottom:14px"><label class="f-lbl">Journal (événements liés)</label>
+    ${J.map(e=>`<div style="padding:4px 0;font-size:.78rem;color:var(--muted)">${new Date(e.t).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})} · ${esc(e.a)}</div>`).join('')}
+  </div>`:''}
+  ${isMembre()?'':`<div style="display:flex;gap:10px">
+    ${run?`<button class="btn btn-ghost" style="flex:1" onclick="closeModal();show('effectif');openRunnerModal(${run.id})">✎ Modifier</button>`:''}
+    <button class="btn btn-ghost" style="flex:1" onclick="closeModal();absModal()">🌴 Déclarer une absence</button>
+  </div>`}`);
+}
+
+/* ================== CENTRE DE NOTIFICATIONS ================== */
+function notifs(){
+  const N=[], now=nowSrv(), al=allowedViews();
+  if(al.includes('factures'))
+    ((S.fact&&S.fact.factures)||[]).filter(f=>f.statut!=='payee'&&f.date&&(now-Date.parse(f.date))/86400000>7).slice(0,8)
+      .forEach(f=>N.push({k:'f'+f.num,g:'var(--red)',t:`Facture n°${f.num} en retard`,d:`${f.client} · ${money(f.ttc)} · émise le ${frDate(f.date)}`,v:'factures'}));
+  if(al.includes('effectif')){
+    const sq=S.runners.filter(r=>!r.poste&&!r.absent&&!absDe(r.nom)&&grade(r).quota&&r.barils<grade(r).quota).length;
+    if(sq) N.push({k:'q'+sq,g:'var(--accent)',t:`${sq} runner(s) sous quota`,d:'quotas de la semaine pas encore atteints',v:'effectif'});
+    ((S.absences||[])).filter(a=>{const fin=Date.parse(a.au);return !isNaN(fin)&&fin<now&&(now-fin)/86400000<=3;})
+      .forEach(a=>N.push({k:'a'+a.id,g:'var(--green)',t:`${a.nom} : absence terminée`,d:`de retour depuis le ${frDate(a.au)}`,v:'effectif'}));
+  }
+  if(al.includes('feuilles')){
+    const inact=((S.sheets&&S.sheets.rh)||[]).filter(x=>{const d=Date.parse(x.dernierService);return String(x.nom||'').trim()&&!isNaN(d)&&(now-d)/86400000>=5&&!absDe(x.nom);});
+    if(inact.length) N.push({k:'i'+inact.length,g:'var(--accent)',t:`${inact.length} employé(s) sans service depuis 5 j ou +`,d:inact.slice(0,4).map(x=>x.nom).join(', ')+(inact.length>4?'…':''),v:'feuilles'});
+    const nc=((S.sheets&&S.sheets.rh)||[]).filter(x=>String(x.nom||'').trim()&&x.contrat!==true);
+    if(nc.length) N.push({k:'c'+nc.length,g:'#5aa0ff',t:`${nc.length} contrat(s) non signé(s)`,d:nc.slice(0,4).map(x=>x.nom).join(', ')+(nc.length>4?'…':''),v:'feuilles'});
+  }
+  return N;
+}
+function nfSeen(){ try{ return JSON.parse(localStorage.getItem('orx_nfseen'))||[]; }catch(e){ return []; } }
+function nfRefresh(){
+  const b=document.getElementById('nfBadge'); if(!b) return;
+  const seen=nfSeen(), n=notifs().filter(x=>!seen.includes(x.k)).length;
+  b.style.display=n?'flex':'none'; b.textContent=n>9?'9+':n;
+}
+function nfAllRead(){ localStorage.setItem('orx_nfseen',JSON.stringify(notifs().map(x=>x.k).slice(0,200))); nfRender(); nfRefresh(); }
+function nfRender(){
+  const p=document.getElementById('nfPanel'), N=notifs(), seen=nfSeen();
+  p.innerHTML=`<h3 style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px">Notifications
+    ${N.length?`<button class="btn btn-sm btn-ghost" onclick="nfAllRead()">Tout marquer lu</button>`:''}</h3>
+  ${N.length?N.map(x=>`<div onclick="document.getElementById('nfPanel').style.display='none';show('${x.v}')" style="display:flex;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line);cursor:pointer;align-items:flex-start">
+    <span style="width:9px;height:9px;border-radius:50%;background:${x.g};flex:none;margin-top:5px"></span>
+    <span style="min-width:0"><b style="font-size:.84rem">${x.t}${seen.includes(x.k)?'':' <span style="color:var(--accent);font-size:.65rem;font-weight:800">NOUVEAU</span>'}</b>
+    <div style="color:var(--muted);font-size:.76rem;margin-top:2px">${x.d}</div></span>
+  </div>`).join(''):'<div class="empty" style="padding:14px">Rien à signaler — tout roule 🛢️</div>'}`;
+}
+function nfToggle(){
+  const p=document.getElementById('nfPanel');
+  if(p.style.display==='block'){ p.style.display='none'; return; }
+  nfRender(); p.style.display='block';
+}
+
+/* ================== RECHERCHE GLOBALE (Ctrl+K) ================== */
+let GK_ITEMS=[], GK_SEL=0;
+function gkOpen(){ const o=document.getElementById('gkOv'); o.style.display='flex'; const i=document.getElementById('gkIn'); i.value=''; gkList(); i.focus(); }
+function gkClose(){ const o=document.getElementById('gkOv'); if(o) o.style.display='none'; }
+function gkSources(){
+  const al=allowedViews(), out=[];
+  document.querySelectorAll('.nav-item[data-view]').forEach(b=>{
+    if(al.includes(b.dataset.view)) out.push({t:b.querySelector('.txt').textContent,d:'page',ico:'▸',act:`show('${b.dataset.view}')`});
+  });
+  if(!isMembre()){
+    const noms=new Set();
+    S.runners.forEach(r=>noms.add(r.nom));
+    ((S.sheets&&S.sheets.rh)||[]).forEach(x=>{ if(String(x.nom||'').trim()) noms.add(x.nom); });
+    [...noms].forEach(n=>out.push({t:n,d:'employé',ico:'👤',act:`ficheEmp(decodeURIComponent('${encodeURIComponent(n)}'))`}));
+  }
+  if(al.includes('relances')&&S.fact)
+    S.fact.clients.forEach(c=>out.push({t:c.nom,d:'client'+(c.tel?' · '+c.tel:''),ico:'🏢',act:`REL_SEARCH=decodeURIComponent('${encodeURIComponent(c.nom)}');show('relances')`}));
+  if(al.includes('factures')&&S.fact)
+    S.fact.factures.slice(0,300).forEach(f=>out.push({t:`Facture n°${f.num} — ${f.client}`,d:`${money(f.ttc)} · ${f.statut==='payee'?'payée':'en attente'}`,ico:'🧾',act:`factTab='hist';show('factures')`}));
+  return out;
+}
+function gkList(){
+  const q=String(document.getElementById('gkIn').value||'').toLowerCase().trim();
+  const all=gkSources();
+  GK_ITEMS=(q?all.filter(x=>(x.t+' '+x.d).toLowerCase().includes(q)):all.filter(x=>x.d==='page')).slice(0,12);
+  GK_SEL=0; gkPaint();
+}
+function gkPaint(){
+  document.getElementById('gkRes').innerHTML=GK_ITEMS.map((x,i)=>`
+    <div onclick="gkGo(${i})" style="display:flex;gap:12px;align-items:center;padding:10px 14px;border-radius:10px;cursor:pointer;${i===GK_SEL?'background:rgba(232,98,44,.14)':''}">
+      <span>${x.ico}</span><span style="min-width:0;flex:1"><b style="font-size:.88rem">${esc(x.t)}</b>
+      <span style="color:var(--muted);font-size:.74rem;margin-left:8px">${esc(x.d)}</span></span>
+      ${i===GK_SEL?'<span style="color:var(--muted);font-size:.7rem">↵</span>':''}
+    </div>`).join('')||'<div class="empty" style="padding:14px">Aucun résultat</div>';
+}
+function gkGo(i){ const x=GK_ITEMS[i]; if(!x) return; gkClose(); setTimeout(()=>{ (0,eval)(x.act); },10); }
+function gkKey(e){
+  if(e.key==='ArrowDown'){ e.preventDefault(); GK_SEL=Math.min(GK_SEL+1,GK_ITEMS.length-1); gkPaint(); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); GK_SEL=Math.max(GK_SEL-1,0); gkPaint(); }
+  else if(e.key==='Enter'){ e.preventDefault(); gkGo(GK_SEL); }
+}
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'&&sessionStorage.getItem('orx_auth')==='1'){ e.preventDefault(); gkOpen(); }
+  if(e.key==='Escape') gkClose();
+});
+
 /* ================== MA SEMAINE (stats perso) ================== */
 function moiNom(){
   const cu=currentUser();
@@ -3874,6 +4067,18 @@ async function params(){
     </div>
   </div>
   <div class="panel" style="margin-top:18px;overflow-x:auto">
+    <h3>🔐 Permissions par rôle</h3>
+    <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px">Qui voit quoi — documentation pour les nouveaux admins. Les rôles se règlent dans « Comptes d'accès » ci-dessus.</p>
+    ${(()=>{
+      const roles=[['direction','Direction'],['rh','RH'],['comptable','Comptable'],['commercial','Commercial'],['membre','Membre']];
+      const lbl=v=>{ const b=document.querySelector(`.nav-item[data-view="${v}"] .txt`); return b?b.textContent:v; };
+      return `<table><thead><tr><th>Onglet</th>${roles.map(([,l])=>`<th style="text-align:center">${l}</th>`).join('')}</tr></thead><tbody>
+      ${PERMS.direction.map(v=>`<tr><td><b>${lbl(v)}</b></td>${roles.map(([k])=>`<td style="text-align:center;font-weight:700;color:${PERMS[k].includes(v)?'var(--green)':'var(--muted)'}">${PERMS[k].includes(v)?(k==='membre'&&v==='effectif'?'👁':'✓'):'—'}</td>`).join('')}</tr>`).join('')}
+      </tbody></table>
+      <p style="color:var(--muted);font-size:.74rem;margin-top:8px">✓ accès complet · 👁 consultation seule · — aucun accès. Les vues « Perso » (Ma semaine, agenda, to-do) ne montrent que les données de la personne connectée.</p>`;
+    })()}
+  </div>
+  <div class="panel" style="margin-top:18px;overflow-x:auto">
     <h3 style="display:flex;justify-content:space-between;align-items:center">📐 Barème progressif d'imposition (référence)
       <button class="btn btn-sm btn-ghost" onclick="if(confirm('Restaurer le barème par défaut (valeurs de Thomas) ?')){S.settings.bareme=JSON.parse(JSON.stringify(BAREME_DEF));palDirty();jlog('Barème d\\'imposition restauré aux valeurs par défaut');save();sbPushNow();params();}">↺ Valeurs par défaut</button></h3>
     <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px">Le palier actif est choisi automatiquement selon le bénéfice après primes (visible sur la page Bilan compta). Modifie ici les tranches de référence si les règles du serveur changent.</p>
@@ -3887,7 +4092,8 @@ async function params(){
     <table><thead><tr><th>Grade</th><th>Quota hebdo</th><th>Multiplicateur prime</th><th>Montée de grade</th></tr></thead><tbody>
     ${GRADES.map((g,i)=>`<tr><td><span class="badge ${g.cls}">${g.nom}</span></td><td>${fmt(g.quota)} barils</td><td>×${g.mult}</td><td>${i>0?fmt(g.montee)+' barils/sem. pour y accéder':'grade d\'entrée'}</td></tr>`).join('')}
     <tr><td><span class="badge bg3">Direction &amp; postes</span> <small style="color:var(--muted)">Patron, RH, commerciaux…</small></td><td>0 barils (aucun quota)</td><td>×${DIR_GRADE.mult}</td><td>—</td></tr>
-    <tr><td><span class="badge bg2">Web Master</span> <small style="color:var(--muted)">sous-direction</small></td><td>0 barils (aucun quota)</td><td>×${WM_GRADE.mult} + prime fixe (Paramètres)</td><td>—</td></tr>
+    <tr><td><span class="badge bgrole">Web Master</span> <small style="color:var(--muted)">sous-direction</small></td><td>0 barils (aucun quota)</td><td>×${WM_GRADE.mult} + prime fixe (Paramètres)</td><td>—</td></tr>
+    <tr><td><span class="badge bgstg">Stagiaire</span> <small style="color:var(--muted)">période d'essai</small></td><td>${fmt(STG_GRADE.quota)} barils</td><td>×${STG_GRADE.mult}</td><td>titularisation manuelle → Intérimaire (bouton 🎓 dans l'Effectif)</td></tr>
     </tbody></table>
   </div>`;
 }
