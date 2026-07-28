@@ -3379,6 +3379,7 @@ function prodder(){
   <div class="panel" style="padding:10px 16px;overflow-x:auto">
     <table class="sheet"><thead><tr>
       <th style="min-width:130px">Date</th>
+      <th style="min-width:150px">Vendeur</th>
       ${D.cols.map((c,ci)=>`<th style="min-width:112px">
         <div style="display:flex;align-items:center;gap:6px;justify-content:space-between">${esc(c.n)}
           <button class="btn btn-sm btn-red" style="padding:1px 7px" onclick="pdColDel(${ci})" title="Supprimer la colonne ${esc(c.n)}">✕</button></div>
@@ -3388,17 +3389,19 @@ function prodder(){
     </tr></thead><tbody>
     ${D.rows.map((r,ri)=>`<tr>
       <td><input type="date" value="${esc(r.date||'')}" onchange="pdCell(${ri},null,this.value)"></td>
+      <td><input type="text" list="pdVendeurs" value="${esc(r.qui||'')}" placeholder="Vendeur…" onchange="pdCell(${ri},'_qui',this.value)"></td>
       ${D.cols.map(c=>`<td><input type="number" min="0" value="${nn(r.q&&r.q[c.n])||''}" placeholder="0" style="text-align:right" onchange="pdCell(${ri},decodeURIComponent('${encodeURIComponent(c.n)}'),this.value)"></td>`).join('')}
       <td class="calc" style="text-align:right;font-weight:700">${fmt(Math.round(rowHT(r)))} $</td>
       <td><button class="btn btn-sm btn-red" onclick="pdRowDel(${ri})">✕</button></td>
-    </tr>`).join('')||`<tr><td colspan="${D.cols.length+3}"><div class="empty">Aucune vente enregistrée — « ＋ Ligne » pour commencer 🗡️</div></td></tr>`}
+    </tr>`).join('')||`<tr><td colspan="${D.cols.length+4}"><div class="empty">Aucune vente enregistrée — « ＋ Ligne » pour commencer 🗡️</div></td></tr>`}
     </tbody>${D.rows.length?`<tfoot><tr style="border-top:2px solid var(--line)">
-      <td style="font-weight:800;padding:10px 12px">Total</td>
+      <td style="font-weight:800;padding:10px 12px">Total</td><td></td>
       ${D.cols.map(c=>`<td style="text-align:right;color:var(--muted);padding:10px 12px">${fmt(D.rows.reduce((a,r)=>a+nn(r.q&&r.q[c.n]),0))}</td>`).join('')}
       <td style="text-align:right;font-weight:800;color:var(--accent);padding:10px 12px">${fmt(Math.round(tot))} $</td><td></td>
     </tr></tfoot>`:''}</table>
     <p style="color:var(--muted);font-size:.75rem;margin-top:10px">Renseigne le prix unitaire HT sous chaque produit : le Prix HT de chaque ligne se calcule tout seul (quantités × prix).</p>
-  </div>`;
+  </div>
+  <datalist id="pdVendeurs">${[...new Set(S.runners.filter(r=>r.poste).map(r=>r.nom))].sort().map(n=>`<option value="${esc(n)}">`).join('')}</datalist>`;
 }
 function pdColAdd(){
   const n=prompt('Nom du nouveau produit (ex. Couteau, Katana, Bagues…)');
@@ -3418,11 +3421,12 @@ function pdColDel(ci){
   save(); sbPushNow(); prodder();
 }
 function pdColPrix(ci,v){ const D=pdData(); if(D.cols[ci]){ D.cols[ci].p=Math.max(0,+v||0); save(); sbPushNow(); prodder(); } }
-function pdRowAdd(){ const D=pdData(); D.rows.push({date:new Date().toISOString().slice(0,10),q:{}}); save(); prodder(); }
+function pdRowAdd(){ const D=pdData(); D.rows.push({date:new Date().toISOString().slice(0,10),qui:(currentUser()||{}).user||'',q:{}}); save(); prodder(); }
 function pdRowDel(ri){ const D=pdData(); if(!confirm('Supprimer cette vente ?')) return; D.rows.splice(ri,1); save(); sbPushNow(); prodder(); }
 function pdCell(ri,k,v){
   const D=pdData(), r=D.rows[ri]; if(!r) return;
   if(k===null) r.date=v;
+  else if(k==='_qui') r.qui=String(v||'').trim();
   else{ r.q=r.q||{}; r.q[k]=Math.max(0,+v||0); }
   save(); prodder();
 }
