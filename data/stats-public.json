@@ -1,7 +1,11 @@
 {
- "ca": 118365,
- "maj": "2026-07-28T01:45:14.193Z",
+ "ca": 141610,
+ "maj": "2026-07-28T10:06:58.000Z",
  "top3": [
+  {
+   "nom": "Djawad Tal",
+   "barils": 3936
+  },
   {
    "nom": "Scott Ramirez",
    "barils": 3832
@@ -9,10 +13,6 @@
   {
    "nom": "Thomas Boyer",
    "barils": 2856
-  },
-  {
-   "nom": "Lukas Myngard",
-   "barils": 2606
   }
  ],
  "runners": [
@@ -29,7 +29,7 @@
    "nom": "Thomas Boyer",
    "grade": 0,
    "poste": "RH",
-   "prime": 7140,
+   "prime": 2500,
    "quota": 0,
    "total": 2856,
    "barils": 2856
@@ -47,7 +47,7 @@
    "nom": "Julio Collins",
    "grade": 0,
    "poste": "Commercial",
-   "prime": 3790,
+   "prime": 2500,
    "quota": 0,
    "total": 1516,
    "barils": 1516
@@ -67,8 +67,8 @@
    "poste": null,
    "prime": 0,
    "quota": 6500,
-   "total": 0,
-   "barils": 0
+   "total": 3936,
+   "barils": 3936
   },
   {
    "nom": "Scott Ramirez",
@@ -94,8 +94,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 436,
-   "barils": 1054
+   "total": 513,
+   "barils": 1131
   },
   {
    "nom": "Loki Balboha",
@@ -166,8 +166,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 638,
-   "barils": 638
+   "total": 1274,
+   "barils": 1274
   },
   {
    "nom": "Julian Poleina",
@@ -290,6 +290,6 @@
  "semaine": 31,
  "effectif": 30,
  "objectif": 200000,
- "totalBarils": 23673,
+ "totalBarils": 28322,
  "clientsServis": 20
 }
