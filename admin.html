@@ -78,6 +78,9 @@
   #nfPanel{position:fixed;top:66px;right:22px;width:min(360px,92vw);max-height:70vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;z-index:160;display:none;box-shadow:0 24px 70px rgba(0,0,0,.55);padding:14px}
   #gkOv{position:fixed;inset:0;background:rgba(5,8,14,.72);backdrop-filter:blur(4px);z-index:300;display:none;align-items:flex-start;justify-content:center;padding-top:14vh}
   #gkBox{background:var(--panel);border:1px solid var(--line);border-radius:16px;width:min(560px,92vw);padding:14px;box-shadow:0 30px 90px rgba(0,0,0,.6)}
+  /* lecture seule : bandeau + contrôles désactivés (les onglets internes et recherches restent utilisables) */
+  #main.ro::before{content:'👁 Consultation seule — ton rôle peut voir cet onglet mais pas le modifier';display:block;background:rgba(90,160,255,.08);border:1px solid rgba(90,160,255,.35);color:#9fc3ff;border-radius:10px;padding:10px 16px;margin-bottom:14px;font-size:.85rem;font-weight:600}
+  #main.ro :is(button,input,select,textarea):not(.tab):not([id$="SearchInput"]){pointer-events:none;opacity:.55}
   .nvb{margin-left:auto;background:var(--red,#ff5c5c);color:#fff;font-size:.66rem;font-weight:800;border-radius:99px;padding:1px 7px;line-height:1.5}
   .nvb.dot{width:9px;height:9px;padding:0;border-radius:50%}
   .nav-item:hover{background:var(--panel-2);color:var(--ink)}
@@ -713,20 +716,31 @@ function permsDe(role){
   const c=S.settings&&S.settings.permsCustom;
   return (c&&Array.isArray(c[role])&&c[role].length)?c[role]:PERMS[role];
 }
+function permRO(role){ const c=S.settings&&S.settings.permsRO; return (c&&Array.isArray(c[role]))?c[role]:[]; }
+function isRO(v){
+  if(sessionStorage.getItem('orx_user')==='SECOURS') return false;
+  const cu=currentUser(); if(!cu) return false;
+  return permRO(cu.role).includes(v||VIEW);
+}
+function applyRO(){ const m=document.getElementById('main'); if(m) m.classList.toggle('ro',isRO(VIEW)); }
 function permToggle(role,v){
+  // cycle à 3 états : — (aucun) → ✓ (accès complet) → 👁 (lecture seule) → —
   if(role==='direction'&&v==='params') return toast('⚠️ La Direction garde toujours l\'accès aux Paramètres');
-  if(!S.settings.permsCustom) S.settings.permsCustom={};
-  const cur=[...(permsDe(role)||[])], i=cur.indexOf(v);
-  if(i>=0){
-    if(cur.length<=1) return toast('⚠️ Un rôle doit garder au moins un onglet');
-    cur.splice(i,1);
-  } else {
-    cur.push(v);
-    const ordre=PERMS.direction; cur.sort((a,b)=>ordre.indexOf(a)-ordre.indexOf(b));
+  S.settings.permsCustom=S.settings.permsCustom||{};
+  S.settings.permsRO=S.settings.permsRO||{};
+  const acc=[...(permsDe(role)||[])], ro=[...permRO(role)];
+  const a=acc.includes(v), r=ro.includes(v);
+  let etat;
+  if(!a){ acc.push(v); const o=PERMS.direction; acc.sort((x,y)=>o.indexOf(x)-o.indexOf(y)); etat='accès complet ✓'; }
+  else if(!r){ ro.push(v); etat='lecture seule 👁'; }
+  else{
+    if(acc.length<=1) return toast('⚠️ Un rôle doit garder au moins un onglet');
+    acc.splice(acc.indexOf(v),1); ro.splice(ro.indexOf(v),1); etat='aucun accès';
   }
-  S.settings.permsCustom[role]=cur;
-  jlog(`Permissions : le rôle ${ROLES[role]||role} ${i>=0?'perd':'gagne'} l'onglet « ${v} »`);
-  save(); sbPushNow(); applyPerms(); params();
+  S.settings.permsCustom[role]=acc;
+  S.settings.permsRO[role]=ro;
+  jlog(`Permissions : ${ROLES[role]||role} · « ${v} » → ${etat}`);
+  save(); sbPushNow(); applyPerms(); applyRO(); params();
 }
 function navCollapsed(){ try{ return JSON.parse(localStorage.getItem('orx_navcol'))||[]; }catch(e){ return []; } }
 function navToggle(k){
@@ -1046,7 +1060,7 @@ function show(v){
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
   ({overview,effectif,runs,semaine,historique,cloture,feuilles,factures,relances,bilan,retention,quotascom,fer,frecues,moi,quotashist,todo,acces,agenda,feedback,maj,dlogs,journal,params})[v]();
-  try{ nfRefresh(); }catch(e){}
+  try{ nfRefresh(); applyRO(); }catch(e){}
 }
 function rerender(){ show(VIEW); }
 
@@ -4087,18 +4101,18 @@ async function params(){
   </div>
   <div class="panel" style="margin-top:18px;overflow-x:auto">
     <h3 style="display:flex;justify-content:space-between;align-items:center">🔐 Permissions par rôle
-      ${S.settings.permsCustom?`<button class="btn btn-sm btn-ghost" onclick="if(confirm('Revenir aux permissions par défaut pour tous les rôles ?')){delete S.settings.permsCustom;jlog('Permissions : retour aux valeurs par défaut');save();sbPushNow();applyPerms();params();}">↺ Permissions par défaut</button>`:''}</h3>
+      ${(S.settings.permsCustom||S.settings.permsRO)?`<button class="btn btn-sm btn-ghost" onclick="if(confirm('Revenir aux permissions par défaut pour tous les rôles ?')){delete S.settings.permsCustom;delete S.settings.permsRO;jlog('Permissions : retour aux valeurs par défaut');save();sbPushNow();applyPerms();applyRO();params();}">↺ Permissions par défaut</button>`:''}</h3>
     <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px"><b>Clique sur une case</b> pour donner ou retirer un onglet à un rôle — appliqué immédiatement à tous les comptes du rôle. Les rôles individuels se règlent dans « Comptes d'accès » ci-dessus.</p>
     ${(()=>{
       const roles=[['direction','Direction'],['rh','RH'],['comptable','Comptable'],['commercial','Commercial'],['membre','Membre']];
       const lbl=v=>{ const b=document.querySelector(`.nav-item[data-view="${v}"] .txt`); return b?b.textContent:v; };
       return `<table><thead><tr><th>Onglet</th>${roles.map(([,l])=>`<th style="text-align:center">${l}</th>`).join('')}</tr></thead><tbody>
       ${PERMS.direction.map(v=>`<tr><td><b>${lbl(v)}</b></td>${roles.map(([k])=>{
-        const on=permsDe(k).includes(v), verrou=(k==='direction'&&v==='params');
-        return `<td onclick="permToggle('${k}','${v}')" title="${verrou?'Verrouillé — la Direction garde les Paramètres':(on?'Cliquer pour retirer':'Cliquer pour donner')}" style="text-align:center;font-weight:700;cursor:${verrou?'not-allowed':'pointer'};color:${on?'var(--green)':'var(--muted)'}">${on?(k==='membre'&&v==='effectif'?'👁':verrou?'🔒':'✓'):'—'}</td>`;
+        const on=permsDe(k).includes(v), ro=permRO(k).includes(v), verrou=(k==='direction'&&v==='params');
+        return `<td onclick="permToggle('${k}','${v}')" title="${verrou?'Verrouillé — la Direction garde les Paramètres':'Cliquer pour passer à : '+(!on?'accès complet ✓':!ro?'lecture seule 👁':'aucun accès —')}" style="text-align:center;font-weight:700;cursor:${verrou?'not-allowed':'pointer'};color:${!on?'var(--muted)':ro?'#5aa0ff':'var(--green)'}">${verrou?'🔒':!on?'—':ro?'👁':'✓'}</td>`;
       }).join('')}</tr>`).join('')}
       </tbody></table>
-      <p style="color:var(--muted);font-size:.74rem;margin-top:8px">✓ accès · 👁 consultation seule · 🔒 verrouillé · — aucun accès. Les vues « Perso » ne montrent que les données de la personne connectée.${S.settings.permsCustom?' <b style="color:var(--accent)">Permissions personnalisées actives.</b>':''}</p>`;
+      <p style="color:var(--muted);font-size:.74rem;margin-top:8px">Chaque clic fait tourner l'état : <b style="color:var(--muted)">—</b> aucun accès → <b style="color:var(--green)">✓</b> accès complet → <b style="color:#5aa0ff">👁</b> lecture seule (l'onglet est visible mais toutes les modifications sont désactivées) → <b style="color:var(--muted)">—</b>. 🔒 verrouillé.${(S.settings.permsCustom||S.settings.permsRO)?' <b style="color:var(--accent)">Permissions personnalisées actives.</b>':''}</p>`;
     })()}
   </div>
   <div class="panel" style="margin-top:18px;overflow-x:auto">
