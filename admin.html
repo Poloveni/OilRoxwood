@@ -87,7 +87,7 @@
   .nav-item.active{background:linear-gradient(135deg,rgba(232,98,44,.18),rgba(232,98,44,.06));color:var(--accent)}
   aside .spacer{flex:1}
   #logout{color:var(--red)}
-  main{margin-left:230px;padding:34px 38px;max-width:1600px}
+  main{margin-left:230px;padding:34px 38px}
   .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:14px}
   .topbar h2{font-size:1.5rem;letter-spacing:-.3px}
   .topbar .sub{color:var(--muted);font-size:.85rem;margin-top:2px}
@@ -392,7 +392,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-28</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-29</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -422,6 +422,7 @@
     <button class="nav-item" data-view="factures">🧾 <span class="txt">Factures</span></button>
     <button class="nav-item" data-view="relances">📞 <span class="txt">Relances</span></button>
     <button class="nav-item" data-view="bilan">🏦 <span class="txt">Bilan compta</span></button>
+    <button class="nav-item" data-view="prodder">🗡️ <span class="txt">Produits dérivés</span></button>
     <button class="nav-item" data-view="quotascom">⚖️ <span class="txt">Quotas commerciaux</span></button>
     <button class="nav-item" data-view="fer">🔩 <span class="txt">Achats Fer</span></button>
     <button class="nav-item" data-view="frecues">📥 <span class="txt">Factures reçues</span></button>
@@ -499,7 +500,7 @@ function load(){
 }
 /* ---- synchro par sections : chaque famille de données a sa propre date ----
    Évite qu'un admin qui touche l'effectif écrase la facture qu'un autre vient de créer. */
-const SEC_KEYS=['runners','weeks','sheets','fact','users','pending','fer','settings','absences','primesExtra','quotasCom','quotasComHist','journal','bilanExtra','closeUndo','bilanForce'];
+const SEC_KEYS=['runners','weeks','sheets','fact','users','pending','fer','settings','absences','primesExtra','quotasCom','quotasComHist','journal','bilanExtra','closeUndo','bilanForce','prodDer'];
 /* ---- heure de référence : celle du serveur Supabase, pas celle du PC ----
    Un utilisateur avec une horloge décalée datait ses modifs « dans le futur » et écrasait tout. */
 let CLOCK_SKEW=0;
@@ -694,10 +695,10 @@ async function sha(t){
 const ROLES={direction:'Direction',rh:'RH',comptable:'Comptable',commercial:'Commercial',membre:'Membre'};
 /* Onglets visibles par rôle — la Direction voit tout, un Membre ne voit que la vue d'ensemble */
 const PERMS={
-  direction:['overview','effectif','runs','semaine','historique','cloture','feuilles','factures','relances','bilan','retention','quotascom','fer','frecues','moi','quotashist','todo','agenda','feedback','maj','dlogs','journal','params'],
-  rh:       ['overview','effectif','semaine','historique','feuilles','retention','acces','factures','relances','quotascom','fer','moi','quotashist','todo','agenda','feedback','maj','dlogs'],
+  direction:['overview','effectif','runs','semaine','historique','cloture','feuilles','factures','relances','bilan','retention','prodder','quotascom','fer','frecues','moi','quotashist','todo','agenda','feedback','maj','dlogs','journal','params'],
+  rh:       ['overview','effectif','semaine','historique','feuilles','retention','acces','factures','relances','prodder','quotascom','fer','moi','quotashist','todo','agenda','feedback','maj','dlogs'],
   comptable:['overview','feuilles','factures','bilan','moi','quotashist','todo','agenda','feedback','maj'],
-  commercial:['overview','factures','relances','feuilles','quotascom','fer','moi','quotashist','todo','agenda','feedback','maj'],
+  commercial:['overview','factures','relances','feuilles','prodder','quotascom','fer','moi','quotashist','todo','agenda','feedback','maj'],
   membre:   ['effectif','moi','quotashist','todo','agenda','feedback','maj'] // lecture seule + stats perso + boîte à idées + agenda
 };
 function isMembre(){
@@ -798,7 +799,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-28';
+const APP_VERSION='C-29';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -1033,6 +1034,7 @@ document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.onclick=()=>show(
     factures:'<path d="M6 3h12v18l-2-1.5L14 21l-2-1.5L10 21l-2-1.5L6 21z"/><path d="M9 8h6M9 12h6"/>',
     relances:'<path d="M5 4h3l2 5-2.5 1.5a12 12 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
     bilan:'<path d="M3 21h18M4 9h16M12 3L3 9h18zM6 9v8M10 9v8M14 9v8M18 9v8"/>',
+    prodder:'<path d="M20.6 13.4L11 3.8a2 2 0 0 0-1.4-.6H4a1 1 0 0 0-1 1v5.6c0 .5.2 1 .6 1.4l9.6 9.6a2 2 0 0 0 2.8 0l4.6-4.6a2 2 0 0 0 0-2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
     quotascom:'<path d="M12 3v18M7 6h10M5 6l-2.5 6a3 3 0 0 0 6 0L6 6M19 6l-2.5 6a3 3 0 0 0 6 0L20 6M8 21h8"/>',
     fer:'<path d="M4 15l3-6h10l3 6z"/><path d="M4 15h16v3H4z"/>',
     frecues:'<path d="M3 13h5l2 3h4l2-3h5"/><path d="M3 13V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7"/><path d="M3 13v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/>',
@@ -1059,7 +1061,7 @@ function show(v){
   VIEW=v;
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   destroyCharts();
-  ({overview,effectif,runs,semaine,historique,cloture,feuilles,factures,relances,bilan,retention,quotascom,fer,frecues,moi,quotashist,todo,acces,agenda,feedback,maj,dlogs,journal,params})[v]();
+  ({overview,effectif,runs,semaine,historique,cloture,feuilles,factures,relances,bilan,retention,prodder,quotascom,fer,frecues,moi,quotashist,todo,acces,agenda,feedback,maj,dlogs,journal,params})[v]();
   try{ nfRefresh(); applyRO(); }catch(e){}
 }
 function rerender(){ show(VIEW); }
@@ -1201,7 +1203,7 @@ function rowRunner(r){
     <td style="text-align:right;white-space:nowrap">
       ${eligible(r)?`<button class="btn btn-sm btn-gold" onclick="promote(${r.id})" title="Monter de grade">▲</button>`:''}
       ${!r.poste&&r.grade>0&&r.barils<g.quota*0.95&&!r.absent&&!ab?`<button class="btn btn-sm btn-red" onclick="demote(${r.id})" title="Descendre de grade (quota réalisé à ${pc}% — sous les 95%)">▼</button>`:''}
-      ${!r.poste&&r.grade===0&&r.barils<g.quota*0.95&&!r.absent&&!ab&&!estNouveau(r.nom)?`<button class="btn btn-sm btn-ghost" style="color:#ffa500;border-color:rgba(255,165,0,.4)" onclick="avertir(${r.id})" title="Sous quota (${pc}%) — donner un avertissement">⚠</button>`:''}
+      ${!r.poste&&r.grade===0&&r.barils<g.quota*0.80&&!r.absent&&!ab&&!estNouveau(r.nom)?`<button class="btn btn-sm btn-ghost" style="color:#ffa500;border-color:rgba(255,165,0,.4)" onclick="avertir(${r.id})" title="Sous 80 % du quota (${pc}%) — donner un avertissement">⚠</button>`:''}
       ${estStagiaire(r)?`<button class="btn btn-sm btn-gold" onclick="titulariser(decodeURIComponent('${encodeURIComponent(r.nom)}'))" title="Titulariser (Stagiaire → Intérimaire)">🎓</button>`:''}
       <button class="btn btn-sm btn-ghost" onclick="toggleAbsent(${r.id})" title="${r.absent?'Marquer de retour':'Mettre en congé / absence'}">${r.absent?'💼':'🌴'}</button>
       <button class="btn btn-sm btn-ghost" onclick="openRunnerModal(${r.id})">✎</button>
@@ -2932,6 +2934,12 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-29',d:'22/07/2026',t:'Produits dérivés & retouches',items:[
+   ['🗡️','Produits dérivés','Nouvelle page Commerce : tableau à colonnes flexibles — ajoute un produit (＋ Colonne, en bleu) ou une vente (＋ Ligne), prix unitaire sous chaque produit, Prix HT calculé par ligne, totaux par colonne, ✕ partout.'],
+   ['✎','Factures reçues modifiables','Entreprise, date, montant, lien et note s\'éditent après coup (l\'image jointe est conservée).'],
+   ['🗑','Ménage dans l\'Historique','Un ✕ par semaine clôturée pour retirer les clôtures de test — records et graphiques recalculés.'],
+   ['⚠','Avertissement à 80 %','Le bouton ⚠ des intérimaires n\'apparaît plus que sous 80 % du quota (au lieu de 95 %).'],
+   ['🖥️','Plein écran','Le contenu exploite désormais toute la largeur de la fenêtre.']]},
  {v:'C-28',d:'21/07/2026',t:'Finitions du cahier des charges',items:[
    ['📊','Vue d\'ensemble réorganisée','Courbe des 4 dernières semaines, donut de production par grade en dégradé orange (légende à droite avec pourcentages), podium TOP 3 et tableau de toute l\'équipe avec barres colorées — noms cliquables vers les fiches.'],
    ['💰','Semaine & Primes réagencée','Les 3 cartes (primes, salaires, semaine) remontent sous les boutons ; les lignes sans activité sont grisées et regroupées en fin de tableau ; « X restants » repasse en gris neutre (le rouge reste aux vraies alertes).'],
@@ -3097,11 +3105,12 @@ function historique(){
   </div>
   <div class="panel">
     <h3>Détail des semaines</h3>
-    <table><thead><tr><th>Semaine</th><th>Clôturée le</th><th>Production</th><th>CA (au prix actuel)</th><th>Primes</th><th>🥇 Vainqueur</th></tr></thead><tbody>
-    ${[...W].reverse().map(w=>`<tr>
+    <table><thead><tr><th>Semaine</th><th>Clôturée le</th><th>Production</th><th>CA (au prix actuel)</th><th>Primes</th><th>🥇 Vainqueur</th>${isMembre()?'':'<th></th>'}</tr></thead><tbody>
+    ${[...W.map((w,i)=>({w,i}))].reverse().map(({w,i})=>`<tr>
       <td><b>S${w.num}</b></td><td>${esc(w.date||'—')}</td>
       <td>${fmt(w.total)} barils</td><td>${money((w.total||0)*S.settings.prix)}</td>
       <td class="gold">${money(w.primes||0)}</td><td>${w.winner?esc(w.winner):'<span style="color:var(--muted)">—</span>'}</td>
+      ${isMembre()?'':`<td style="text-align:right"><button class="btn btn-sm btn-red" onclick="weekDel(${i})" title="Supprimer cette semaine de l'historique (ex. clôture de test)">✕</button></td>`}
     </tr>`).join('')}
     </tbody></table>
   </div>`;
@@ -3110,6 +3119,16 @@ function historique(){
     options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
   mkChart('cHistPrimes',{type:'line',data:{labels,datasets:[{data:prims,borderColor:'#E8622C',backgroundColor:'rgba(232,98,44,.15)',fill:true,tension:.35,pointRadius:4}]},
     options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+}
+
+function weekDel(i){
+  if(isMembre()) return;
+  const w=S.weeks[i]; if(!w) return;
+  if(!confirm(`Supprimer la semaine S${w.num} (clôturée le ${w.date||'?'}) de l'historique ?\n\nLes records, moyennes et graphiques seront recalculés. Utile pour retirer une clôture de test.`)) return;
+  S.weeks.splice(i,1);
+  jlog(`Historique : semaine S${w.num} du ${w.date||'?'} supprimée (${fmt(w.total)} barils)`);
+  save(); sbPushNow(); historique();
+  toast(`🗑 Semaine S${w.num} retirée de l'historique`);
 }
 
 /* ================== JOURNAL D'ACTIVITÉ (Direction) ================== */
@@ -3238,7 +3257,9 @@ async function frecues(){
             ${f.lien?` <a href="${esc(f.lien)}" target="_blank" rel="noopener" style="color:var(--accent)">🔗 lien</a>`:''}
             ${!f.img&&!f.lien?'—':''}</td>
         <td style="color:var(--muted);font-size:.8rem">${esc(f.auteur||'—')}</td>
-        <td style="text-align:right"><button class="btn btn-sm btn-red" onclick="frDel(${f.id})">✕</button></td>
+        <td style="text-align:right;white-space:nowrap">
+          <button class="btn btn-sm btn-ghost" onclick="frEdit(${f.id})" title="Modifier">✎</button>
+          <button class="btn btn-sm btn-red" onclick="frDel(${f.id})">✕</button></td>
       </tr>`).join('')}</tbody></table>`:''}
     </div>`;
   }).join(''):'<div class="panel"><div class="empty">Aucune facture archivée — colle ta première capture ci-dessus 🖼️</div></div>'}`;
@@ -3257,6 +3278,31 @@ async function frAdd(){
     jlog(`Facture reçue archivée : ${en}${+$('#frM').value?' — '+fmt(+$('#frM').value)+' $':''}`);
     FR_IMG=null; FR_CACHE=null; frecues(); toast('📥 Facture archivée — classée sous '+en);
   }catch(e){ toast('❌ Archivage impossible — table manquante ou image trop lourde'); }
+}
+function frEdit(id){
+  const f=(FR_CACHE||[]).find(x=>x.id===id); if(!f) return;
+  openModal(`<h3>✎ Modifier la facture reçue</h3>
+  <div class="f-row"><label class="f-lbl">Entreprise</label><input class="field" id="feE" value="${esc(f.entreprise||'')}"></div>
+  <div class="f-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div><label class="f-lbl">Date</label><input class="field" type="date" id="feD" value="${esc(String(f.date||'').slice(0,10))}"></div>
+    <div><label class="f-lbl">Montant ($)</label><input class="field" type="number" id="feM" value="${nn(f.montant)||''}"></div>
+  </div>
+  <div class="f-row"><label class="f-lbl">Lien</label><input class="field" id="feL" value="${esc(f.lien||'')}"></div>
+  <div class="f-row"><label class="f-lbl">Note</label><input class="field" id="feN" value="${esc(f.note||'')}"></div>
+  ${f.img?'<p style="color:var(--muted);font-size:.76rem;margin-bottom:12px">🖼️ L\'image jointe est conservée telle quelle — pour la changer, supprime la facture et ré-archive-la.</p>':''}
+  <button class="btn btn-gold" style="width:100%" onclick="frSaveEdit(${id})">💾 Enregistrer les modifications</button>`);
+}
+async function frSaveEdit(id){
+  const en=$('#feE').value.trim();
+  if(!en) return toast('⚠️ Indique l\'entreprise');
+  try{
+    const {error}=await SYNC.cli.from('oilroxwood_frecues').update({
+      entreprise:en, date:$('#feD').value||null, montant:+$('#feM').value||0,
+      lien:$('#feL').value.trim(), note:$('#feN').value.trim()}).eq('id',id);
+    if(error) throw error;
+    jlog(`Facture reçue modifiée : ${en}`);
+    closeModal(); FR_CACHE=null; frecues(); toast('✎ Facture reçue mise à jour');
+  }catch(e){ toast('❌ Modification impossible'); }
 }
 function frZoom(id){
   const f=(FR_CACHE||[]).find(x=>x.id===id); if(!f||!f.img) return;
@@ -3311,6 +3357,74 @@ function peDel(id){
   S.primesExtra=S.primesExtra.filter(x=>x.id!==id);
   jlog(`Prime exceptionnelle retirée : ${p.nom} (${fmt(p.montant)} $)`);
   save(); sbPushNow(); peModal(); rerender();
+}
+
+/* ================== PRODUITS DÉRIVÉS (colonnes flexibles) ================== */
+function pdData(){
+  S.prodDer=S.prodDer||{cols:[{n:'Couteau',p:0},{n:'Katana',p:0},{n:'Préservatif',p:0},{n:'Bagues',p:0},{n:'Bracelets',p:0}],rows:[]};
+  return S.prodDer;
+}
+function prodder(){
+  const D=pdData();
+  const rowHT=r=>D.cols.reduce((a,c)=>a+nn(r.q&&r.q[c.n])*nn(c.p),0);
+  const tot=D.rows.reduce((a,r)=>a+rowHT(r),0);
+  $('#main').innerHTML=`
+  <div class="topbar">
+    <div><h2>Produits dérivés</h2><div class="sub">${D.cols.length} produit(s) · ${D.rows.length} vente(s) · les colonnes s'ajoutent et se retirent à la volée</div></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" style="background:linear-gradient(135deg,#5aa0ff,#3d7fd9);color:#0d1626;font-weight:800" onclick="pdColAdd()">＋ Colonne (produit)</button>
+      <button class="btn btn-gold" onclick="pdRowAdd()">＋ Ligne (vente)</button>
+    </div>
+  </div>
+  <div class="panel" style="padding:10px 16px;overflow-x:auto">
+    <table class="sheet"><thead><tr>
+      <th style="min-width:130px">Date</th>
+      ${D.cols.map((c,ci)=>`<th style="min-width:112px">
+        <div style="display:flex;align-items:center;gap:6px;justify-content:space-between">${esc(c.n)}
+          <button class="btn btn-sm btn-red" style="padding:1px 7px" onclick="pdColDel(${ci})" title="Supprimer la colonne ${esc(c.n)}">✕</button></div>
+        <input class="field" type="number" min="0" title="Prix unitaire HT du produit" value="${nn(c.p)||''}" placeholder="prix" style="margin-top:5px;padding:4px 7px;font-size:.75rem;width:92px;text-align:right" onchange="pdColPrix(${ci},this.value)">
+        <div style="font-weight:400;color:var(--muted);font-size:.64rem;text-transform:none;letter-spacing:0">$ HT / unité</div></th>`).join('')}
+      <th style="text-align:right">Prix HT</th><th></th>
+    </tr></thead><tbody>
+    ${D.rows.map((r,ri)=>`<tr>
+      <td><input type="date" value="${esc(r.date||'')}" onchange="pdCell(${ri},null,this.value)"></td>
+      ${D.cols.map(c=>`<td><input type="number" min="0" value="${nn(r.q&&r.q[c.n])||''}" placeholder="0" style="text-align:right" onchange="pdCell(${ri},decodeURIComponent('${encodeURIComponent(c.n)}'),this.value)"></td>`).join('')}
+      <td class="calc" style="text-align:right;font-weight:700">${fmt(Math.round(rowHT(r)))} $</td>
+      <td><button class="btn btn-sm btn-red" onclick="pdRowDel(${ri})">✕</button></td>
+    </tr>`).join('')||`<tr><td colspan="${D.cols.length+3}"><div class="empty">Aucune vente enregistrée — « ＋ Ligne » pour commencer 🗡️</div></td></tr>`}
+    </tbody>${D.rows.length?`<tfoot><tr style="border-top:2px solid var(--line)">
+      <td style="font-weight:800;padding:10px 12px">Total</td>
+      ${D.cols.map(c=>`<td style="text-align:right;color:var(--muted);padding:10px 12px">${fmt(D.rows.reduce((a,r)=>a+nn(r.q&&r.q[c.n]),0))}</td>`).join('')}
+      <td style="text-align:right;font-weight:800;color:var(--accent);padding:10px 12px">${fmt(Math.round(tot))} $</td><td></td>
+    </tr></tfoot>`:''}</table>
+    <p style="color:var(--muted);font-size:.75rem;margin-top:10px">Renseigne le prix unitaire HT sous chaque produit : le Prix HT de chaque ligne se calcule tout seul (quantités × prix).</p>
+  </div>`;
+}
+function pdColAdd(){
+  const n=prompt('Nom du nouveau produit (ex. Couteau, Katana, Bagues…)');
+  if(!n||!n.trim()) return;
+  const D=pdData();
+  if(D.cols.find(c=>c.n.toLowerCase()===n.trim().toLowerCase())) return toast('⚠️ Ce produit existe déjà');
+  D.cols.push({n:n.trim(),p:0});
+  jlog(`Produits dérivés : colonne « ${n.trim()} » ajoutée`);
+  save(); sbPushNow(); prodder();
+}
+function pdColDel(ci){
+  const D=pdData(), c=D.cols[ci]; if(!c) return;
+  if(!confirm(`Supprimer la colonne « ${c.n} » ?\n(les quantités saisies pour ce produit seront perdues)`)) return;
+  D.cols.splice(ci,1);
+  D.rows.forEach(r=>{ if(r.q) delete r.q[c.n]; });
+  jlog(`Produits dérivés : colonne « ${c.n} » supprimée`);
+  save(); sbPushNow(); prodder();
+}
+function pdColPrix(ci,v){ const D=pdData(); if(D.cols[ci]){ D.cols[ci].p=Math.max(0,+v||0); save(); sbPushNow(); prodder(); } }
+function pdRowAdd(){ const D=pdData(); D.rows.push({date:new Date().toISOString().slice(0,10),q:{}}); save(); prodder(); }
+function pdRowDel(ri){ const D=pdData(); if(!confirm('Supprimer cette vente ?')) return; D.rows.splice(ri,1); save(); sbPushNow(); prodder(); }
+function pdCell(ri,k,v){
+  const D=pdData(), r=D.rows[ri]; if(!r) return;
+  if(k===null) r.date=v;
+  else{ r.q=r.q||{}; r.q[k]=Math.max(0,+v||0); }
+  save(); prodder();
 }
 
 /* ================== QUOTAS COMMERCIAUX ================== */
