@@ -707,7 +707,26 @@ function allowedViews(){
   if(sessionStorage.getItem('orx_user')==='SECOURS') return PERMS.direction; // clé de secours
   if(!S.users||!S.users.length) return PERMS.direction; // phase d'installation : tout ouvert
   const cu=currentUser();
-  return cu ? (PERMS[cu.role]||PERMS.membre) : PERMS.membre; // session sans compte : minimum
+  return cu ? (permsDe(cu.role)||PERMS.membre) : PERMS.membre; // session sans compte : minimum
+}
+function permsDe(role){
+  const c=S.settings&&S.settings.permsCustom;
+  return (c&&Array.isArray(c[role])&&c[role].length)?c[role]:PERMS[role];
+}
+function permToggle(role,v){
+  if(role==='direction'&&v==='params') return toast('⚠️ La Direction garde toujours l\'accès aux Paramètres');
+  if(!S.settings.permsCustom) S.settings.permsCustom={};
+  const cur=[...(permsDe(role)||[])], i=cur.indexOf(v);
+  if(i>=0){
+    if(cur.length<=1) return toast('⚠️ Un rôle doit garder au moins un onglet');
+    cur.splice(i,1);
+  } else {
+    cur.push(v);
+    const ordre=PERMS.direction; cur.sort((a,b)=>ordre.indexOf(a)-ordre.indexOf(b));
+  }
+  S.settings.permsCustom[role]=cur;
+  jlog(`Permissions : le rôle ${ROLES[role]||role} ${i>=0?'perd':'gagne'} l'onglet « ${v} »`);
+  save(); sbPushNow(); applyPerms(); params();
 }
 function navCollapsed(){ try{ return JSON.parse(localStorage.getItem('orx_navcol'))||[]; }catch(e){ return []; } }
 function navToggle(k){
@@ -4067,15 +4086,19 @@ async function params(){
     </div>
   </div>
   <div class="panel" style="margin-top:18px;overflow-x:auto">
-    <h3>🔐 Permissions par rôle</h3>
-    <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px">Qui voit quoi — documentation pour les nouveaux admins. Les rôles se règlent dans « Comptes d'accès » ci-dessus.</p>
+    <h3 style="display:flex;justify-content:space-between;align-items:center">🔐 Permissions par rôle
+      ${S.settings.permsCustom?`<button class="btn btn-sm btn-ghost" onclick="if(confirm('Revenir aux permissions par défaut pour tous les rôles ?')){delete S.settings.permsCustom;jlog('Permissions : retour aux valeurs par défaut');save();sbPushNow();applyPerms();params();}">↺ Permissions par défaut</button>`:''}</h3>
+    <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px"><b>Clique sur une case</b> pour donner ou retirer un onglet à un rôle — appliqué immédiatement à tous les comptes du rôle. Les rôles individuels se règlent dans « Comptes d'accès » ci-dessus.</p>
     ${(()=>{
       const roles=[['direction','Direction'],['rh','RH'],['comptable','Comptable'],['commercial','Commercial'],['membre','Membre']];
       const lbl=v=>{ const b=document.querySelector(`.nav-item[data-view="${v}"] .txt`); return b?b.textContent:v; };
       return `<table><thead><tr><th>Onglet</th>${roles.map(([,l])=>`<th style="text-align:center">${l}</th>`).join('')}</tr></thead><tbody>
-      ${PERMS.direction.map(v=>`<tr><td><b>${lbl(v)}</b></td>${roles.map(([k])=>`<td style="text-align:center;font-weight:700;color:${PERMS[k].includes(v)?'var(--green)':'var(--muted)'}">${PERMS[k].includes(v)?(k==='membre'&&v==='effectif'?'👁':'✓'):'—'}</td>`).join('')}</tr>`).join('')}
+      ${PERMS.direction.map(v=>`<tr><td><b>${lbl(v)}</b></td>${roles.map(([k])=>{
+        const on=permsDe(k).includes(v), verrou=(k==='direction'&&v==='params');
+        return `<td onclick="permToggle('${k}','${v}')" title="${verrou?'Verrouillé — la Direction garde les Paramètres':(on?'Cliquer pour retirer':'Cliquer pour donner')}" style="text-align:center;font-weight:700;cursor:${verrou?'not-allowed':'pointer'};color:${on?'var(--green)':'var(--muted)'}">${on?(k==='membre'&&v==='effectif'?'👁':verrou?'🔒':'✓'):'—'}</td>`;
+      }).join('')}</tr>`).join('')}
       </tbody></table>
-      <p style="color:var(--muted);font-size:.74rem;margin-top:8px">✓ accès complet · 👁 consultation seule · — aucun accès. Les vues « Perso » (Ma semaine, agenda, to-do) ne montrent que les données de la personne connectée.</p>`;
+      <p style="color:var(--muted);font-size:.74rem;margin-top:8px">✓ accès · 👁 consultation seule · 🔒 verrouillé · — aucun accès. Les vues « Perso » ne montrent que les données de la personne connectée.${S.settings.permsCustom?' <b style="color:var(--accent)">Permissions personnalisées actives.</b>':''}</p>`;
     })()}
   </div>
   <div class="panel" style="margin-top:18px;overflow-x:auto">
