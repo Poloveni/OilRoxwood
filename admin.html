@@ -392,7 +392,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-27</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-28</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -798,7 +798,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-27';
+const APP_VERSION='C-28';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -1095,31 +1095,32 @@ function overview(){
     <div style="text-align:right;margin-top:6px;font-size:.8rem;color:${pc>=100?'#4A9D6F':'var(--muted)'}">${pc}%${pc>=100?' — 🎉 objectif atteint, bravo à tous !':''}</div>
   </div>`;})()}
   <div class="grid g2" style="margin-bottom:18px">
-    <div class="panel"><h3>Barils par runner (semaine)</h3>${R.length?'<canvas id="cRunners" height="230"></canvas>':'<div class="empty">Aucun runner — ajoute ton effectif 👥</div>'}</div>
+    <div class="panel"><h3>Historique des semaines</h3>${S.weeks.length?'<canvas id="cWeeks" height="230"></canvas>':'<div class="empty">Aucune semaine clôturée pour le moment</div>'}</div>
     <div class="panel"><h3>Production par grade</h3>${R.length?'<canvas id="cGrades" height="230"></canvas>':'<div class="empty">—</div>'}</div>
   </div>
-  <div class="grid g2">
-    <div class="panel"><h3>Historique des semaines</h3>${S.weeks.length?'<canvas id="cWeeks" height="220"></canvas>':'<div class="empty">Aucune semaine clôturée pour le moment</div>'}</div>
-    <div class="panel"><h3>🏆 TOP 3 en direct</h3>${top3html(sorted)}</div>
-  </div>
-  <div class="panel" style="margin-top:18px;padding:8px 16px">
+  <div class="panel" style="margin-bottom:18px"><h3>🏆 TOP 3 en direct</h3>${top3html(sorted)}</div>
+  <div class="panel" style="padding:8px 16px">
     <h3 style="padding:12px 0 4px">📋 Production de la semaine — toute l'équipe</h3>
     ${R.length?`<table><thead><tr><th>Nom</th><th>Barils vendus</th><th style="min-width:180px">Quota</th></tr></thead><tbody>
-    ${sorted.map(r=>{const q=grade(r).quota,pc=q?Math.min(100,Math.round(r.barils/q*100)):100;return `<tr>
-      <td><b>${esc(r.nom)}</b></td>
+    ${sorted.map(r=>{const q=grade(r).quota,pc=q?Math.min(100,Math.round(r.barils/q*100)):100;return `<tr style="${r.barils===0?'opacity:.5':''}">
+      <td style="cursor:pointer" onclick="ficheEmp(decodeURIComponent('${encodeURIComponent(r.nom)}'))"><b>${esc(r.nom)}</b></td>
       <td>${fmt(r.barils)}</td>
-      <td><div class="prog" style="max-width:150px"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></div><div class="pct">${pc}% du quota</div></td>
+      <td><div class="prog" style="max-width:150px"><i class="${pc>=100?'full':pc<40?'low':''}" style="width:${pc}%"></i></div><div class="pct">${pc}% du quota</div></td>
     </tr>`}).join('')}
     </tbody></table>`:'<div class="empty">Aucun runner</div>'}
   </div>`;
   if(R.length){
-    mkChart('cRunners',{type:'bar',data:{labels:sorted.map(r=>r.nom),datasets:[{data:sorted.map(r=>r.barils),backgroundColor:sorted.map((r,i)=>i===0?'#E8622C':i===1?'#a8b6c8':i===2?'#c07840':'rgba(90,160,255,.55)'),borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
-    const gd=GRADES.map((g,i)=>R.filter(r=>r.grade===i&&!r.poste).reduce((a,r)=>a+r.barils,0));
+    // donut en dégradé orange : foncé = grades juniors, clair = seniors, gris = direction
+    const gd=GRADES.map((g,i)=>R.filter(r=>r.grade===i&&!r.poste&&!estStagiaire(r)).reduce((a,r)=>a+r.barils,0));
+    gd.unshift(R.filter(r=>estStagiaire(r)).reduce((a,r)=>a+r.barils,0));
     gd.push(R.filter(r=>r.poste).reduce((a,r)=>a+r.barils,0));
-    mkChart('cGrades',{type:'doughnut',data:{labels:[...GRADES.map(g=>g.nom),'Direction & postes'],datasets:[{data:gd,backgroundColor:['#8494a9','#5aa0ff','#a78bfa','#E8622C','#E8622C'],borderWidth:0}]},options:{cutout:'62%',plugins:{legend:{position:'bottom'}}}});
+    const totG=gd.reduce((a,b)=>a+b,0)||1;
+    const labels=['Stagiaire',...GRADES.map(g=>g.nom),'Direction & postes'].map((l,i)=>`${l} (${Math.round(gd[i]/totG*100)} %)`);
+    mkChart('cGrades',{type:'doughnut',data:{labels,datasets:[{data:gd,backgroundColor:['#54400f','#7A2C14','#B8431E','#E8622C','#F2B705','#8B939B'],borderWidth:0}]},options:{cutout:'62%',plugins:{legend:{position:'right'}}}});
   }
   if(S.weeks.length){
-    mkChart('cWeeks',{type:'line',data:{labels:S.weeks.map(w=>'S'+w.num),datasets:[{label:'Barils',data:S.weeks.map(w=>w.total),borderColor:'#E8622C',backgroundColor:'rgba(232,98,44,.12)',fill:true,tension:.35,pointBackgroundColor:'#E8622C'}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+    const W4=S.weeks.slice(-4);
+    mkChart('cWeeks',{type:'line',data:{labels:W4.map(w=>'S'+w.num),datasets:[{label:'Barils',data:W4.map(w=>w.total),borderColor:'#E8622C',backgroundColor:'rgba(232,98,44,.12)',fill:true,tension:.35,pointBackgroundColor:'#F2B705'}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
   }
 }
 function top3html(sorted){
@@ -1483,7 +1484,13 @@ async function semaine(){
       <button class="btn btn-gold" onclick="closeWeek()">🗓️ Clôturer la semaine (lundi)</button>
     </div>
   </div>
+  <div class="grid g3" style="margin-bottom:18px">
+    <div class="panel kpi"><div class="lbl">Total primes projetées</div><div class="val gold">${money(totalPrimes)}</div><div class="delta">si tous les quotas restent en l'état</div></div>
+    <div class="panel kpi"><div class="lbl">Total salaires projetés</div><div class="val">${money(items.reduce((a,it)=>a+it.sal,0))}</div><div class="delta">masse totale : ${money(items.reduce((a,it)=>a+it.tot,0))} (salaires + primes)</div></div>
+    <div class="panel kpi"><div class="lbl">Semaine actuelle</div><div class="val">S${S.settings.semaine}</div><div class="delta">${weekRange()}</div></div>
+  </div>
   <div class="panel" style="margin-bottom:18px;padding:8px 16px">
+    <h3 style="padding:10px 0 0">Classement de la semaine</h3>
     <input class="field" id="semSearchInput" style="max-width:260px;margin:8px 0 4px" placeholder="🔍 Rechercher un employé…" value="${esc(semSearch)}" oninput="semSearch=this.value;semaine()">
     ${visibles.length?`<table><thead><tr>
       <th onclick="semSort('rang')" style="cursor:pointer" title="Trier">#${fl('rang')}</th>
@@ -1496,26 +1503,29 @@ async function semaine(){
       <th onclick="semSort('salaire')" style="cursor:pointer" title="Trier">Salaire${fl('salaire')}</th>
       <th onclick="semSort('total')" style="cursor:pointer" title="Trier">Total${fl('total')}</th>
     </tr></thead><tbody>
-    ${visibles.map(it=>{const {r,g,okk,i,sal,pr}=it;return `<tr>
+    ${(()=>{
+      const ligne=(it,grise)=>{const {r,g,okk,i,sal,pr}=it;return `<tr style="${grise?'opacity:.5':''}">
       <td>${i<3&&r.barils>0?['🥇','🥈','🥉'][i]:i+1}</td>
-      <td><b>${esc(r.nom)}</b></td>
+      <td style="cursor:pointer" title="Ouvrir la fiche" onclick="ficheEmp(decodeURIComponent('${encodeURIComponent(r.nom)}'))"><b>${esc(r.nom)}</b></td>
       <td><span class="badge ${gCls(r)}">${esc(gTitle(r))}</span></td>
       <td>${fmt(r.barils)}</td>
-      <td>${okk?'<span class="up">✔ atteint</span>':`<span class="down">${fmt(g.quota-r.barils)} restants</span>`}</td>
+      <td>${okk?'<span class="up">✔ atteint</span>':`<span style="color:var(--muted)">${fmt(g.quota-r.barils)} restants</span>`}</td>
       <td>×${g.mult}</td>
       <td class="${okk?'gold':''}" style="font-weight:700">${okk?money(pr):'—'}${okk&&i<3?`<div style="font-size:.7rem;color:var(--muted)">dont TOP ${i+1} : ${money(S.settings.top[i])}</div>`:''}</td>
       <td>${r.poste?`<b>${recruesAuto(r.nom)}</b> <small style="color:var(--muted)" title="Compté automatiquement : fiches RH où ${esc(r.nom)} est Recruteur, arrivées cette semaine">auto</small>`:'<span style="color:var(--muted)">—</span>'}</td>
       <td>${sal?money(sal):'—'}</td>
       <td style="font-weight:700">${sal+pr?money(sal+pr):'—'}</td>
-    </tr>`}).join('')}
+    </tr>`;};
+      const actifsV=visibles.filter(it=>it.r.barils>0||it.r.poste);
+      const zerosV=visibles.filter(it=>!(it.r.barils>0||it.r.poste));
+      return actifsV.map(it=>ligne(it,false)).join('')
+        +(zerosV.length?`<tr><td colspan="10" style="color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;padding:14px 12px 6px;border-bottom:none">💤 Sans activité cette semaine (${zerosV.length})</td></tr>`
+        +zerosV.map(it=>ligne(it,true)).join(''):'');
+    })()}
     </tbody></table>`:`<div class="empty">${q?'Aucun employé ne correspond à « '+esc(semSearch)+' »':'Aucun runner'}</div>`}
   </div>
   <div class="grid g2">
-    <div class="grid g2" style="align-content:start">
-      <div class="panel kpi"><div class="lbl">Total primes projetées</div><div class="val gold">${money(totalPrimes)}</div><div class="delta">si tous les quotas restent en l'état</div></div>
-      <div class="panel kpi"><div class="lbl">Total salaires projetés</div><div class="val">${money(items.reduce((a,it)=>a+it.sal,0))}</div><div class="delta">masse totale : ${money(items.reduce((a,it)=>a+it.tot,0))} (salaires + primes)</div></div>
-    </div>
-    <div class="panel">
+    <div class="panel" style="grid-column:span 2">
       <h3>🗃️ Semaines clôturées</h3>
       ${S.weeks.length?`<table><thead><tr><th>Semaine</th><th>Barils</th><th>Primes versées</th><th>🥇 Vainqueur</th></tr></thead><tbody>
       ${[...S.weeks].reverse().map(w=>`<tr><td><b>S${w.num}</b> <span style="color:var(--muted);font-size:.75rem">${w.date}</span></td><td>${fmt(w.total)}</td><td class="gold">${money(w.primes)}</td><td>${esc(w.winner||'—')}</td></tr>`).join('')}
@@ -2416,6 +2426,11 @@ async function relances(){
       ${[0,30,60,90].map(j=>`<button class="tab ${REL_J===j?'on':''}" onclick="REL_J=${j};relances()">${j===0?'Tous':'+'+j+' jours'}</button>`).join('')}
     </div>
   </div>
+  <div class="grid g3" style="margin-bottom:16px">
+    <div class="panel kpi"><div class="lbl">À relancer</div><div class="val">${rows.length}</div><div class="delta">clients inactifs ${REL_J?REL_J+' j ou +':''}</div></div>
+    <div class="panel kpi"><div class="lbl">Jamais commandé</div><div class="val">${jamais.length}</div><div class="delta">prospects à démarcher</div></div>
+    <div class="panel kpi"><div class="lbl">Relances en cours</div><div class="val ${enCours?'up':''}">${enCours}</div><div class="delta">prises en charge par l'équipe</div></div>
+  </div>
   <div style="display:flex;gap:14px;margin-bottom:14px;font-size:.8rem;color:var(--muted);align-items:center;flex-wrap:wrap">
     <input class="field" id="relSearchInput" style="max-width:250px" placeholder="🔍 Rechercher un client…" value="${esc(REL_SEARCH)}" oninput="REL_SEARCH=this.value;relances()">
     <span>🟠 à relancer</span><span>🟢 relance en cours</span><span>🔴 +90 jours sans commande</span>
@@ -2758,7 +2773,7 @@ async function retention(){
     ${RH.length?`<table><thead><tr><th>Employé</th><th>Grade</th><th>Arrivée</th><th>Ancienneté</th></tr></thead><tbody>
     ${list.map(({x,a})=>`<tr>
       <td><b>${esc(x.nom)}</b></td><td style="color:var(--muted);font-size:.8rem">${esc(x.grade||'')}</td>
-      <td>${x.arrivee?frDate(x.arrivee):'—'}</td><td>${a!==null?`<b class="${a<7?'down':a>90?'up':''}">${a} j</b>`:'<span style="color:var(--muted)">date d\'arrivée manquante</span>'}</td></tr>`).join('')}
+      <td>${x.arrivee?frDate(x.arrivee):'—'}</td><td>${a!==null?`<b style="color:${a>=300?'var(--green)':a>=100?'var(--accent)':'var(--muted)'}">${a} j</b>`:'<span style="color:var(--muted)">date d\'arrivée manquante</span>'}</td></tr>`).join('')}
     </tbody></table>`:'<div class="empty">Feuille RH vide</div>'}
   </div>`;
 }
@@ -2917,6 +2932,12 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-28',d:'21/07/2026',t:'Finitions du cahier des charges',items:[
+   ['📊','Vue d\'ensemble réorganisée','Courbe des 4 dernières semaines, donut de production par grade en dégradé orange (légende à droite avec pourcentages), podium TOP 3 et tableau de toute l\'équipe avec barres colorées — noms cliquables vers les fiches.'],
+   ['💰','Semaine & Primes réagencée','Les 3 cartes (primes, salaires, semaine) remontent sous les boutons ; les lignes sans activité sont grisées et regroupées en fin de tableau ; « X restants » repasse en gris neutre (le rouge reste aux vraies alertes).'],
+   ['📞','Relances : 3 KPI','À relancer, jamais commandé et relances en cours, d\'un coup d\'œil.'],
+   ['🗂️','Ancienneté par paliers','Vert ≥ 300 j de maison, orange 100-299, gris en dessous.'],
+   ['🔐','Permissions à 3 états','En plus de donner/retirer un onglet, chaque case peut passer en 👁 lecture seule : visible mais non modifiable.']]},
  {v:'C-27',d:'21/07/2026',t:'Notifications, Ctrl+K, fiche employé & Stagiaires',items:[
    ['🔔','Centre de notifications','Cloche en haut à droite : factures en retard, runners sous quota, employés sans service 5 j+, contrats non signés, fins d\'absence — avec lien direct vers la page concernée et « tout marquer lu ».'],
    ['⌨️','Recherche globale Ctrl+K','Un raccourci pour tout retrouver : employé (ouvre sa fiche), client (ouvre ses relances), facture, page — navigation au clavier ↑↓ ↵.'],
