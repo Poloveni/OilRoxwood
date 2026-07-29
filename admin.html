@@ -392,7 +392,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-29</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-30</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -799,7 +799,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-29';
+const APP_VERSION='C-30';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -1642,6 +1642,11 @@ const SHEETS_DEF = {
     {k:'quantite',l:'Quantité',t:'num'},{k:'qui',l:'Qui ?',t:'text'}],
     tot:['quantite'], nouveau:{date:'',client:'',quantite:0,qui:''}},
   rh:{ico:'🗂️',label:'RH',drag:true,cols:[
+    {k:'_ctr',l:'📄',t:'html',f:r=>{
+      const id=String(r.idU||'').replace(/\D/g,'');
+      if(!id) return '<span style="color:var(--muted)" title="ID unique requis pour générer le contrat">—</span>';
+      return `<button class="btn btn-sm ${r.contratGen?'btn-ghost':'btn-gold'}" style="padding:3px 9px" title="${r.contratGen?'Contrat généré le '+new Date(r.contratGen.t).toLocaleDateString('fr-FR')+' par '+esc(r.contratGen.par||'?')+' — cliquer pour le revoir / réimprimer':'Générer le contrat de travail'}" onclick="contratGen('${id}')">${r.contratGen?'📄✓':'📄'}</button>`;
+    }},
     {k:'idU',l:'ID unique',t:'text'},{k:'nom',l:'Employé',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
     {k:'rib',l:'RIB',t:'text'},{k:'arrivee',l:'Arrivée',t:'date'},
     {k:'discord',l:'Discord',t:'text'},{k:'avert',l:'Avert.',t:'text'},{k:'contrat',l:'Contrat signé',t:'bool'},
@@ -1660,7 +1665,7 @@ const SHEETS_DEF = {
       const col=j<=2?'var(--green)':j<=6?'var(--accent)':'var(--red)';
       return warn+abs+`<span style="color:${col};font-weight:700">${j} j sans service</span>`;
     }}],
-    lite:['idU','nom','grade','tel','rib','discord','recrut','dernierService','_actif'],
+    lite:['_ctr','idU','nom','grade','tel','rib','discord','recrut','dernierService','_actif'],
     tot:[], nouveau:{nom:'',grade:'Intérimaire',tel:'',rib:'',idU:'',arrivee:'',discord:'',avert:'',contrat:false,recrut:'',dernierService:'',flagOut:false}},
   blacklist:{ico:'⛔',label:'Blacklist',cols:[
     {k:'nom',l:'Nom',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
@@ -1827,6 +1832,46 @@ function eligTriGrade(){
   jlog('Feuille Éligibilité triée par grade');
   save(); sbPushNow(); feuilles();
   toast('⇅ Feuille Éligibilité triée par grade (grades complétés au passage)');
+}
+/* ---- contrat de travail : texte écrit par-dessus le template (base 793×1121 = A4 à 96 dpi) ---- */
+function contratGen(idU){
+  if(isMembre()) return toast('👀 Consultation seule pour les membres');
+  const row=S.sheets.rh.find(x=>String(x.idU||'').replace(/\D/g,'')===String(idU)); if(!row) return;
+  const full=String(row.nom||'').trim();
+  const parts=full.split(/\s+/), prenom=parts[0]||'', nomF=parts.slice(1).join(' ')||'';
+  const gr=String(row.grade||'').trim();
+  const poste=/^(stagiaire|int[ée]rimaire|raffineur)/i.test(gr)?'Runner':(gr||'Runner');
+  const d=String(row.arrivee||'').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  const jo=d?d[3]:'', mo=d?d[2]:'', an=d?d[1]:'';
+  // réduction automatique des polices si le texte est long
+  const posteSize=Math.max(8,Math.min(14,Math.floor(77/(Math.max(1,poste.length)*0.62))));
+  const sigSize=Math.max(16,Math.min(40,Math.floor(274/(Math.max(1,full.length)*0.52))));
+  const T=(x,y,txt,size,extra)=>`<span style="position:absolute;left:${x}px;top:${y-2}px;font-size:${size}px;line-height:1;color:#282624;font-family:'EB Garamond',Georgia,serif;white-space:nowrap;${extra||''}">${esc(txt)}</span>`;
+  const C=(x1,x2,y,txt,size)=>`<span style="position:absolute;left:${x1}px;top:${y-2}px;width:${x2-x1}px;text-align:center;font-size:${size}px;line-height:1;font-weight:700;color:#282624;font-family:'EB Garamond',Georgia,serif">${esc(txt)}</span>`;
+  const HTML=`
+  <div style="position:relative;width:793px;height:1121px">
+    <img src="${new URL('assets/contrat-template.png',location.href).href}" style="position:absolute;inset:0;width:793px;height:1121px">
+    ${T(112,402,nomF||prenom,19)}
+    ${T(141,427,prenom,19)}
+    ${T(263,452,String(row.idU||'').trim(),19)}
+    ${T(222,477,row.tel||'',19)}
+    ${C(422,457,597,jo,14)}${C(464,490,597,mo,14)}${C(496,539,597,an,14)}
+    ${T(650,597,poste,posteSize,'font-weight:700')}
+    <span style="position:absolute;left:453px;top:998px;width:274px;height:77px;display:flex;align-items:center;justify-content:center;font-family:'Dancing Script',cursive;font-weight:700;font-size:${sigSize}px;color:#141E46">${esc(full)}</span>
+  </div>`;
+  const w=window.open('','_blank','width=840,height=1080');
+  if(!w) return alert('Autorise les pop-ups pour générer le contrat.');
+  w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Contrat de travail — ${esc(full)}</title>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <style>@page{size:A4;margin:0}body{margin:0}</style></head>
+  <body>${HTML}<script>window.onload=()=>setTimeout(()=>window.print(),700);<\/script></body></html>`);
+  w.document.close();
+  if(!row.contratGen){
+    row.contratGen={t:nowSrv(),par:(currentUser()||{}).user||'?'};
+    jlog(`Contrat de travail généré : ${full} (${poste})`);
+    save(); sbPushNow(); if(VIEW==='feuilles') feuilles();
+    sendLog('📄 Contrat généré',`Le contrat de travail de **${full}** (${poste}) a été généré par **${row.contratGen.par}**.`,0x5aa0ff);
+  }
 }
 function rhTriGrade(){
   if(!S.sheets||!S.sheets.rh||!S.sheets.rh.length) return toast('Feuille RH vide');
@@ -2442,7 +2487,7 @@ async function relances(){
     <h3 style="padding:12px 0 4px">💰 Clients à relancer (déjà commandé)</h3>
     ${rows.length?`<table><thead><tr><th>Client</th><th>Dernière commande</th><th>Inactif</th><th>Contact</th><th>Statut</th><th style="text-align:right"></th></tr></thead><tbody>
     ${rows.map(x=>`<tr>
-      <td>${dot(x)} <b>${esc(x.c.nom)}</b>${(x.c.notes||[]).length?`<div style="color:var(--muted);font-size:.74rem;margin-top:2px">📝 ${esc(x.c.notes[x.c.notes.length-1].txt.slice(0,70))}${x.c.notes[x.c.notes.length-1].txt.length>70?'…':''}</div>`:''}</td>
+      <td>${dot(x)} <b style="cursor:pointer" title="Ouvrir la fiche client" onclick="ficheClient(${x.i})">${esc(x.c.nom)}</b>${(x.c.notes||[]).length?`<div style="color:var(--muted);font-size:.74rem;margin-top:2px">📝 ${esc(x.c.notes[x.c.notes.length-1].txt.slice(0,70))}${x.c.notes[x.c.notes.length-1].txt.length>70?'…':''}</div>`:''}</td>
       <td>${frDate(x.c.lastCmd)}</td>
       <td><b class="${x.a>=90?'down':'gold'}">${x.a} j</b></td>
       <td style="color:var(--muted);font-size:.8rem">${x.c.tel?'📞 '+esc(x.c.tel):'—'}</td>
@@ -2461,7 +2506,7 @@ async function relances(){
     <h3 style="padding:12px 0 4px">🌱 Prospects — jamais commandé (${jamais.length})</h3>
     ${jamais.length?`<table><thead><tr><th>Client</th><th>Contact</th><th>Statut</th><th style="text-align:right"></th></tr></thead><tbody>
     ${jamais.map(x=>`<tr>
-      <td>${x.c.relance?'🟢':'🟠'} <b>${esc(x.c.nom)}</b>${(x.c.notes||[]).length?`<div style="color:var(--muted);font-size:.74rem;margin-top:2px">📝 ${esc(x.c.notes[x.c.notes.length-1].txt.slice(0,70))}${x.c.notes[x.c.notes.length-1].txt.length>70?'…':''}</div>`:''}</td>
+      <td>${x.c.relance?'🟢':'🟠'} <b style="cursor:pointer" title="Ouvrir la fiche client" onclick="ficheClient(${x.i})">${esc(x.c.nom)}</b>${(x.c.notes||[]).length?`<div style="color:var(--muted);font-size:.74rem;margin-top:2px">📝 ${esc(x.c.notes[x.c.notes.length-1].txt.slice(0,70))}${x.c.notes[x.c.notes.length-1].txt.length>70?'…':''}</div>`:''}</td>
       <td style="color:var(--muted);font-size:.8rem">${x.c.tel?'📞 '+esc(x.c.tel):'—'}</td>
       <td>${x.c.relance
         ?`<span class="badge" style="background:rgba(74,157,111,.14);color:var(--green)">démarchage en cours · ${esc(x.c.relance.par)} · ${frDate(x.c.relance.date)}</span>`
@@ -2477,33 +2522,144 @@ async function relances(){
   // frappe fluide : le curseur revient dans la recherche après chaque caractère
   if(REL_SEARCH){ const el=document.getElementById('relSearchInput'); if(el){ el.focus(); el.setSelectionRange(el.value.length,el.value.length); } }
 }
-/* ---- notes de suivi du démarchage ---- */
-function relNotes(i){
+/* ---- médias clients (lieu de livraison + captures des notes) ---- */
+let CM_CACHE={}, RN_IMGS=[], RN_CTX=null;
+async function cmLoad(client){
+  if(!SYNC.cli){ CM_CACHE[client]=[]; return []; }
+  try{
+    const {data,error}=await SYNC.cli.from('oilroxwood_media').select('*').eq('client',client).order('id',{ascending:false});
+    if(error) throw error;
+    CM_CACHE[client]=data||[];
+  }catch(e){ CM_CACHE[client]=[]; CM_CACHE[client]._err=true; }
+  return CM_CACHE[client];
+}
+document.addEventListener('paste',e=>{
+  if(!RN_CTX) return;
+  const it=[...(e.clipboardData?.items||[])].find(x=>x.type.startsWith('image/'));
+  if(!it) return;
+  e.preventDefault();
+  frResize(it.getAsFile(),d=>{ RN_IMGS.push(d); relNotes(RN_CTX.i); toast('🖼️ Capture ajoutée à la note'); });
+});
+function rnDrop(e){
+  e.preventDefault();
+  [...(e.dataTransfer?.files||[])].filter(f=>f.type.startsWith('image/'))
+    .forEach(f=>frResize(f,d=>{ RN_IMGS.push(d); relNotes(RN_CTX?RN_CTX.i:0); }));
+}
+function cmZoom(id){
+  const all=Object.values(CM_CACHE).flat(), m=all.find(x=>x.id===id);
+  if(m&&m.img) openModal(`<img src="${m.img}" style="width:100%;border-radius:10px">`);
+}
+
+/* ---- notes de suivi du démarchage (texte + captures) ---- */
+async function relNotes(i){
   const c=S.fact.clients[i]; if(!c) return;
+  if(!RN_CTX||RN_CTX.i!==i){ RN_IMGS=[]; RN_CTX={i,client:c.nom}; await cmLoad(c.nom); }
   const N=c.notes||[];
+  const M=CM_CACHE[c.nom]||[];
   openModal(`<h3>📝 Suivi du démarchage — ${esc(c.nom)}</h3>
   <textarea class="field" id="rnTxt" style="min-height:70px" placeholder="Ex. : appelé le 13/07, intéressé par 200 bidons, rappeler jeudi…"></textarea>
-  <button class="btn btn-gold" style="width:100%;margin:10px 0 16px" onclick="relNoteAdd(${i})">Ajouter la note</button>
-  ${N.length?[...N].reverse().map(n=>`<div style="padding:9px 0;border-bottom:1px solid var(--line);font-size:.86rem">
+  <div ondragover="event.preventDefault()" ondrop="rnDrop(event)" style="border:2px dashed var(--line);border-radius:10px;padding:${RN_IMGS.length?'8px':'14px'};margin-top:10px;text-align:center;color:var(--muted);font-size:.78rem">
+    ${RN_IMGS.length?RN_IMGS.map((d,k)=>`<span style="position:relative;display:inline-block;margin:3px"><img src="${d}" style="height:56px;border-radius:6px">
+      <button onclick="RN_IMGS.splice(${k},1);relNotes(${i})" style="position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:.6rem;cursor:pointer">✕</button></span>`).join('')
+    :'🖼️ Colle une capture (Ctrl+V), glisse-la ici, ou '}
+    <label style="color:var(--accent);cursor:pointer;text-decoration:underline">choisis un fichier<input type="file" accept="image/*" multiple style="display:none" onchange="[...this.files].forEach(f=>frResize(f,d=>{RN_IMGS.push(d);relNotes(${i});}));this.value=''"></label>
+  </div>
+  <button class="btn btn-gold" style="width:100%;margin:12px 0 16px" onclick="relNoteAdd(${i})">Enregistrer la note${RN_IMGS.length?` (+ ${RN_IMGS.length} capture(s))`:''}</button>
+  ${N.length?[...N].reverse().map(n=>{
+    const imgs=M.filter(m=>m.type==='note'&&String(m.note_t)===String(n.t));
+    return `<div style="padding:9px 0;border-bottom:1px solid var(--line);font-size:.86rem">
     <div style="display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.75rem">
       <span><b style="color:var(--ink)">${esc(n.par)}</b> · ${new Date(n.t).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
       <button class="btn btn-sm btn-ghost" style="color:#f87171" onclick="relNoteDel(${i},${n.t})">✕</button>
     </div>
     <div style="margin-top:4px;line-height:1.5">${esc(n.txt)}</div>
-  </div>`).join(''):'<div class="empty" style="padding:10px">Aucune note pour ce client — sois le premier à documenter le contact 📞</div>'}`);
+    ${imgs.length?`<div style="margin-top:6px">${imgs.map(m=>`<img src="${m.img}" style="height:64px;border-radius:6px;margin-right:6px;cursor:zoom-in" onclick="cmZoom(${m.id})">`).join('')}</div>`:''}
+  </div>`;}).join(''):'<div class="empty" style="padding:10px">Aucune note pour ce client — sois le premier à documenter le contact 📞</div>'}`);
 }
-function relNoteAdd(i){
+async function relNoteAdd(i){
   const c=S.fact.clients[i], txt=$('#rnTxt').value.trim();
-  if(!txt) return toast('⚠️ Écris d\'abord ta note');
-  (c.notes=c.notes||[]).push({t:Date.now(),par:(currentUser()||{}).user||'?',txt});
-  save(); sbPushNow(); relNotes(i); relances();
+  if(!txt&&!RN_IMGS.length) return toast('⚠️ Écris une note ou joins une capture');
+  const t=nowSrv();
+  (c.notes=c.notes||[]).push({t,par:(currentUser()||{}).user||'?',txt,imgs:RN_IMGS.length});
+  if(RN_IMGS.length&&SYNC.cli){
+    try{ await SYNC.cli.from('oilroxwood_media').insert(RN_IMGS.map(d=>({client:c.nom,type:'note',note_t:t,img:d}))); }
+    catch(e){ toast('⚠️ Note enregistrée mais images non stockées (table oilroxwood_media manquante ?)'); }
+  }
+  RN_IMGS=[];
+  save(); sbPushNow(); await cmLoad(c.nom); relNotes(i); relances();
   toast('📝 Note ajoutée — visible par toute l\'équipe');
 }
-function relNoteDel(i,t){
+async function relNoteDel(i,t){
   const c=S.fact.clients[i]; if(!c) return;
-  if(!confirm('Supprimer cette note ?')) return;
+  if(!confirm('Supprimer cette note (et ses captures) ?')) return;
   c.notes=(c.notes||[]).filter(n=>n.t!==t);
-  save(); sbPushNow(); relNotes(i); relances();
+  try{ await SYNC.cli.from('oilroxwood_media').delete().eq('client',c.nom).eq('note_t',t); }catch(e){}
+  save(); sbPushNow(); await cmLoad(c.nom); relNotes(i); relances();
+}
+/* ---- fiche client unifiée (panneau au clic sur un client) ---- */
+async function ficheClient(i){
+  const c=S.fact.clients[i]; if(!c) return;
+  openModal('<div class="empty">Chargement de la fiche client…</div>');
+  const M=await cmLoad(c.nom);
+  const lieu=M.find(m=>m.type==='lieu');
+  const low=c.nom.toLowerCase().trim();
+  const F=((S.fact&&S.fact.factures)||[]).filter(f=>String(f.client||'').toLowerCase().trim()===low).sort((a,b)=>b.num-a.num);
+  const ca=F.reduce((a,f)=>a+nn(f.ttc),0);
+  const aI=c.lastCmd?Math.floor((nowSrv()-Date.parse(c.lastCmd))/86400000):null;
+  const first=F.map(f=>f.date).filter(Boolean).sort()[0];
+  const anc=first?Math.floor((nowSrv()-Date.parse(first))/86400000):null;
+  const statut=c.relance?['relance en cours · '+esc(c.relance.par),'var(--green)']
+    :(aI!==null&&aI>=30?['à relancer','var(--accent)']:(F.length?['client actif','var(--green)']:['jamais commandé','var(--muted)']));
+  openModal(`
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+    <span class="avat" style="width:46px;height:46px;font-size:1rem;background:linear-gradient(135deg,#3d5a80,#5aa0ff)">${esc(c.nom.trim().split(/\s+/).map(w=>w[0]||'').slice(0,2).join('').toUpperCase())}</span>
+    <div style="min-width:0"><h3 style="margin:0">${esc(c.nom)}</h3>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px;font-size:.75rem">
+        <span style="color:${statut[1]};font-weight:700">● ${statut[0]}</span>
+        ${anc!==null?`<span style="color:var(--muted)">client depuis ${anc} j</span>`:''}
+      </div></div>
+  </div>
+  <div class="grid g2" style="gap:10px;margin-bottom:14px">
+    <div class="panel kpi" style="padding:12px 14px"><div class="lbl">Total commandes</div><div class="val gold" style="font-size:1.25rem">${money(ca)}</div><div class="delta">${F.length} facture(s)</div></div>
+    <div class="panel kpi" style="padding:12px 14px"><div class="lbl">Dernière commande</div><div class="val" style="font-size:1.25rem">${aI!==null?aI+' j':'—'}</div><div class="delta">${c.lastCmd?frDate(c.lastCmd):'aucune'}</div></div>
+  </div>
+  <div style="font-size:.85rem;line-height:2;border-top:1px solid var(--line);padding-top:10px;margin-bottom:12px">
+    📞 ${esc(c.tel||'—')} · 🏦 RIB ${esc(c.rib||'—')}${c.adresse?`<br>📍 ${esc(c.adresse)}`:''}
+  </div>
+  <div style="margin-bottom:14px"><label class="f-lbl">Lieu de livraison</label>
+    ${lieu?`<img src="${lieu.img}" style="width:100%;max-height:190px;object-fit:cover;border-radius:10px;cursor:zoom-in" onclick="cmZoom(${lieu.id})" title="Agrandir">`
+    :'<div class="empty" style="padding:10px">Aucune capture du lieu de livraison</div>'}
+    <label class="btn btn-ghost btn-sm" style="margin-top:8px;display:inline-block;cursor:pointer">🖼️ ${lieu?'Remplacer':'Ajouter'} la capture
+      <input type="file" accept="image/*" style="display:none" onchange="fcLieu(${i},this)"></label>
+  </div>
+  ${F.length?`<div style="margin-bottom:14px"><label class="f-lbl">Historique des factures</label>
+    ${F.slice(0,5).map(f=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:.83rem">
+      <span><b>n°${f.num}</b> · ${frDate(f.date)}</span>
+      <span>${money(f.ttc)} <b style="color:${f.statut==='payee'?'var(--green)':'var(--accent)'}">${f.statut==='payee'?'✔ payée':'⏳ attente'}</b>
+      <button class="btn btn-sm btn-ghost" style="padding:1px 7px" onclick="printFact(S.fact.factures.find(x=>x.num===${f.num}))" title="Imprimer / PDF">🖨</button></span>
+    </div>`).join('')}
+    ${F.length>5?`<button class="btn btn-sm btn-ghost" style="margin-top:6px" onclick="closeModal();factTab='hist';show('factures')">Voir les ${F.length} factures →</button>`:''}
+  </div>`:''}
+  ${(c.notes||[]).length?`<div style="margin-bottom:14px;color:var(--muted);font-size:.78rem">📝 ${c.notes.length} note(s) de suivi — dernière : « ${esc(c.notes[c.notes.length-1].txt.slice(0,60))}${c.notes[c.notes.length-1].txt.length>60?'…':''} »</div>`:''}
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn btn-gold" style="flex:1" onclick="closeModal();newDraft();FD.client=decodeURIComponent('${encodeURIComponent(c.nom)}');factTab='new';show('factures')">🧾 Créer une facture</button>
+    <button class="btn btn-ghost" onclick="relNotes(${i})">📝 Notes</button>
+    ${c.relance?`<button class="btn btn-ghost" onclick="closeModal();annuleRelance(${i})">↩ Annuler la relance</button>`
+    :`<button class="btn btn-ghost" onclick="closeModal();marqueRelance(${i})">📞 Relancer</button>`}
+  </div>`);
+}
+function fcLieu(i,inp){
+  const c=S.fact.clients[i], f=inp.files[0]; if(!c||!f) return;
+  frResize(f,async d=>{
+    try{
+      await SYNC.cli.from('oilroxwood_media').delete().eq('client',c.nom).eq('type','lieu');
+      const {error}=await SYNC.cli.from('oilroxwood_media').insert({client:c.nom,type:'lieu',img:d});
+      if(error) throw error;
+      jlog(`Lieu de livraison ajouté : ${c.nom}`);
+      await cmLoad(c.nom); ficheClient(i); toast('🖼️ Lieu de livraison enregistré');
+    }catch(e){ toast('❌ Image non stockée — table oilroxwood_media manquante ?'); }
+  });
+  inp.value='';
 }
 function marqueRelance(i){
   const c=S.fact.clients[i]; if(!c) return;
@@ -2934,6 +3090,11 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-30',d:'29/07/2026',t:'Fiche client & contrats de travail',items:[
+   ['🏢','Fiche client','Clique sur un client dans les Relances : statut, ancienneté, total commandes, contact avec RIB, lieu de livraison en capture (zoomable), historique des factures avec impression, dernière note — et bouton « Créer une facture » pré-rempli.'],
+   ['🖼️','Notes avec captures','Colle (Ctrl+V), glisse ou choisis des images dans tes notes de démarchage — galerie de vignettes, zoom, suppression.'],
+   ['📄','Contrat de travail automatique','Bouton 📄 en tête de chaque ligne RH : le contrat Bullhead se remplit tout seul (nom, prénom, ID en n° de sécu, téléphone, date d\'arrivée, poste calculé Runner/direction) avec signature manuscrite générée — impression/PDF en un clic, regénérable à volonté (📄✓).'],
+   ['🧑‍💼','Vendeur sur les produits dérivés','Colonne Vendeur pré-remplie avec auto-complétion.']]},
  {v:'C-29',d:'22/07/2026',t:'Produits dérivés & retouches',items:[
    ['🗡️','Produits dérivés','Nouvelle page Commerce : tableau à colonnes flexibles — ajoute un produit (＋ Colonne, en bleu) ou une vente (＋ Ligne), prix unitaire sous chaque produit, Prix HT calculé par ligne, totaux par colonne, ✕ partout.'],
    ['✎','Factures reçues modifiables','Entreprise, date, montant, lien et note s\'éditent après coup (l\'image jointe est conservée).'],

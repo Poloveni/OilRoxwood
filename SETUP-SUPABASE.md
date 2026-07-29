@@ -110,6 +110,26 @@ create policy "todo_auth" on oilroxwood_todo
   for all to authenticated using (true) with check (true);
 ```
 
+## Étape 2 sexies — Table des médias clients (lieu de livraison, captures des notes)
+
+```sql
+create table if not exists oilroxwood_media (
+  id bigint generated always as identity primary key,
+  client text not null,
+  type text default 'note',   -- 'lieu' ou 'note'
+  note_t bigint,              -- horodatage de la note liée (pour type='note')
+  img text,                   -- image compressée (JPEG base64)
+  date timestamptz default now()
+);
+
+create index if not exists oilroxwood_media_cli on oilroxwood_media(client);
+
+alter table oilroxwood_media enable row level security;
+
+create policy "media_auth" on oilroxwood_media
+  for all to authenticated using (true) with check (true);
+```
+
 ## Étape 3 — Récupérer les clés
 
 Menu **Settings → API** (ou Project Settings → Data API) :
