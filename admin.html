@@ -932,6 +932,27 @@ const DIR_GRADE={nom:'Direction',quota:0,mult:2.5,montee:null,cls:'bg3'}; // pos
 const WM_GRADE={nom:'Web Master',quota:0,mult:2,montee:null,cls:'bgrole'};   // sous-direction : quota 0, ×2 + prime fixe
 const STG_GRADE={nom:'Stagiaire',quota:3000,mult:1,montee:null,cls:'bgstg'}; // période d'essai : règles d'Intérimaire, titularisation manuelle
 function rhRowOf(nom){ const l=String(nom||'').toLowerCase().trim(); return ((S.sheets&&S.sheets.rh)||[]).find(x=>String(x.nom||'').toLowerCase().trim()===l)||null; }
+/* vivier des « membres à poste » pour les menus déroulants (émetteurs, recruteur, vendeurs…) :
+   effectif tablette ∪ fiche RH (grade de poste) ∪ comptes d'accès direction/RH/commercial/comptable */
+function nomsPostes(){
+  const m=new Map(); const add=n=>{ n=String(n||'').trim(); if(n&&!m.has(n.toLowerCase())) m.set(n.toLowerCase(),n); };
+  S.runners.filter(r=>r.poste).forEach(r=>add(r.nom));
+  ((S.sheets&&S.sheets.rh)||[]).forEach(x=>{
+    const g=String(x.grade||'').trim();
+    if(g&&g!=='-'&&!/raffineur|int[ée]rimaire|stagiaire/i.test(g)) add(x.nom);
+  });
+  (S.users||[]).filter(u=>u.role&&u.role!=='membre').forEach(u=>add(u.user));
+  return [...m.values()].sort((a,b)=>a.localeCompare(b));
+}
+function posteDe(n){
+  const l=String(n||'').toLowerCase().trim();
+  const r=S.runners.find(x=>String(x.nom||'').toLowerCase().trim()===l&&x.poste); if(r) return r.poste;
+  const row=rhRowOf(n);
+  if(row&&row.grade&&row.grade!=='-'&&!/raffineur|int[ée]rimaire|stagiaire/i.test(row.grade)) return row.grade;
+  const u=(S.users||[]).find(x=>String(x.user||'').toLowerCase().trim()===l);
+  if(u&&u.role!=='membre') return (typeof ROLES!=='undefined'&&ROLES[u.role])||u.role;
+  return '';
+}
 function estStagiaire(r){ if(!r||r.poste) return false; if(r.stagiaire) return true; const row=rhRowOf(r.nom); return !!(row&&/stagiaire/i.test(String(row.grade||''))); }
 function estWebmaster(r){ return !!(r.poste&&/web\s*master/i.test(r.poste)); }
 function grade(r){ return estWebmaster(r)?WM_GRADE:estStagiaire(r)?STG_GRADE:(r.poste?DIR_GRADE:GRADES[r.grade]); }
@@ -1650,7 +1671,7 @@ const SHEETS_DEF = {
     {k:'idU',l:'ID unique',t:'text'},{k:'nom',l:'Employé',t:'text'},{k:'grade',l:'Grade',t:'text'},{k:'tel',l:'Téléphone',t:'text'},
     {k:'rib',l:'RIB',t:'text'},{k:'arrivee',l:'Arrivée',t:'date'},
     {k:'discord',l:'Discord',t:'text'},{k:'avert',l:'Avert.',t:'text'},{k:'contrat',l:'Contrat signé',t:'bool'},
-    {k:'recrut',l:'Recruteur',t:'choice',opts:()=>['',...[...new Set(S.runners.filter(r=>r.poste).map(r=>r.nom))].sort()]},{k:'dernierService',l:'Dernière prise de service',t:'date'},
+    {k:'recrut',l:'Recruteur',t:'choice',opts:()=>['',...nomsPostes()]},{k:'dernierService',l:'Dernière prise de service',t:'date'},
     {k:'_actif',l:'Actif',t:'html',f:r=>{
       // alerte si l'ID unique figure aussi dans la feuille Blacklist
       const idu=String(r.idU||'').trim();
@@ -2129,10 +2150,11 @@ function fNew(){
         <div class="combo">
           <button type="button" id="emBtn" class="field" style="text-align:left;cursor:pointer;display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:44px" onclick="document.getElementById('emList').classList.toggle('open')">${emBtnHtml()}</button>
           <div class="combo-list" id="emList">
-            ${S.runners.filter(r=>r.poste).sort((a,b)=>a.nom.localeCompare(b.nom)).map(p=>{
+            ${nomsPostes().map(n=>{
               const sel=(FD.emetteur||'').split(',').map(s=>s.trim());
-              return `<label class="combo-item" style="cursor:pointer"><span>${esc(p.nom)} <small style="color:var(--muted)">· ${esc(p.poste)}</small></span><input type="checkbox" style="accent-color:var(--accent)" ${sel.includes(p.nom)?'checked':''} onchange="emPick('${esc(p.nom)}',this.checked)"></label>`;
-            }).join('')||'<div class="combo-item"><small>Aucun poste de direction dans l\'effectif</small></div>'}
+              const info=posteDe(n);
+              return `<label class="combo-item" style="cursor:pointer"><span>${esc(n)}${info?` <small style="color:var(--muted)">· ${esc(info)}</small>`:''}</span><input type="checkbox" style="accent-color:var(--accent)" ${sel.includes(n)?'checked':''} onchange="emPick('${esc(n)}',this.checked)"></label>`;
+            }).join('')||'<div class="combo-item"><small>Aucun membre à poste (effectif, RH ou comptes)</small></div>'}
           </div>
         </div>
       </div>
@@ -3562,7 +3584,7 @@ function prodder(){
     </tr></tfoot>`:''}</table>
     <p style="color:var(--muted);font-size:.75rem;margin-top:10px">Renseigne le prix unitaire HT sous chaque produit : le Prix HT de chaque ligne se calcule tout seul (quantités × prix).</p>
   </div>
-  <datalist id="pdVendeurs">${[...new Set(S.runners.filter(r=>r.poste).map(r=>r.nom))].sort().map(n=>`<option value="${esc(n)}">`).join('')}</datalist>`;
+  <datalist id="pdVendeurs">${nomsPostes().map(n=>`<option value="${esc(n)}">`).join('')}</datalist>`;
 }
 function pdColAdd(){
   const n=prompt('Nom du nouveau produit (ex. Couteau, Katana, Bagues…)');
