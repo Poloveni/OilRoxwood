@@ -3974,7 +3974,7 @@ function gkSources(){
     [...noms].forEach(n=>out.push({t:n,d:'employé',ico:'👤',act:`ficheEmp(decodeURIComponent('${encodeURIComponent(n)}'))`}));
   }
   if(al.includes('relances')&&S.fact)
-    S.fact.clients.forEach(c=>out.push({t:c.nom,d:'client'+(c.tel?' · '+c.tel:''),ico:'🏢',act:`REL_SEARCH=decodeURIComponent('${encodeURIComponent(c.nom)}');show('relances')`}));
+    S.fact.clients.forEach((c,ci)=>out.push({t:c.nom,d:'client'+(c.tel?' · '+c.tel:''),ico:'🏢',act:`ficheClient(${ci})`}));
   if(al.includes('factures')&&S.fact)
     S.fact.factures.slice(0,300).forEach(f=>out.push({t:`Facture n°${f.num} — ${f.client}`,d:`${money(f.ttc)} · ${f.statut==='payee'?'payée':'en attente'}`,ico:'🧾',act:`factTab='hist';show('factures')`}));
   return out;
