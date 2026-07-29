@@ -1,14 +1,14 @@
 {
- "ca": 273500,
- "maj": "2026-07-28T23:26:04.285Z",
+ "ca": 301350,
+ "maj": "2026-07-29T02:45:54.947Z",
  "top3": [
+  {
+   "nom": "Thomas Boyer",
+   "barils": 7368
+  },
   {
    "nom": "Laurent Roquel",
    "barils": 6810
-  },
-  {
-   "nom": "Thomas Boyer",
-   "barils": 6616
   },
   {
    "nom": "Lukas Myngard",
@@ -31,8 +31,8 @@
    "poste": "RH",
    "prime": 10000,
    "quota": 0,
-   "total": 6616,
-   "barils": 6616
+   "total": 7368,
+   "barils": 7368
   },
   {
    "nom": "Juan Sanchez",
@@ -85,8 +85,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 0,
-   "barils": 482
+   "total": 488,
+   "barils": 970
   },
   {
    "nom": "Araceli Vega",
@@ -112,8 +112,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 610,
-   "barils": 610
+   "total": 920,
+   "barils": 920
   },
   {
    "nom": "Stella Collins",
@@ -164,10 +164,10 @@
    "nom": "Amia Collins",
    "grade": 1,
    "poste": null,
-   "prime": 0,
+   "prime": 5233.5,
    "quota": 3000,
-   "total": 2868,
-   "barils": 2868
+   "total": 3489,
+   "barils": 3489
   },
   {
    "nom": "Julian Poleina",
@@ -193,8 +193,8 @@
    "poste": null,
    "prime": 0,
    "quota": 5000,
-   "total": 633,
-   "barils": 633
+   "total": 2846,
+   "barils": 2846
   },
   {
    "nom": "Tisso Gone",
@@ -346,13 +346,22 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
+   "total": 1186,
+   "barils": 1186
+  },
+  {
+   "nom": "Youccef Ibra",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
    "total": 0,
    "barils": 0
   }
  ],
  "semaine": 31,
- "effectif": 37,
+ "effectif": 38,
  "objectif": 200000,
- "totalBarils": 54700,
+ "totalBarils": 60270,
  "clientsServis": 21
 }
