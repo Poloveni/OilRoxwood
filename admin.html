@@ -392,7 +392,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-30</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-31</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -617,7 +617,7 @@ function initSync(){
       }
       localStorage.setItem(LS_KEY,JSON.stringify(S));
       if(sessionStorage.getItem('orx_auth')==='1'){
-        applyPerms(); rerender();
+        applyPerms(); softRerender();
         const cu=currentUser(), wu=document.getElementById('whoami'); // le rôle affiché suit un éventuel changement
         if(wu) wu.innerHTML=cu?`<span class="avat">${esc((cu.user||'?').trim().split(/\s+/).map(w=>w[0]||'').slice(0,2).join('').toUpperCase())}</span><span style="min-width:0"><b style="color:var(--ink);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(cu.user)}</b><small>${ROLES[cu.role]||cu.role}</small></span>`:'';
         toast('☁️ Mise à jour reçue d\'un autre admin');
@@ -625,6 +625,19 @@ function initSync(){
       else checkDiscordAuth(); // en attente de validation : entre automatiquement dès que la direction valide
     })
     .subscribe(st=>{ if(st==='SUBSCRIBED') syncDot(true,'Temps réel actif'); });
+  // présence : « untel est en train de modifier » (éphémère, jamais stocké)
+  SYNC.pres=SYNC.cli.channel('presence-edit');
+  SYNC.pres.on('broadcast',{event:'edit'},p=>{
+    const d=p.payload||{};
+    if(d.u&&d.u!==((currentUser()||{}).user)) presBadge(d.u,d.v);
+  }).subscribe();
+  let presLast=0;
+  document.addEventListener('focusin',e=>{
+    if(!e.target.closest||!e.target.closest('#main')) return;
+    if(!/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    const now=Date.now(); if(now-presLast<5000) return; presLast=now;
+    try{ SYNC.pres.send({type:'broadcast',event:'edit',payload:{u:(currentUser()||{}).user||'?',v:VIEW}}); }catch(err){}
+  });
   // notification en direct des demandes d'accès (table dédiée)
   SYNC.cli.channel('demandes-sync')
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'oilroxwood_demandes'},p=>{
@@ -799,7 +812,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-30';
+const APP_VERSION='C-31';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -897,6 +910,16 @@ const frDate = d => { const m=String(d||'').match(/^(\d{4})-(\d{2})-(\d{2})/); r
 const money = n => fmt(Math.round(n)) + ' $';
 const esc = t => String(t??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2600); }
+function presBadge(u,v){
+  let b=document.getElementById('presBadge');
+  if(!b){ b=document.createElement('div'); b.id='presBadge';
+    b.style.cssText='position:fixed;bottom:24px;right:24px;background:var(--panel-2);border:1px solid var(--line);border-left:3px solid #F2B705;border-radius:10px;padding:10px 16px;font-size:.82rem;z-index:400;box-shadow:0 10px 30px rgba(0,0,0,.4);transition:opacity .3s';
+    document.body.appendChild(b); }
+  const lbl=document.querySelector(`.nav-item[data-view="${v}"] .txt`);
+  b.innerHTML=`✏️ <b>${esc(u)}</b> est en train de modifier <b>${esc(lbl?lbl.textContent:v||'')}</b>`;
+  b.style.opacity='1'; b.style.display='block';
+  clearTimeout(b._h); b._h=setTimeout(()=>{ b.style.opacity='0'; setTimeout(()=>b.style.display='none',350); },5000);
+}
 /* ---- Logs Discord (webhook compte entreprise) ---- */
 function sendLog(title, desc, color, mention){
   const url=(S.settings.webhook||'').trim();
@@ -1086,6 +1109,22 @@ function show(v){
   try{ nfRefresh(); applyRO(); }catch(e){}
 }
 function rerender(){ show(VIEW); }
+/* ---- rafraîchissement « poli » : jamais pendant une saisie ou un modal ouvert ---- */
+let RERENDER_WAIT=false;
+function editionEnCours(){
+  const a=document.activeElement;
+  const modal=document.getElementById('modalBg');
+  return (modal&&modal.classList.contains('open'))||
+    (a&&a.closest&&a.closest('#main')&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
+}
+function softRerender(){
+  if(editionEnCours()){
+    if(!RERENDER_WAIT){ RERENDER_WAIT=true; toast('☁️ Mise à jour reçue — elle s\'affichera dès la fin de ta saisie'); }
+    return;
+  }
+  RERENDER_WAIT=false; rerender();
+}
+document.addEventListener('focusout',()=>{ setTimeout(()=>{ if(RERENDER_WAIT&&!editionEnCours()){ RERENDER_WAIT=false; rerender(); } },300); });
 
 /* ================== VUE D'ENSEMBLE ================== */
 function overview(){
@@ -3112,6 +3151,12 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-31',d:'30/07/2026',t:'Agenda partagé & synchro apaisée',items:[
+   ['📢','Agenda : partage avec la direction','Chaque événement de ton agenda a une case « Partager avec la direction » : il devient visible (fond doré rayé, nom du propriétaire) dans l\'agenda des rôles de gestion via le bouton « 👁 Équipe ». Non coché = strictement privé, comme avant.'],
+   ['✍️','Fini les saisies écrasées','Une mise à jour reçue pendant que tu tapes ne recharge plus la page : elle attend la fin de ta saisie (ou la fermeture du modal) pour s\'afficher.'],
+   ['✏️','« Untel est en train de modifier »','Un badge discret t\'avertit quand un collègue édite une page en même temps que toi — pour éviter de travailler sur la même chose.'],
+   ['📇','Ctrl+K → fiche client','Sélectionner un client ouvre directement sa fiche.'],
+   ['👥','Menus déroulants complets','Les comptes direction/RH/commercial/comptable apparaissent dans les listes d\'émetteurs, recruteurs et vendeurs, même sans pointage tablette.']]},
  {v:'C-30',d:'29/07/2026',t:'Fiche client & contrats de travail',items:[
    ['🏢','Fiche client','Clique sur un client dans les Relances : statut, ancienneté, total commandes, contact avec RIB, lieu de livraison en capture (zoomable), historique des factures avec impression, dernière note — et bouton « Créer une facture » pré-rempli.'],
    ['🖼️','Notes avec captures','Colle (Ctrl+V), glisse ou choisis des images dans tes notes de démarchage — galerie de vignettes, zoom, suppression.'],
@@ -4083,7 +4128,10 @@ async function navBadges(){
 }
 
 /* ================== AGENDA PERSONNEL ================== */
-let AG_OFF=0, AG_EVS=null, AG_ERR=false; // décalage de semaine · cache événements · table manquante ?
+let AG_OFF=0, AG_EVS=null, AG_ERR=false, AG_SHARED=[]; // décalage de semaine · cache événements · table manquante ? · partagés par l'équipe
+let AG_TEAM=localStorage.getItem('orx_agteam')!=='0'; // afficher les événements partagés (rôles gestion)
+function agPeutVoirPartages(){ const cu=currentUser(); return sessionStorage.getItem('orx_user')==='SECOURS'||(cu&&cu.role!=='membre'); }
+function agProprio(uid){ const u=(S.users||[]).find(x=>String(x.did||'')===String(uid)); return u?u.user:'?'; }
 const AG_TYPES={rdv:{lbl:'RDV',c:'#B8431E'},commande:{lbl:'Commande',c:'#E8622C'},entretien:{lbl:'Entretien',c:'#22c55e'},autre:{lbl:'Autre',c:'#38bdf8'}};
 function agKey(){ const cu=currentUser(); return cu?String(cu.did||cu.user):String(sessionStorage.getItem('orx_user')||'anonyme'); }
 function agMonday(off){ const n=new Date(), d=(n.getDay()+6)%7; return new Date(n.getFullYear(),n.getMonth(),n.getDate()-d+off*7); }
@@ -4091,12 +4139,16 @@ function agISO(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(
 function agMin(h){ const m=String(h||'').match(/^(\d{1,2}):(\d{2})/); return m?(+m[1]*60+ +m[2]):0; }
 function agHM(mn){ mn=((mn%1440)+1440)%1440; return `${String(Math.floor(mn/60)).padStart(2,'0')}:${String(mn%60).padStart(2,'0')}`; }
 async function agLoad(){
-  AG_ERR=false;
+  AG_ERR=false; AG_SHARED=[];
   if(!SYNC.cli){ AG_EVS=[]; return; }
   try{
     const {data,error}=await SYNC.cli.from('oilroxwood_agenda').select('*').eq('uid',agKey()).order('date');
     if(error) throw error;
     AG_EVS=data||[];
+    if(agPeutVoirPartages()){
+      const r2=await SYNC.cli.from('oilroxwood_agenda').select('*').eq('partage',true).neq('uid',agKey()).order('date');
+      if(!r2.error) AG_SHARED=r2.data||[]; // colonne « partage » absente → simplement ignoré
+    }
   }catch(e){ AG_EVS=[]; AG_ERR=true; }
 }
 async function agenda(){
@@ -4114,6 +4166,7 @@ async function agenda(){
       <button class="btn btn-ghost" onclick="agNav(-1)">‹</button>
       <button class="btn btn-ghost" onclick="agNav(0)">Aujourd'hui</button>
       <button class="btn btn-ghost" onclick="agNav(1)">›</button>
+      ${agPeutVoirPartages()?`<button class="btn btn-ghost" onclick="AG_TEAM=!AG_TEAM;localStorage.setItem('orx_agteam',AG_TEAM?'1':'0');agenda()" title="Afficher/masquer les événements partagés par l'équipe">${AG_TEAM?'👁':'🚫'} Équipe${AG_SHARED.length?` (${AG_SHARED.length})`:''}</button>`:''}
       <button class="btn btn-gold" onclick="agEdit()">＋ Événement</button>
     </div>
   </div>
@@ -4133,9 +4186,15 @@ async function agenda(){
             ${(AG_EVS||[]).filter(e=>e.date===iso).map(e=>{
               const t=AG_TYPES[e.type]||AG_TYPES.autre;
               const top=agMin(e.deb)/60*H, hgt=Math.max(24,(Math.max(agMin(e.fin),agMin(e.deb)+30)-agMin(e.deb))/60*H-2);
-              return `<div class="ag-ev" style="top:${top}px;height:${hgt}px;background:${t.c}26;border-color:${t.c};color:var(--ink)"
-                onclick="event.stopPropagation();agEdit(${e.id})" title="${esc(e.titre)}">
-                <span style="color:${t.c}">${esc(e.deb||'')}</span> ${esc(e.titre)}${e.note?`<small>${esc(e.note)}</small>`:''}</div>`;
+              return `<div class="ag-ev" style="top:${top}px;height:${hgt}px;background:${e.partage?'rgba(242,183,5,.20)':t.c+'26'};border-color:${e.partage?'#F2B705':t.c};color:var(--ink);${e.partage?'border-width:2px':''}"
+                onclick="event.stopPropagation();agEdit(${e.id})" title="${esc(e.titre)}${e.partage?' · partagé avec la direction':''}">
+                <span style="color:${t.c}">${esc(e.deb||'')}</span> ${e.partage?'📢 ':''}${esc(e.titre)}${e.note?`<small>${esc(e.note)}</small>`:''}</div>`;
+            }).join('')}
+            ${(AG_TEAM?AG_SHARED:[]).filter(e=>e.date===iso).map(e=>{
+              const top=agMin(e.deb)/60*H, hgt=Math.max(24,(Math.max(agMin(e.fin),agMin(e.deb)+30)-agMin(e.deb))/60*H-2);
+              return `<div class="ag-ev" style="top:${top}px;height:${hgt}px;background:repeating-linear-gradient(45deg,rgba(242,183,5,.22),rgba(242,183,5,.22) 6px,rgba(242,183,5,.10) 6px,rgba(242,183,5,.10) 12px);border-color:#F2B705;color:var(--ink);border-width:2px"
+                onclick="event.stopPropagation()" title="Partagé par ${esc(agProprio(e.uid))} — ${esc(e.titre)}${e.note?' · '+esc(e.note):''}">
+                <span style="color:#F2B705">${esc(e.deb||'')}</span> 📢 ${esc(e.titre)}<small>par ${esc(agProprio(e.uid))}</small></div>`;
             }).join('')}
           </div>`;
         }).join('')}
@@ -4163,6 +4222,10 @@ function agEdit(id,iso,deb){
     <div><label class="f-lbl">Fin</label><input class="field" type="time" id="agF" value="${fin}"></div>
   </div>
   <div class="f-row"><label class="f-lbl">Note (optionnel)</label><textarea class="field" id="agN" style="min-height:70px">${esc(e.note||'')}</textarea></div>
+  <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:14px;padding:10px 14px;border-radius:10px;border:1px dashed rgba(242,183,5,.5);background:rgba(242,183,5,.06)">
+    <input type="checkbox" id="agPart" style="width:19px;height:19px;accent-color:#F2B705" ${e.partage?'checked':''}>
+    <span style="font-size:.85rem">📢 <b>Partager avec la direction</b><br><small style="color:var(--muted)">visible en détail par les rôles de gestion — sinon strictement privé</small></span>
+  </label>
   <div style="display:flex;gap:10px">
     <button class="btn btn-gold" style="flex:1" onclick="agSave(${id||'null'})">Enregistrer</button>
     ${id?`<button class="btn btn-ghost" style="color:#f87171" onclick="agDel(${id})">🗑 Supprimer</button>`:''}
@@ -4173,7 +4236,7 @@ async function agSave(id){
   if(!SYNC.cli) return toast('⚠️ Synchronisation non configurée');
   let deb=$('#agDe').value||'14:00', fin=$('#agF').value;
   if(!fin||agMin(fin)<=agMin(deb)) fin=agHM(agMin(deb)+60);
-  const row={titre,type:$('#agTy').value,date:$('#agD').value,deb,fin,note:$('#agN').value.trim()};
+  const row={titre,type:$('#agTy').value,date:$('#agD').value,deb,fin,note:$('#agN').value.trim(),partage:!!($('#agPart')&&$('#agPart').checked)};
   try{
     const q=SYNC.cli.from('oilroxwood_agenda');
     const {error}=id?await q.update(row).eq('id',id):await q.insert(Object.assign({uid:agKey()},row));
@@ -4566,7 +4629,11 @@ function resetAll(){
 
 /* ================== MODAL ================== */
 function openModal(html){ $('#modalBox').innerHTML=html; $('#modalBg').classList.add('open'); }
-function closeModal(){ $('#modalBg').classList.remove('open'); }
+function closeModal(){
+  $('#modalBg').classList.remove('open');
+  RN_CTX=null; // fin d'édition de note client
+  setTimeout(()=>{ if(typeof RERENDER_WAIT!=='undefined'&&RERENDER_WAIT&&!editionEnCours()){ RERENDER_WAIT=false; rerender(); } },150);
+}
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 
 /* ================== UI PREMIUM : canvas, ripple, compteurs ================== */
