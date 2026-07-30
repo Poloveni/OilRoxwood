@@ -1,14 +1,14 @@
 {
- "ca": 457610,
- "maj": "2026-07-29T23:28:47.125Z",
+ "ca": 485995,
+ "maj": "2026-07-30T00:49:28.078Z",
  "top3": [
+  {
+   "nom": "Thomas Boyer",
+   "barils": 9268
+  },
   {
    "nom": "Lukas Myngard",
    "barils": 9064
-  },
-  {
-   "nom": "Thomas Boyer",
-   "barils": 8020
   },
   {
    "nom": "Scott Ramirez",
@@ -29,10 +29,10 @@
    "nom": "Thomas Boyer",
    "grade": 0,
    "poste": "RH",
-   "prime": 17500,
+   "prime": 23170,
    "quota": 0,
-   "total": 8020,
-   "barils": 8020
+   "total": 9268,
+   "barils": 9268
   },
   {
    "nom": "Juan Sanchez",
@@ -74,7 +74,7 @@
    "nom": "Scott Ramirez",
    "grade": 3,
    "poste": null,
-   "prime": 17500,
+   "prime": 19085,
    "quota": 6500,
    "total": 7634,
    "barils": 7634
@@ -328,8 +328,8 @@
    "poste": null,
    "prime": 0,
    "quota": 6500,
-   "total": 0,
-   "barils": 0
+   "total": 3241,
+   "barils": 3241
   },
   {
    "nom": "Tony Carrera",
@@ -353,10 +353,10 @@
    "nom": "Youccef Ibra",
    "grade": 0,
    "poste": null,
-   "prime": 4732,
+   "prime": 5270,
    "quota": 3000,
-   "total": 4732,
-   "barils": 4732
+   "total": 5270,
+   "barils": 5270
   },
   {
    "nom": "Bryan Anderson",
@@ -382,13 +382,22 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 646,
-   "barils": 646
+   "total": 1296,
+   "barils": 1296
+  },
+  {
+   "nom": "Xavier Collins",
+   "grade": 2,
+   "poste": null,
+   "prime": 0,
+   "quota": 5000,
+   "total": 0,
+   "barils": 0
   }
  ],
  "semaine": 31,
- "effectif": 41,
+ "effectif": 42,
  "objectif": 200000,
- "totalBarils": 91522,
+ "totalBarils": 97199,
  "clientsServis": 22
 }
