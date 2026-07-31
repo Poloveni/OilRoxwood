@@ -1,7 +1,11 @@
 {
- "ca": 707380,
- "maj": "2026-07-31T09:41:29.215Z",
+ "ca": 737440,
+ "maj": "2026-07-31T11:47:11.883Z",
  "top3": [
+  {
+   "nom": "Youccef Ibra",
+   "barils": 14076
+  },
   {
    "nom": "Laurent Roquel",
    "barils": 12836
@@ -9,10 +13,6 @@
   {
    "nom": "Thomas Boyer",
    "barils": 11224
-  },
-  {
-   "nom": "Youccef Ibra",
-   "barils": 10512
   }
  ],
  "runners": [
@@ -139,8 +139,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 0,
-   "barils": 0
+   "total": 2576,
+   "barils": 1288
   },
   {
    "nom": "Nikko Mount",
@@ -353,10 +353,10 @@
    "nom": "Youccef Ibra",
    "grade": 0,
    "poste": null,
-   "prime": 10512,
+   "prime": 14076,
    "quota": 3000,
-   "total": 10512,
-   "barils": 10512
+   "total": 17640,
+   "barils": 14076
   },
   {
    "nom": "Bryan Anderson",
@@ -380,10 +380,10 @@
    "nom": "Francis Zonetti",
    "grade": 0,
    "poste": null,
-   "prime": 4372,
+   "prime": 4908,
    "quota": 3000,
-   "total": 4372,
-   "barils": 4372
+   "total": 5444,
+   "barils": 4908
   },
   {
    "nom": "Xavier Collins",
@@ -445,8 +445,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 2582,
-   "barils": 1938
+   "total": 3830,
+   "barils": 2562
   },
   {
    "nom": "John Kuss",
@@ -461,6 +461,6 @@
  "semaine": 31,
  "effectif": 49,
  "objectif": 200000,
- "totalBarils": 141476,
+ "totalBarils": 147488,
  "clientsServis": 23
 }
