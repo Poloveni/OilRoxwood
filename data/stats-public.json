@@ -1,6 +1,6 @@
 {
- "ca": 1251575,
- "maj": "2026-08-02T11:44:00.683Z",
+ "ca": 1307555,
+ "maj": "2026-08-02T13:23:00.354Z",
  "top3": [
   {
    "nom": "Ashley Cooper",
@@ -12,7 +12,7 @@
   },
   {
    "nom": "Thomas Boyer",
-   "barils": 15858
+   "barils": 21150
   }
  ],
  "runners": [
@@ -29,19 +29,19 @@
    "nom": "Thomas Boyer",
    "grade": 0,
    "poste": "RH",
-   "prime": 39645,
+   "prime": 47500,
    "quota": 0,
-   "total": 29820,
-   "barils": 15858
+   "total": 35112,
+   "barils": 21150
   },
   {
    "nom": "Juan Sanchez",
    "grade": 0,
    "poste": "Commercial",
-   "prime": 18815,
+   "prime": 26635,
    "quota": 0,
-   "total": 22866,
-   "barils": 7526
+   "total": 25994,
+   "barils": 10654
   },
   {
    "nom": "Laurent Roquel",
@@ -65,7 +65,7 @@
    "nom": "Ashley Cooper",
    "grade": 3,
    "poste": null,
-   "prime": 42500,
+   "prime": 47500,
    "quota": 6500,
    "total": 58569,
    "barils": 24114
@@ -92,10 +92,10 @@
    "nom": "Marcus Johnson",
    "grade": 1,
    "poste": null,
-   "prime": 5622,
+   "prime": 8053.5,
    "quota": 3000,
-   "total": 11321,
-   "barils": 3748
+   "total": 12942,
+   "barils": 5369
   },
   {
    "nom": "Santi Show",
@@ -317,10 +317,10 @@
    "nom": "Ray Buffalo",
    "grade": 0,
    "poste": null,
-   "prime": 5766,
+   "prime": 6401,
    "quota": 3000,
-   "total": 7864,
-   "barils": 5766
+   "total": 8499,
+   "barils": 6401
   },
   {
    "nom": "Luiz Gonzalez",
@@ -517,8 +517,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 0,
-   "barils": 474
+   "total": 198,
+   "barils": 672
   },
   {
    "nom": "Miguel Paco",
@@ -528,11 +528,20 @@
    "quota": 3000,
    "total": 0,
    "barils": 954
+  },
+  {
+   "nom": "John Nolan",
+   "grade": 0,
+   "poste": "Stagiaire",
+   "prime": 805,
+   "quota": 0,
+   "total": 0,
+   "barils": 322
   }
  ],
  "semaine": 31,
- "effectif": 57,
+ "effectif": 58,
  "objectif": 200000,
- "totalBarils": 250315,
+ "totalBarils": 261511,
  "clientsServis": 26
 }
