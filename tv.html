@@ -75,10 +75,13 @@ async function load(){
     document.getElementById('fTot').textContent=F(d.totalBarils);
     document.getElementById('fN').textContent=d.effectif||d.runners.length;
     document.getElementById('fMaj').textContent=d.maj?new Date(d.maj).toLocaleString('fr-FR'):'—';
-    const rs=[...d.runners].filter(x=>!x.poste).sort((a,b)=>b.barils-a.barils);
+    const rs=[...d.runners].sort((a,b)=>b.barils-a.barils); // direction incluse dans le classement
     const top=rs.slice(0,3);
     const pod=(r,i)=>r?`<div class="pod pod${i}"><div class="medal">${['🥇','🥈','🥉'][i-1]}</div><div class="name">${esc(r.nom)}</div><div class="amt">${F(r.barils)} barils</div></div>`:'';
-    const rows=rs.map(r=>{const q=r.quota||GR[r.grade]?.q||3000;const pc=Math.min(100,Math.round(r.barils/q*100));return `<div class="row"><span class="nm">${esc(r.nom)}</span><span class="bar"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></span><span class="pc">${pc}%</span></div>`;}).join('');
+    const rows=rs.map(r=>{
+      if(r.poste){ return `<div class="row"><span class="nm">${esc(r.nom)} <small style="opacity:.55">· ${esc(r.poste)}</small></span><span class="bar"><i style="width:${r.barils?100:0}%;opacity:.3"></i></span><span class="pc">${F(r.barils)}</span></div>`; }
+      const q=r.quota||GR[r.grade]?.q||3000;const pc=Math.min(100,Math.round(r.barils/q*100));
+      return `<div class="row"><span class="nm">${esc(r.nom)}</span><span class="bar"><i class="${pc>=100?'full':''}" style="width:${pc}%"></i></span><span class="pc">${pc}%</span></div>`;}).join('');
     let obj='';
     if(d.objectif>0){
       const pc=Math.min(100,Math.round((d.totalBarils||0)/d.objectif*100));

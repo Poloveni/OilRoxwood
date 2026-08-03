@@ -81,6 +81,12 @@
   /* lecture seule : bandeau + contrôles désactivés (les onglets internes et recherches restent utilisables) */
   #main.ro::before{content:'👁 Consultation seule — ton rôle peut voir cet onglet mais pas le modifier';display:block;background:rgba(90,160,255,.08);border:1px solid rgba(90,160,255,.35);color:#9fc3ff;border-radius:10px;padding:10px 16px;margin-bottom:14px;font-size:.85rem;font-weight:600}
   #main.ro :is(button,input,select,textarea):not(.tab):not([id$="SearchInput"]){pointer-events:none;opacity:.55}
+  .ro-zone :is(button,input,select,textarea):not(.tab):not([id$="SearchInput"]){pointer-events:none;opacity:.55}
+  .tour-hl{outline:3px solid var(--accent) !important;outline-offset:3px;border-radius:8px;animation:tourPulse 1.2s ease-in-out infinite}
+  @keyframes tourPulse{0%,100%{outline-color:var(--accent)}50%{outline-color:var(--or1)}}
+  #tourCard{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);width:min(520px,92vw);background:var(--panel);border:1px solid var(--accent);border-radius:16px;padding:18px 22px;z-index:350;box-shadow:0 24px 70px rgba(0,0,0,.6);display:none}
+  #tourCard h3{margin:4px 0 8px}
+  #tourCard p{color:var(--muted);font-size:.88rem;line-height:1.55;margin-bottom:14px}
   .nvb{margin-left:auto;background:var(--red,#ff5c5c);color:#fff;font-size:.66rem;font-weight:800;border-radius:99px;padding:1px 7px;line-height:1.5}
   .nvb.dot{width:9px;height:9px;padding:0;border-radius:50%}
   .nav-item:hover{background:var(--panel-2);color:var(--ink)}
@@ -392,7 +398,7 @@
   <div class="login-card">
     <img src="assets/logo.png" alt="Oil Roxwood" style="width:110px;height:110px;object-fit:contain">
     <h1>OIL <b>ROXWOOD</b></h1>
-    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-32</span></small></p>
+    <p>Espace membre — connexion sécurisée<br><small style="opacity:.55">version <span id="verTag">C-33</span></small></p>
     <button type="button" onclick="loginDiscord()" style="width:100%;padding:13px;border:none;border-radius:10px;background:#5865F2;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:filter .2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.4c1.7.4 2.5 1 3.3 1.7A16.2 16.2 0 0 0 12 3.8a16.2 16.2 0 0 0-6.5 1.3c.8-.7 1.7-1.3 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4A20.4 20.4 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l.5-.7a12.6 12.6 0 0 1-2.6-1.3l.6-.4a14.2 14.2 0 0 0 12.8 0l.6.4c-.8.5-1.7 1-2.6 1.3l.5.7a19.9 19.9 0 0 0 6-3A20.4 20.4 0 0 0 20.3 4.4zM8.7 15.4c-1 0-1.9-1-1.9-2.1s.8-2.1 1.9-2.1 1.9 1 1.9 2.1-.9 2.1-1.9 2.1zm6.6 0c-1 0-1.9-1-1.9-2.1s.9-2.1 1.9-2.1 1.9 1 1.9 2.1-.8 2.1-1.9 2.1z"/></svg>
       Se connecter avec Discord
@@ -441,6 +447,7 @@
     <div class="nav-sec" style="cursor:default">Accès rapides</div>
     <a class="nav-item" href="tv.html" target="_blank" rel="noopener" style="text-decoration:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M8 21h8M12 18v3"/></svg> <span class="txt">TV du dépôt</span></a>
     <a class="nav-item" href="index.html" style="text-decoration:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg> <span class="txt">Retour au site</span></a>
+    <button class="nav-item" onclick="localStorage.setItem('orx_lang',localStorage.getItem('orx_lang')==='en'?'fr':'en');applyLang()" title="Changer la langue de l'interface / Switch interface language">🌐 <span class="txt" data-nolang="1">FR / EN</span></button>
     <div id="whoami" style="padding:8px 14px;font-size:.78rem;color:var(--muted)"></div>
     <button class="nav-item" id="logout" onclick="logout()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v8"/><path d="M6.3 6.5a8 8 0 1 0 11.4 0"/></svg> <span class="txt">Déconnexion</span></button>
   </aside>
@@ -794,6 +801,13 @@ function enter(){
   const bell=document.getElementById('nfBell'); if(bell) bell.style.display='flex';
   nfRefresh();
   przLoad().then(()=>{ if(VIEW==='effectif') rerender(); }); setInterval(przLoad,5*60*1000); // présence Discord (widget) rafraîchie
+  hbSend(); hbLoad(); setInterval(()=>{ hbSend(); hbLoad(); },90*1000); // présence sur le SITE (battement de cœur)
+  // visite guidée automatique pour les comptes de gestion récents (créés il y a moins de 7 jours)
+  setTimeout(()=>{
+    const cu2=currentUser();
+    if(cu2&&cu2.role!=='membre'&&!localStorage.getItem('orx_tour_'+agKey())&&cu2.id&&(nowSrv()-cu2.id)<7*86400000) tourStart();
+    else if(cu2&&!localStorage.getItem('orx_tour_'+agKey())) localStorage.setItem('orx_tour_'+agKey(),'1'); // anciens comptes : pas de visite imposée
+  },1500);
   let _rsz; addEventListener('resize',()=>{ clearTimeout(_rsz); _rsz=setTimeout(applyPerms,200); });
   const wk=semaineCal(); if(S.settings.semaine!==wk){ S.settings.semaine=wk; save(); } // semaine calendaire (heure de Paris) — save uniquement si elle change
   show('overview');
@@ -813,7 +827,7 @@ function logout(){
 }
 
 /* ---- Canari de version : prévient les onglets restés sur une vieille version ---- */
-const APP_VERSION='C-32';
+const APP_VERSION='C-33';
 function checkVersion(){
   const test=()=>fetch('version.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
     const b=document.getElementById('verBanner');
@@ -1023,11 +1037,10 @@ function palierAuto(){
   PAL_BUSY=true;
   const B=bareme(); const fixes=[], scores=[];
   try{
-    // balayage exhaustif : pour chaque palier, on calcule le bilan AVEC ses plafonds/taux,
-    // et on garde le palier cohérent avec le bénéfice après primes qu'il produit
+    // règle officielle (Thomas) : le palier est déterminé par le BÉNÉFICE IMPOSABLE (avant primes)
     for(let i=0;i<B.length;i++){
       PAL_CACHE=i;
-      const net=Math.max(0,bilanData().apresPrimes);
+      const net=Math.max(0,bilanData().benefice);
       const j=palIdxFor(net);
       if(j===i) fixes.push(i);
       scores.push(Math.abs(j-i));
@@ -1099,6 +1112,24 @@ document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.onclick=()=>show(
     b.insertAdjacentHTML('afterbegin',`<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`);
   });
 })();
+/* ---- langue de l'interface (v1 : navigation & sections) ---- */
+const I18N_EN={"Vue d'ensemble":'Overview','Semaine & Primes':'Week & Bonuses','Historique':'History','Clôture du lundi':'Monday closing','Effectif':'Workforce','Runs':'Runs','Feuilles':'Sheets','Ancienneté RH':'HR seniority',"Demandes d'accès":'Access requests','Factures':'Invoices','Relances':'Follow-ups','Bilan compta':'Accounting','Produits dérivés':'Merchandise','Quotas commerciaux':'Sales quotas','Achats Fer':'Iron purchases','Factures reçues':'Received invoices','Ma semaine':'My week','Quotas 3 semaines':'Quotas (3 weeks)','Ma to-do':'My to-do','Mon agenda':'My agenda','Suggestions / Bugs':'Suggestions / Bugs','Mises à jour':'Updates','Logs Discord':'Discord logs','Journal':'Activity log','Paramètres':'Settings','TV du dépôt':'Depot TV','Retour au site':'Back to site','Déconnexion':'Log out','Pilotage':'Steering','Gestion':'Management','Commerce':'Sales','Perso':'Personal','Système':'System','Accès rapides':'Quick access'};
+function applyLang(){
+  const en=localStorage.getItem('orx_lang')==='en';
+  document.querySelectorAll('.nav-item .txt').forEach(e=>{
+    if(e.dataset.nolang) return;
+    if(!e.dataset.fr) e.dataset.fr=e.textContent;
+    e.textContent=en?(I18N_EN[e.dataset.fr]||e.dataset.fr):e.dataset.fr;
+  });
+  document.querySelectorAll('.nav-sec').forEach(e=>{
+    const t=e.childNodes[0];
+    if(t&&t.nodeType===3){
+      if(!e.dataset.fr) e.dataset.fr=t.textContent.trim();
+      t.textContent=(en?(I18N_EN[e.dataset.fr]||e.dataset.fr):e.dataset.fr)+' ';
+    }
+  });
+}
+applyLang();
 let VIEW='overview';
 function show(v){
   const al=allowedViews();
@@ -1145,6 +1176,10 @@ function overview(){
     <div class="panel kpi link" onclick="show('bilan')" title="Ouvrir le Bilan compta"><div class="lbl">Chiffre d'affaires</div><div class="val gold">${money(tot*S.settings.prix)}</div><div class="delta">à ${S.settings.prix} $/unité</div></div>
     <div class="panel kpi link" onclick="show('semaine')" title="Ouvrir Semaine & Primes"><div class="lbl">Quotas atteints</div><div class="val ${ok===R.length&&R.length?'up':''}">${ok}<span style="font-size:1rem;color:var(--muted)">/${R.length}</span></div><div class="delta">primes projetées : ${money(R.reduce((a,r)=>a+primeProj(r),0)+(S.primesExtra||[]).reduce((a,p)=>a+nn(p.montant),0))}</div></div>
   </div>
+  ${ONLINE.length?`<div class="panel" style="margin-bottom:18px;padding:12px 18px;font-size:.85rem;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <b>🟢 Sur le site maintenant :</b>
+    ${ONLINE.map(o=>`<span class="chip" style="cursor:pointer" onclick="ficheEmp(decodeURIComponent('${encodeURIComponent(o.nom)}'))">${esc(o.nom)} <small style="color:var(--muted)">· ${ROLES[o.role]||o.role||''}</small></span>`).join('')}
+  </div>`:''}
   ${(()=>{const o=S.settings.objectif||0; if(!o) return '';
     const pc=Math.min(100,Math.round(tot/o*100));
     return `<div class="panel" style="margin-bottom:18px">
@@ -1190,7 +1225,11 @@ function top3html(sorted){
   const t=sorted.slice(0,3);
   if(!t.length) return '<div class="empty">Aucune donnée</div>';
   const p=(r,i)=>r?`<div class="pod pod${i}"><div style="font-size:1.3rem">${['🥇','🥈','🥉'][i-1]}</div><div class="name">${esc(r.nom)}</div><div class="amt">${fmt(r.barils)} barils${PRIMES_OFF?'':' · prime '+money(S.settings.top[i-1])}</div></div>`:'<div class="pod" style="min-height:60px"></div>';
-  return `<div class="podium">${p(t[1],2)}${p(t[0],1)}${p(t[2],3)}</div>`;
+  const past=(S.weeks||[]).filter(w=>w.detail&&w.detail.length).slice(-3).reverse();
+  const histo=past.length?`<div style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px;font-size:.8rem;color:var(--muted)">
+    ${past.map(w=>{const t3=w.detail.filter(x=>x.barils>0).slice(0,3);return `<div style="padding:3px 0"><b style="color:var(--ink)">S${w.num}</b> · ${t3.length?t3.map((x,i)=>['🥇','🥈','🥉'][i]+' '+esc(x.nom)+' ('+fmt(x.barils)+')').join(' · '):'aucun run'}</div>`;}).join('')}
+  </div>`:'';
+  return `<div class="podium">${p(t[1],2)}${p(t[0],1)}${p(t[2],3)}</div>${histo}`;
 }
 
 /* ================== EFFECTIF ================== */
@@ -1601,7 +1640,12 @@ async function semaine(){
 function closeWeek(){
   if(!S.runners.length) return toast('Aucun runner à clôturer');
   // la semaine qu'on clôture = celle d'HIER (heure de Paris) : une clôture le lundi 13/07 (S29) ferme la semaine 28
-  const semClose=isoWeek(dateParis(nowSrv()-86400000));
+  let semClose=isoWeek(dateParis(nowSrv()-86400000));
+  // la séquence réelle prime : après une annulation/reclôture tardive, on suit la dernière semaine close +1 (pas de saut de numéro)
+  if(S.weeks.length){
+    const last=S.weeks[S.weeks.length-1].num, exp=last>=53?1:last+1;
+    if(semClose!==exp&&Math.abs(semClose-exp)<=2) semClose=exp;
+  }
   if(!confirm(`Clôturer la semaine ${semClose} ?\n\n• Les primes sont figées (quota + TOP 3)\n• Les montées de grade éligibles sont appliquées\n• La feuille Éligibilité est regénérée (quotas réussis + direction)\n• Les compteurs hebdo repartent à zéro\n\n↩ Tu pourras ANNULER cette clôture juste après en cas d'oubli.`)) return;
   // instantané complet AVANT clôture — permet d'annuler intégralement
   S.closeUndo={ date:new Date().toISOString(), semaine:semClose,
@@ -1615,8 +1659,22 @@ function closeWeek(){
   primes+=(S.primesExtra||[]).reduce((a,p)=>a+nn(p.montant),0); // primes exceptionnelles de la semaine
   S.primesExtra=[]; // versées avec cette clôture → remise à zéro
   S.runners.forEach(r=>{ if(eligible(r)){ r.grade++; promus.push(r.nom); syncRhGrade(r); } });
+  // statistiques de la semaine close (archivées dans l'Historique, avec tendances)
+  const statsClose=(()=>{
+    try{
+      const B0=bilanData();
+      const base=dateParis(nowSrv()-86400000), dw=(base.getDay()+6)%7;
+      const lun=new Date(base.getFullYear(),base.getMonth(),base.getDate()-dw), dim=new Date(lun.getTime()+6*86400000);
+      const fd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const recrut=((S.sheets&&S.sheets.rh)||[]).filter(x=>x.arrivee&&String(x.arrivee)>=fd(lun)&&String(x.arrivee)<=fd(dim)).length;
+      const prods=S.runners.filter(r=>!r.poste&&!r.absent&&!absDe(r.nom));
+      const zeros=prods.filter(r=>r.barils===0).length;
+      return {recrut,ca:Math.round(B0.caBrut),ventes:bidonsVendusSem(),prod:sorted.reduce((a,r)=>a+r.barils,0),
+        taux0:prods.length?Math.round(zeros/prods.length*100):0,effectif:S.runners.length};
+    }catch(e){ return null; }
+  })();
   S.weeks.push({num:semClose, date:new Date().toLocaleDateString('fr-FR'), total:sorted.reduce((a,r)=>a+r.barils,0), primes, winner:sorted[0]?.barils>0?sorted[0].nom:null,
-    detail:sorted.map(r=>({nom:r.nom,barils:r.barils,quota:grade(r).quota,ok:quotaOK(r),poste:!!r.poste}))});
+    detail:sorted.map(r=>({nom:r.nom,barils:r.barils,quota:grade(r).quota,ok:quotaOK(r),poste:!!r.poste})),stats:statsClose});
   const w=S.weeks[S.weeks.length-1];
   jlog(`Clôture de la semaine ${w.num} — ${fmt(w.total)} barils · ${money(primes)} de primes${promus.length?' · promus : '+promus.join(', '):''}`);
   const podium=sorted.slice(0,3).filter(r=>r.barils>0).map((r,i)=>`${['🥇','🥈','🥉'][i]} **${r.nom}** — ${fmt(r.barils)} barils (+${money(S.settings.top[i])})`).join('\n');
@@ -1742,11 +1800,34 @@ const SHEETS_DEF = {
 };
 const nn = x => +x||0;
 /* feuilles interdites par rôle (en plus des restrictions de vues) */
-const SHEET_DENY={ commercial:['rh','blacklist','compta'] };
+/* permissions fines par feuille : 'x' = plein accès · 'ro' = lecture seule · 'off' = caché
+   défauts historiques + compta réservée Patron/Comptable ; personnalisable dans Paramètres */
+const SHEET_DEF_PERMS={ commercial:{rh:'off',blacklist:'off',compta:'off'}, rh:{compta:'off'} };
+function sheetPerm(role,k){
+  if(!role||role==='direction'||role==='comptable'&&k==='compta') {}
+  const c=S.settings&&S.settings.sheetPerms&&S.settings.sheetPerms[role];
+  if(c&&c[k]) return c[k];
+  return (SHEET_DEF_PERMS[role]&&SHEET_DEF_PERMS[role][k])||'x';
+}
 function sheetAllowed(k){
-  const cu=currentUser();
-  const deny=cu&&SHEET_DENY[cu.role];
-  return !deny||!deny.includes(k);
+  if(sessionStorage.getItem('orx_user')==='SECOURS') return true;
+  const cu=currentUser(); if(!cu) return true;
+  if(cu.role==='direction') return true;
+  return sheetPerm(cu.role,k)!=='off';
+}
+function sheetRO(k){
+  if(sessionStorage.getItem('orx_user')==='SECOURS') return false;
+  const cu=currentUser(); if(!cu||cu.role==='direction') return false;
+  return sheetPerm(cu.role,k)==='ro';
+}
+function sheetPermToggle(role,k){
+  S.settings.sheetPerms=S.settings.sheetPerms||{};
+  S.settings.sheetPerms[role]=S.settings.sheetPerms[role]||{};
+  const cur=sheetPerm(role,k);
+  const next=cur==='x'?'ro':cur==='ro'?'off':'x';
+  S.settings.sheetPerms[role][k]=next;
+  jlog(`Permissions feuilles : ${ROLES[role]||role} · « ${k} » → ${next==='x'?'plein accès':next==='ro'?'lecture seule':'caché'}`);
+  save(); sbPushNow(); params();
 }
 let curSheet='tablette', sheetSearch='', sheetFull=false;
 async function feuilles(){
@@ -1799,7 +1880,8 @@ async function feuilles(){
   </div>
   <div class="tabs">${Object.entries(SHEETS_DEF).filter(([k])=>sheetAllowed(k)).map(([k,d])=>`<button class="tab ${k===curSheet?'on':''}" onclick="curSheet='${k}';sheetSearch='';feuilles()">${d.ico} ${d.label} <span style="opacity:.6">(${S.sheets[k].length})</span></button>`).join('')}</div>
   ${def.note?`<div class="warn" style="border-color:rgba(232,98,44,.35);background:rgba(232,98,44,.07);color:var(--accent)">ℹ️ ${def.note}</div>`:''}
-  <div class="panel" style="padding:10px 16px;overflow-x:auto">
+  ${sheetRO(curSheet)?'<div class="warn" style="border-color:rgba(90,160,255,.35);background:rgba(90,160,255,.07);color:#9fc3ff">👁 Feuille en consultation seule pour ton rôle</div>':''}
+  <div class="panel ${sheetRO(curSheet)?'ro-zone':''}" style="padding:10px 16px;overflow-x:auto">
     <input class="field" id="sheetSearchInput" style="max-width:240px;margin:6px 0 10px" placeholder="🔍 Rechercher…" value="${esc(sheetSearch)}" oninput="sheetSearch=this.value;feuilles()">
     <table class="sheet"><thead><tr>${head}<th></th></tr></thead><tbody>${body||`<tr><td colspan="${cols.length+2}"><div class="empty">Aucune ligne</div></td></tr>`}</tbody>${foot}</table>
   </div>
@@ -2607,9 +2689,19 @@ function rnDrop(e){
   [...(e.dataTransfer?.files||[])].filter(f=>f.type.startsWith('image/'))
     .forEach(f=>frResize(f,d=>{ RN_IMGS.push(d); relNotes(RN_CTX?RN_CTX.i:0); }));
 }
+function lightbox(src){
+  let l=document.getElementById('orxLight');
+  if(!l){ l=document.createElement('div'); l.id='orxLight';
+    l.style.cssText='position:fixed;inset:0;background:rgba(3,5,9,.93);z-index:600;display:flex;align-items:center;justify-content:center;cursor:zoom-out;padding:2vh 2vw';
+    l.onclick=()=>l.style.display='none';
+    document.body.appendChild(l);
+  }
+  l.innerHTML=`<img src="${src}" style="max-width:96vw;max-height:96vh;border-radius:8px;box-shadow:0 30px 90px rgba(0,0,0,.8)">`;
+  l.style.display='flex';
+}
 function cmZoom(id){
   const all=Object.values(CM_CACHE).flat(), m=all.find(x=>x.id===id);
-  if(m&&m.img) openModal(`<img src="${m.img}" style="width:100%;border-radius:10px">`);
+  if(m&&m.img) lightbox(m.img);
 }
 
 /* ---- notes de suivi du démarchage (texte + captures) ---- */
@@ -2751,7 +2843,7 @@ function barTableHtml(){
     <td>${money(t.se)}</td><td>${money(t.sp)}</td><td>${money(t.pe)}</td><td>${money(t.pp)}</td>
     <td style="font-size:.72rem;white-space:nowrap">${i===auto?`<span style="color:var(--accent);font-weight:700">${forced?'palier auto attendu':'palier détecté automatiquement'}</span>`:''}${i===cur&&forced?'<span style="color:#5aa0ff;font-weight:700"> sélectionné manuellement</span>':''}</td>
   </tr>`).join('')}</tbody></table>
-  <p style="color:var(--muted);font-size:.75rem;margin-top:8px">Palier déterminé par le <b>bénéfice après primes</b> (calcul itératif : plafonds → primes → bénéfice → palier, jusqu'à stabilité). Le barème de référence s'édite dans Paramètres.</p>
+  <p style="color:var(--muted);font-size:.75rem;margin-top:8px">Palier déterminé par le <b>bénéfice imposable</b> (avant primes) — règle officielle. Le barème de référence s'édite dans Paramètres.</p>
   </div>`;
 }
 function barForce(i){
@@ -3007,14 +3099,18 @@ async function cloture(){
   const steps=[
     {t:'Coller la tablette de la semaine',d:'Ouvre Feuilles → Tablette → 📋 Coller depuis Excel (mode ♻️ Remplacer). L\'effectif et les quotas se calent automatiquement.',
      btn:'📋 Ouvrir la Tablette',act:"show('feuilles');curSheet='tablette';setTimeout(()=>openPasteModal(),200)"},
-    {t:'Vérifier l\'effectif et les primes',d:'Contrôle les barils, grades et primes projetées avant de figer. Corrige si besoin.',
-     btn:'💰 Voir Semaine & Primes',act:"show('semaine')"},
+    {t:'Vérifier l\'effectif et les salaires',d:'Colle le pointage RH (Gestion équipe en jeu → tout sélectionner sauf « Renvoyer ») puis contrôle les salaires et primes projetés.',
+     btn:'🕒 Coller le pointage RH',act:"show('feuilles');curSheet='rh';setTimeout(()=>rhPasteModal(),200)",btn2:'💰 Contrôler les salaires',act2:"show('semaine')"},
+    {t:'Annoncer les montées, descentes et avertissements',d:'Dans l\'Effectif : ▲ montées disponibles, ▼ descentes (quota sous 95 %), ⚠ avertissements des intérimaires sous 80 %. Annonce-les en jeu / sur Discord avant de figer.',
+     btn:'👥 Ouvrir l\'Effectif',act:"show('effectif')"},
     {t:'Clôturer la semaine',d:'Fige les primes + TOP 3, applique les montées de grade, remet les compteurs à zéro. '+fmt(totB)+' barils en cours.',
-     btn:'🗓️ Clôturer maintenant',act:"closeWeek();clSet(3)",danger:true},
-    {t:'Copier le bilan pour le GDoc',d:'Récupère le détail par employé en un Ctrl+V pour ta comptabilité.',
-     btn:'📋 Copier le bilan',act:"show('bilan');setTimeout(()=>bilanCopy(),300)"},
+     btn:'🗓️ Clôturer maintenant',act:"closeWeek();clSet(4)",danger:true},
+    {t:'Copier les GDocs et vérifier',d:'Bilan → 📋 Copier pour GDoc (détail employés) puis le second bouton pour dépenses/retraits. Vérifie que les totaux du GDoc correspondent au site.',
+     btn:'📋 Ouvrir le Bilan',act:"show('bilan');setTimeout(()=>bilanCopy(),300)"},
     {t:'Réinitialiser les ventes de la semaine',d:'Vide la feuille Ventes de la semaine pour repartir propre.',
      btn:'♻️ Vider les ventes',act:"show('feuilles');curSheet='ventesSem';setTimeout(()=>sheetReset(),200)"},
+    {t:'Statistiques de la semaine',d:'Compare la semaine close aux précédentes : recrutements, CA, ventes, production, % sans production, effectif — flèches vertes/rouges, archivées définitivement dans l\'Historique.',
+     btn:'📈 Voir les statistiques',act:"show('historique')"},
   ];
   $('#main').innerHTML=`
   <div class="topbar"><div><h2>Clôture du lundi</h2><div class="sub">${weekRange()} · suis les étapes dans l'ordre — coche au fur et à mesure</div></div>
@@ -3030,7 +3126,8 @@ async function cloture(){
           <div style="font-weight:700;${done?'text-decoration:line-through;color:var(--muted)':''}">${s.t}</div>
           <div style="color:var(--muted);font-size:.85rem;margin:4px 0 10px">${s.d}</div>
           ${cur?`<div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn btn-sm ${s.danger?'btn-gold':'btn-gold'}" onclick="${s.act}">${s.btn}</button>
+            <button class="btn btn-sm btn-gold" onclick="${s.act}">${s.btn}</button>
+            ${s.btn2?`<button class="btn btn-sm btn-ghost" onclick="${s.act2}">${s.btn2}</button>`:''}
             <button class="btn btn-sm btn-ghost" onclick="clSet(${i+1})">✓ Étape faite</button>
           </div>`:''}
         </div>
@@ -3152,6 +3249,15 @@ function ferDel(id){
 
 /* ================== MISES À JOUR (changelog) ================== */
 const CHANGELOG=[
+ {v:'C-33',d:'03/08/2026',t:'Visite guidée, langue, présence & corrections',items:[
+   ['🎓','Visite guidée du site','À l\'attribution d\'un accès de gestion, une visite pas-à-pas présente chaque section selon tes droits (textes de Thomas, étapes RH détaillées). Relançable depuis Paramètres. Elle remplace la checklist d\'intégration.'],
+   ['🌐','Langue FR / EN','Un bouton dans la barre latérale bascule l\'interface en anglais pour les membres non-francophones — choix mémorisé par utilisateur.'],
+   ['🟢','Présence sur le site','Pastille verte lumineuse devant les noms des personnes actuellement connectées au dashboard.'],
+   ['🧮','Palier fiscal corrigé','Règle officielle : le palier du barème est déterminé par le bénéfice imposable (avant primes) — plus de calcul itératif sur l\'après-primes.'],
+   ['🗓','Numérotation de semaine réparée','Après une annulation/reclôture, la semaine suit la séquence réelle (S30 après S29) — et la S31 fautive est renumérotée automatiquement.'],
+   ['📈','Clôture en 7 étapes + statistiques','Le wizard du lundi couvre désormais pointage RH, annonces de grades et statistiques comparatives (recrutements, CA, ventes, production, % sans production, effectif — flèches vertes/rouges), archivées à vie dans l\'Historique.'],
+   ['🏆','TOP 3 sur 3 semaines','Le podium de la Vue d\'ensemble affiche aussi les podiums des 3 dernières semaines clôturées.'],
+   ['🔍','Zoom plein écran','Les images des notes et factures reçues s\'ouvrent en vrai plein écran.']]},
  {v:'C-32',d:'30/07/2026',t:'Intégration des recrues & présence Discord',items:[
    ['✅','Checklist d\'intégration','Dans chaque fiche employé : 6 étapes à cocher (Discord, contrat, règlement, tenue, formation, tablette) avec jauge de progression. La case contrat est synchronisée avec la colonne RH, l\'intégration complète est célébrée sur Discord, et la cloche 🔔 signale les intégrations en retard (arrivées de moins de 3 semaines).'],
    ['🟢','Présence Discord en direct','Pastille vert/gris devant chaque nom de l\'Effectif selon le statut en ligne Discord — via le widget du serveur, relevé toutes les 15 min (nécessite le widget activé + l\'ID du serveur dans les secrets GitHub).']]},
@@ -3297,7 +3403,8 @@ const CHANGELOG=[
 function maj(){
   localStorage.setItem('orx_seenver',APP_VERSION); navBadges(); // vu → le point rouge s'éteint
   $('#main').innerHTML=`
-  <div class="topbar"><div><h2>Mises à jour</h2><div class="sub">Tout ce qui a changé sur le site et le dashboard · version actuelle : <b style="color:var(--accent)">${APP_VERSION}</b></div></div></div>
+  <div class="topbar"><div><h2>Mises à jour</h2><div class="sub">Tout ce qui a changé sur le site et le dashboard · version actuelle : <b style="color:var(--accent)">${APP_VERSION}</b></div></div>
+    <button class="btn btn-ghost" onclick="tourStart()">🎓 Revoir la visite guidée</button></div>
   ${CHANGELOG.map(c=>`<div class="panel" style="margin-bottom:18px">
     <h3 style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
       <span>🆕 Version ${c.v}${c.t?' — '+c.t:''}</span>
@@ -3311,6 +3418,17 @@ function maj(){
 
 /* ================== HISTORIQUE (semaines closes) ================== */
 function historique(){
+  // réparation unique : la reclôture après annulation avait créé S31 au lieu de S30
+  if(!S._wkFix1){
+    S._wkFix1=true;
+    const i=S.weeks.findIndex(w=>w.num===31);
+    if(i>0&&S.weeks[i-1]&&S.weeks[i-1].num===29&&!S.weeks.some(w=>w.num===30)){
+      S.weeks[i].num=30;
+      jlog('Historique : semaine S31 renumérotée S30 (reclôture après annulation)');
+      toast('🩹 Numérotation réparée : S31 → S30');
+    }
+    save();
+  }
   const W=S.weeks||[];
   if(!W.length){
     $('#main').innerHTML=`<div class="topbar"><div><h2>Historique</h2><div class="sub">Évolution semaine par semaine</div></div></div>
@@ -3335,6 +3453,28 @@ function historique(){
     <div class="panel"><h3>Production par semaine (barils)</h3><canvas id="cHistProd" height="230"></canvas></div>
     <div class="panel"><h3>Primes versées par semaine ($)</h3><canvas id="cHistPrimes" height="230"></canvas></div>
   </div>
+  ${(()=>{
+    const WS=W.filter(w=>w.stats);
+    if(!WS.length) return '';
+    const fleche=(v,p,inverse)=>{
+      if(p===undefined||p===null) return '';
+      if(v===p) return ' <span style="color:var(--muted)">＝</span>';
+      const hausse=v>p, bon=inverse?!hausse:hausse;
+      return ` <b style="color:${bon?'var(--green)':'var(--red)'}">${hausse?'▲':'▼'}</b>`;
+    };
+    const cols=[['recrut','Recrutements',v=>fmt(v),false],['ca','CA',v=>money(v),false],['ventes','Ventes (bidons)',v=>fmt(v),false],
+      ['prod','Production',v=>fmt(v)+' barils',false],['taux0','% sans production',v=>v+' %',true],['effectif','Effectif',v=>fmt(v),false]];
+    return `<div class="panel" style="margin-bottom:18px;overflow-x:auto">
+    <h3>📈 Statistiques par semaine — tendances</h3>
+    <table><thead><tr><th>Semaine</th>${cols.map(c=>`<th>${c[1]}</th>`).join('')}</tr></thead><tbody>
+    ${WS.map((w,i)=>{
+      const p=i>0?WS[i-1].stats:null;
+      return `<tr><td><b>S${w.num}</b></td>${cols.map(([k,,f,inv])=>`<td>${f(w.stats[k])}${p?fleche(w.stats[k],p[k],inv):''}</td>`).join('')}</tr>`;
+    }).join('')}
+    </tbody></table>
+    <p style="color:var(--muted);font-size:.74rem;margin-top:8px">▲▼ = tendance vs la semaine précédente · <b style="color:var(--green)">vert</b> = favorable, <b style="color:var(--red)">rouge</b> = défavorable (un % sans production qui monte est défavorable, un effectif qui baisse aussi). Archive alimentée à chaque clôture.</p>
+    </div>`;
+  })()}
   <div class="panel">
     <h3>Détail des semaines</h3>
     <table><thead><tr><th>Semaine</th><th>Clôturée le</th><th>Production</th><th>CA (au prix actuel)</th><th>Primes</th><th>🥇 Vainqueur</th>${isMembre()?'':'<th></th>'}</tr></thead><tbody>
@@ -3538,8 +3678,7 @@ async function frSaveEdit(id){
 }
 function frZoom(id){
   const f=(FR_CACHE||[]).find(x=>x.id===id); if(!f||!f.img) return;
-  openModal(`<h3>🏢 ${esc(f.entreprise)} · ${frDate(f.date)}${nn(f.montant)?' · '+money(f.montant):''}</h3>
-  <img src="${f.img}" style="width:100%;border-radius:10px">${f.note?`<p style="color:var(--muted);font-size:.85rem;margin-top:10px">${esc(f.note)}</p>`:''}`);
+  lightbox(f.img);
 }
 async function frDel(id){
   const f=(FR_CACHE||[]).find(x=>x.id===id);
@@ -3911,6 +4050,101 @@ async function acces(){
   </div>`;
 }
 
+/* ================== VISITE GUIDÉE (attribution des accès) ================== */
+let TOUR=null;
+function tourSteps(){
+  const al=allowedViews(), stp=[];
+  const add=(view,title,txt,sel,tab)=>{ if(al.includes(view)) stp.push({view,title,txt,sel,tab}); };
+  add('semaine','Salaires et primes',"Tu retrouveras en temps réel ici les salaires actuels de chacun ainsi que leurs quotas.");
+  add('effectif','Effectif',"La fiche de chaque employé : grade, quota, contrat, actions.");
+  if(al.includes('feuilles')){
+    const sv=k=>sheetAllowed(k);
+    if(sv('tablette')) add('feuilles','Feuilles — Tablette',"Tu viendras ici mettre les quotas à jour. En jeu, ouvre la tablette, va dans Statistiques, clique sur Exporter. Reviens sur le site, clique sur « Coller depuis Excel » (Ctrl+V) dans l'espace prévu, puis clique sur la case rouge.",'button[onclick="openPasteModal()"]','tablette');
+    if(sv('eligibilite')) add('feuilles','Feuilles — Éligibilité',"Tu y retrouveras chaque personne éligible à la semaine. Remplis le document si tu lui remets son dû.",null,'eligibilite');
+    if(sv('ventesSem')) add('feuilles','Feuilles — Ventes de la semaine',"Historique des commandes.",null,'ventesSem');
+    if(sv('rh')){
+      add('feuilles','Feuilles RH — 1/8',"Après chaque recrutement, va en jeu dans Gestion équipe.",null,'rh');
+      add('feuilles','Feuilles RH — 2/8',"Sélectionne toutes les lignes sauf la dernière (« Renvoyer »).",null,'rh');
+      add('feuilles','Feuilles RH — 3/8',"Reviens sur le site, clique sur « Coller le pointage » (Ctrl+V) dans l'espace prévu.",'button[onclick="rhPasteModal()"]','rh');
+      add('feuilles','Feuilles RH — 4/8',"Valide.",'button[onclick="rhPasteModal()"]','rh');
+      add('feuilles','Feuilles RH — 5/8',"Tu retrouveras des lignes incomplètes correspondant à tes derniers recrutements.",'table.sheet thead','rh');
+      add('feuilles','Feuilles RH — 6/8',"Enregistre les informations manquantes sur chaque ligne.",'table.sheet thead','rh');
+      add('feuilles','Feuilles RH — 7/8',"Génère le contrat en cliquant sur le bouton en début de ligne.",'table.sheet tbody .btn-gold','rh');
+      add('feuilles','Feuilles RH — 8/8',"Il ne reste plus qu'à l'envoyer.",null,'rh');
+    }
+    if(sv('blacklist')) add('feuilles','Feuilles — Blacklist',"Renseigne ici les personnes blacklistées de l'entreprise.",null,'blacklist');
+    if(sv('compta')) add('feuilles','Feuilles — Compta',"Réservé Patron / Comptable : dépenses déductibles et retraits du compte entreprise.",null,'compta');
+  }
+  add('factures','Factures',"Ici tu vas créer les factures : dans « Émetteur », indique ton prénom, choisis ton client, renseigne la quantité commandée ainsi que la TVA en application. Si la livraison est effectuée par Post Op, n'oublie pas de cocher la case, puis génère la facture et envoie-la. Une fois payée, déclare-la comme payée dans l'historique. Si c'est un nouveau client ou que des données ont changé, retrouve tout dans « Base client ».");
+  add('relances','Relances',"Les clients à relancer et leur historique.");
+  add('prodder','Produits dérivés',"Suivi des produits dérivés vendus.");
+  add('moi','Ma semaine',"Ton suivi personnel de la semaine en cours.");
+  add('todo','Ma to-do',"Tes tâches personnelles à faire.");
+  add('agenda','Mon agenda',"Ton planning personnel (avec option de partage direction).");
+  add('feedback','Suggestions / Bugs',"Où proposer une idée ou signaler un bug.");
+  add('dlogs','Logs Discord',"Tu y retrouveras bientôt tous les logs possibles : de chaque personne, de chaque coffre, véhicule, etc.");
+  return stp;
+}
+function tourStart(){
+  const steps=tourSteps();
+  if(!steps.length) return;
+  TOUR={i:0,steps};
+  tourGo(0);
+}
+function tourGo(i){
+  if(!TOUR) return;
+  if(i>=TOUR.steps.length){ tourEnd(true); return; }
+  TOUR.i=Math.max(0,i);
+  const s=TOUR.steps[TOUR.i];
+  if(s.tab) curSheet=s.tab;
+  show(s.view);
+  setTimeout(()=>tourCard(s),400);
+}
+function tourCard(s){
+  document.querySelectorAll('.tour-hl').forEach(e=>e.classList.remove('tour-hl'));
+  const nav=document.querySelector(`.nav-item[data-view="${s.view}"]`);
+  if(nav) nav.classList.add('tour-hl');
+  if(s.sel){ try{ const el=document.querySelector('#main '+s.sel)||document.querySelector(s.sel);
+    if(el){ el.classList.add('tour-hl'); el.scrollIntoView({block:'center',behavior:'smooth'}); } }catch(e){} }
+  let c=document.getElementById('tourCard');
+  if(!c){ c=document.createElement('div'); c.id='tourCard'; document.body.appendChild(c); }
+  c.innerHTML=`<div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px">🎓 Visite guidée · étape ${TOUR.i+1}/${TOUR.steps.length}</div>
+  <h3>${esc(s.title)}</h3><p>${esc(s.txt)}</p>
+  <div style="display:flex;gap:10px;align-items:center">
+    ${TOUR.i>0?'<button class="btn btn-ghost btn-sm" onclick="tourGo(TOUR.i-1)">‹ Précédent</button>':''}
+    <button class="btn btn-gold btn-sm" onclick="tourGo(TOUR.i+1)">${TOUR.i+1>=TOUR.steps.length?'Terminer 🎉':'Suivant ›'}</button>
+    <button class="btn btn-ghost btn-sm" style="margin-left:auto;color:var(--muted)" onclick="tourEnd(false)">Passer la visite</button>
+  </div>`;
+  c.style.display='block';
+}
+function tourEnd(fini){
+  document.querySelectorAll('.tour-hl').forEach(e=>e.classList.remove('tour-hl'));
+  const c=document.getElementById('tourCard'); if(c) c.style.display='none';
+  TOUR=null;
+  localStorage.setItem('orx_tour_'+agKey(),'1');
+  if(fini){ toast('🎓 Visite terminée — bienvenue à bord, bon jeu !'); show('overview'); }
+}
+
+/* ================== PRÉSENCE SUR LE SITE (qui est connecté) ================== */
+let ONLINE=[];
+async function hbSend(){
+  if(!SYNC.cli||sessionStorage.getItem('orx_auth')!=='1') return;
+  const cu=currentUser(); if(!cu) return;
+  try{ await SYNC.cli.from('oilroxwood_online').upsert({uid:agKey(),nom:cu.user,role:cu.role,vu:new Date(nowSrv()).toISOString()}); }catch(e){}
+}
+async function hbLoad(){
+  if(!SYNC.cli) return;
+  try{
+    const lim=new Date(nowSrv()-3*60*1000).toISOString();
+    const {data}=await SYNC.cli.from('oilroxwood_online').select('*').gte('vu',lim);
+    ONLINE=data||[];
+  }catch(e){ ONLINE=[]; }
+}
+function surSite(nom){
+  const l=String(nom||'').toLowerCase().trim();
+  return l&&ONLINE.some(o=>String(o.nom||'').toLowerCase().trim()===l);
+}
+
 /* ================== INTÉGRATION NOUVEAU RUNNER ================== */
 const ONBOARD=[
   {k:'discord',l:'A rejoint le Discord de l\'entreprise'},
@@ -3946,6 +4180,7 @@ function enLigne(...noms){
   return noms.some(n=>n&&PRZ.set.has(String(n).toLowerCase().trim()));
 }
 function przDot(r){
+  if(surSite(r.nom)) return '<span title="Connecté sur le site en ce moment" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);margin-right:5px;vertical-align:middle"></span>';
   const row=r._ghost?null:rhRowOf(r.nom);
   const on=enLigne(r.discord,r.nom,row&&row.discord);
   return on===null?'':(on?'<span title="En ligne sur Discord" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:5px;vertical-align:middle"></span>'
@@ -3992,16 +4227,6 @@ function ficheEmp(nom){
     · Avertissements : <b>${esc(String(row.avert||'0'))}</b>
     · Recruteur : ${esc(row.recrut||'—')}
   </div>`:''}
-  ${row&&!isMembre()?(()=>{
-    const done=obEtat(row);
-    return `<div style="margin-bottom:14px"><label class="f-lbl">Intégration — ${done}/${ONBOARD.length}${done===ONBOARD.length?' ✔':''}</label>
-    <div style="background:var(--panel-2);border:1px solid var(--line);border-radius:99px;height:8px;overflow:hidden;margin:6px 0 8px">
-      <div style="height:100%;width:${Math.round(done/ONBOARD.length*100)}%;background:${done===ONBOARD.length?'var(--green)':'linear-gradient(90deg,var(--or3),var(--or1))'}"></div></div>
-    ${ONBOARD.map(s=>{const v=s.k==='contrat'?(row.contrat===true):!!(row.integ&&row.integ[s.k]);
-      return `<label style="display:flex;align-items:center;gap:9px;padding:4px 0;cursor:pointer;font-size:.84rem;${v?'color:var(--muted)':''}">
-      <input type="checkbox" style="width:16px;height:16px;accent-color:var(--green)" ${v?'checked':''} onchange="obToggle(decodeURIComponent('${encodeURIComponent(nom)}'),'${s.k}',this.checked)">
-      <span style="${v?'text-decoration:line-through':''}">${s.l}</span></label>`;}).join('')}
-    </div>`;})():''}
   ${hist.some(h=>h.x)?`<div style="margin-bottom:14px"><label class="f-lbl">4 dernières semaines</label>
     ${hist.map(h=>h.x?`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);font-size:.83rem">
       <span>S${h.num}</span><span>${fmt(h.x.barils)} / ${fmt(h.x.quota)}</span><b style="color:${h.x.ok?'var(--green)':'var(--red)'}">${h.x.ok?'✔':'✗'}</b></div>`:'').join('')}
@@ -4032,12 +4257,6 @@ function notifs(){
     if(inact.length) N.push({k:'i'+inact.length,g:'var(--accent)',t:`${inact.length} employé(s) sans service depuis 5 j ou +`,d:inact.slice(0,4).map(x=>x.nom).join(', ')+(inact.length>4?'…':''),v:'feuilles'});
     const nc=((S.sheets&&S.sheets.rh)||[]).filter(x=>String(x.nom||'').trim()&&x.contrat!==true);
     if(nc.length) N.push({k:'c'+nc.length,g:'#5aa0ff',t:`${nc.length} contrat(s) non signé(s)`,d:nc.slice(0,4).map(x=>x.nom).join(', ')+(nc.length>4?'…':''),v:'feuilles'});
-    const ob=((S.sheets&&S.sheets.rh)||[]).filter(x=>{
-      if(!String(x.nom||'').trim()||!x.arrivee) return false;
-      const j=(now-Date.parse(x.arrivee))/86400000;
-      return !isNaN(j)&&j>=0&&j<=21&&obEtat(x)<ONBOARD.length;
-    });
-    if(ob.length) N.push({k:'o'+ob.length,g:'var(--accent)',t:`${ob.length} intégration(s) à terminer`,d:ob.slice(0,4).map(x=>`${x.nom} (${obEtat(x)}/${ONBOARD.length})`).join(', ')+(ob.length>4?'…':''),v:'effectif'});
   }
   return N;
 }
@@ -4559,6 +4778,19 @@ async function params(){
       }).join('')}</tr>`).join('')}
       </tbody></table>
       <p style="color:var(--muted);font-size:.74rem;margin-top:8px">Chaque clic fait tourner l'état : <b style="color:var(--muted)">—</b> aucun accès → <b style="color:var(--green)">✓</b> accès complet → <b style="color:#5aa0ff">👁</b> lecture seule (l'onglet est visible mais toutes les modifications sont désactivées) → <b style="color:var(--muted)">—</b>. 🔒 verrouillé.${(S.settings.permsCustom||S.settings.permsRO)?' <b style="color:var(--accent)">Permissions personnalisées actives.</b>':''}</p>`;
+    })()}
+  </div>
+  <div class="panel" style="margin-top:18px;overflow-x:auto">
+    <h3>🗂️ Permissions fines — feuilles</h3>
+    <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px">Onglet par onglet de la page Feuilles, pour chaque rôle : <b style="color:var(--green)">✓</b> plein accès → <b style="color:#5aa0ff">👁</b> lecture seule → <b style="color:var(--muted)">—</b> caché (clic pour faire tourner). La Direction a toujours tout.</p>
+    ${(()=>{
+      const roles=[['rh','RH'],['comptable','Comptable'],['commercial','Commercial']];
+      return `<table><thead><tr><th>Feuille</th>${roles.map(([,l])=>`<th style="text-align:center">${l}</th>`).join('')}</tr></thead><tbody>
+      ${Object.entries(SHEETS_DEF).map(([k,d])=>`<tr><td><b>${d.ico} ${d.label}</b></td>
+        ${roles.map(([rk])=>{ const v=sheetPerm(rk,k);
+          return `<td onclick="sheetPermToggle('${rk}','${k}')" style="text-align:center;font-weight:700;cursor:pointer;color:${v==='x'?'var(--green)':v==='ro'?'#5aa0ff':'var(--muted)'}" title="Cliquer pour changer">${v==='x'?'✓':v==='ro'?'👁':'—'}</td>`;
+        }).join('')}</tr>`).join('')}
+      </tbody></table>`;
     })()}
   </div>
   <div class="panel" style="margin-top:18px;overflow-x:auto">
