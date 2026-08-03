@@ -1,18 +1,18 @@
 {
- "ca": 32700,
- "maj": "2026-08-03T16:14:23.120Z",
+ "ca": 56940,
+ "maj": "2026-08-03T18:17:43.115Z",
  "top3": [
   {
    "nom": "Morino Collins",
-   "barils": 3366
+   "barils": 5565
   },
   {
    "nom": "Lukas Myngard",
    "barils": 2188
   },
   {
-   "nom": "Diego Teirzo",
-   "barils": 486
+   "nom": "Stella Collins",
+   "barils": 747
   }
  ],
  "runners": [
@@ -20,10 +20,10 @@
    "nom": "Stella Collins",
    "grade": 0,
    "poste": "Patron",
-   "prime": 0,
+   "prime": 1867.5,
    "quota": 0,
-   "total": 0,
-   "barils": 0
+   "total": 747,
+   "barils": 747
   },
   {
    "nom": "Diego Herrera",
@@ -56,10 +56,10 @@
    "nom": "Morino Collins",
    "grade": 2,
    "poste": null,
-   "prime": 0,
+   "prime": 11130,
    "quota": 5000,
-   "total": 3366,
-   "barils": 3366
+   "total": 5565,
+   "barils": 5565
   },
   {
    "nom": "Ajaw Akbal",
@@ -229,13 +229,31 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
+   "total": 637,
+   "barils": 637
+  },
+  {
+   "nom": "Tisso Gone",
+   "grade": 2,
+   "poste": null,
+   "prime": 0,
+   "quota": 5000,
    "total": 0,
-   "barils": 0
+   "barils": 625
+  },
+  {
+   "nom": "Amia Collins",
+   "grade": 2,
+   "poste": null,
+   "prime": 0,
+   "quota": 5000,
+   "total": 0,
+   "barils": 640
   }
  ],
  "semaine": 32,
- "effectif": 24,
+ "effectif": 26,
  "objectif": 200000,
- "totalBarils": 6540,
+ "totalBarils": 11388,
  "clientsServis": 29
 }
