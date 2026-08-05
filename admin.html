@@ -440,7 +440,7 @@
     <button class="nav-item" data-view="feedback">💡 <span class="txt">Suggestions / Bugs</span></button>
     <button class="nav-item" data-view="maj">🆕 <span class="txt">Mises à jour</span></button>
     <div class="nav-sec" data-sec="systeme" onclick="navToggle('systeme')">Système <span class="chev">▾</span></div>
-    <button class="nav-item" data-view="dlogs">📡 <span class="txt">Logs Discord</span></button>
+    <button class="nav-item" data-view="dlogs">📡 <span class="txt">Logs en direct</span></button>
     <button class="nav-item" data-view="journal">📜 <span class="txt">Journal</span></button>
     <button class="nav-item" data-view="params">⚙️ <span class="txt">Paramètres</span></button>
     <div class="spacer"></div>
@@ -1113,7 +1113,7 @@ document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.onclick=()=>show(
   });
 })();
 /* ---- langue de l'interface (v1 : navigation & sections) ---- */
-const I18N_EN={"Vue d'ensemble":'Overview','Semaine & Primes':'Week & Bonuses','Historique':'History','Clôture du lundi':'Monday closing','Effectif':'Workforce','Runs':'Runs','Feuilles':'Sheets','Ancienneté RH':'HR seniority',"Demandes d'accès":'Access requests','Factures':'Invoices','Relances':'Follow-ups','Bilan compta':'Accounting','Produits dérivés':'Merchandise','Quotas commerciaux':'Sales quotas','Achats Fer':'Iron purchases','Factures reçues':'Received invoices','Ma semaine':'My week','Quotas 3 semaines':'Quotas (3 weeks)','Ma to-do':'My to-do','Mon agenda':'My agenda','Suggestions / Bugs':'Suggestions / Bugs','Mises à jour':'Updates','Logs Discord':'Discord logs','Journal':'Activity log','Paramètres':'Settings','TV du dépôt':'Depot TV','Retour au site':'Back to site','Déconnexion':'Log out','Pilotage':'Steering','Gestion':'Management','Commerce':'Sales','Perso':'Personal','Système':'System','Accès rapides':'Quick access'};
+const I18N_EN={"Vue d'ensemble":'Overview','Semaine & Primes':'Week & Bonuses','Historique':'History','Clôture du lundi':'Monday closing','Effectif':'Workforce','Runs':'Runs','Feuilles':'Sheets','Ancienneté RH':'HR seniority',"Demandes d'accès":'Access requests','Factures':'Invoices','Relances':'Follow-ups','Bilan compta':'Accounting','Produits dérivés':'Merchandise','Quotas commerciaux':'Sales quotas','Achats Fer':'Iron purchases','Factures reçues':'Received invoices','Ma semaine':'My week','Quotas 3 semaines':'Quotas (3 weeks)','Ma to-do':'My to-do','Mon agenda':'My agenda','Suggestions / Bugs':'Suggestions / Bugs','Mises à jour':'Updates','Logs Discord':'Discord logs','Logs en direct':'Live logs','Journal':'Activity log','Paramètres':'Settings','TV du dépôt':'Depot TV','Retour au site':'Back to site','Déconnexion':'Log out','Pilotage':'Steering','Gestion':'Management','Commerce':'Sales','Perso':'Personal','Système':'System','Accès rapides':'Quick access'};
 function applyLang(){
   const en=localStorage.getItem('orx_lang')==='en';
   document.querySelectorAll('.nav-item .txt').forEach(e=>{
@@ -4621,9 +4621,110 @@ async function fbDel(id){
 
 /* ================== LOGS DISCORD ================== */
 const TYPE_ICON={vente:'💵',recolte:'⛏️',raffinage:'🏭',depot:'📦',retrait:'📤',autre:'📄'};
+/* ---- Logs en direct : écrits par le bot de l'entreprise dans Supabase.
+   Contrairement à l'ancien détour (GitHub Actions toutes les 15 min), ici
+   chaque événement arrive à la seconde où le bot l'enregistre. ---- */
+const DL={data:null,ch:null,type:'',q:''};
+const DL_TYPES={
+  vente:['💰','Vente'], achat_fer:['⚙️','Achat de fer'],
+  coffre_depot:['📥','Dépôt coffre'], coffre_retrait:['📤','Retrait coffre'],
+  vehicule_spawn:['🚛','Sortie véhicule'], compte_entreprise:['🏦','Compte entreprise'],
+  facture:['🧾','Facture'], annonce:['📢','Annonce'],
+  prise_service:['🟢','Prise de service'], fin_service:['🔴','Fin de service'],
+  recolte:['⛏️','Récolte'], raffinage:['🏭','Raffinage'], depot:['📥','Dépôt'],
+  retrait:['📤','Retrait'], paie:['💵','Paie'], autre:['📄','Autre'],
+};
+function dlLbl(t){ return DL_TYPES[t]||['📄',t||'?']; }
 async function dlogs(){
+  if(!SYNC.cli) return dlogsAncien();
+  $('#main').innerHTML = `<div class="topbar"><div><h2>Logs en direct</h2><div class="sub">Chargement…</div></div></div><div class="panel"><div class="empty">Chargement…</div></div>`;
+  const {data,error}=await SYNC.cli.from('oilroxwood_bot_logs').select('*').order('ts',{ascending:false}).limit(300);
+  if(error){ toast('⚠️ Lecture des logs impossible : '+error.message); return dlogsAncien(); }
+  DL.data=data||[];
+  if(!DL.ch){
+    DL.ch=SYNC.cli.channel('bot-logs')
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'oilroxwood_bot_logs'},pl=>{
+        if(!DL.data) DL.data=[];
+        DL.data.unshift(pl.new);
+        if(DL.data.length>400) DL.data.pop();
+        if(document.getElementById('dl-zone')) dlRender();
+      }).subscribe();
+  }
+  dlRender();
+}
+function dlRender(){
+  const L=DL.data||[];
+  const types=[...new Set(L.map(x=>x.type))].sort();
+  const f=L.filter(x=>(!DL.type||x.type===DL.type)&&(!DL.q||String(x.employe||'').toLowerCase().includes(DL.q)));
+  const j0=new Date(); j0.setHours(0,0,0,0);
+  const jour=L.filter(x=>new Date(x.ts)>=j0);
+  const ventes=jour.filter(x=>x.type==='vente');
+  const caJour=ventes.reduce((a,x)=>a+(+x.montant||0),0);
+  const bJour=ventes.reduce((a,x)=>a+(+x.quantite||0),0);
+  const actifs=new Set(jour.map(x=>x.employe).filter(Boolean)).size;
+  const match=n=>n?S.runners.find(r=>r.nom.toLowerCase()===String(n).toLowerCase()||String(n).toLowerCase().includes(r.nom.toLowerCase())):null;
+  const rows=f.slice(0,150).map(m=>{
+    const T=dlLbl(m.type);
+    const r=match(m.employe);
+    const key='sb_'+m.id, done=S.imported.includes(key);
+    const canImp=m.type==='vente'&&+m.quantite>0&&!done;
+    let meta='';
+    if(m.meta&&typeof m.meta==='object'&&Object.keys(m.meta).length){
+      meta=Object.entries(m.meta).slice(0,2)
+        .map(([k,v])=>esc(k)+' : '+esc(typeof v==='object'?JSON.stringify(v):String(v))).join(' · ');
+    }
+    return `<tr style="${done?'opacity:.45':''}">
+      <td style="white-space:nowrap;color:var(--muted);font-size:.76rem">${new Date(m.ts).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+      <td style="white-space:nowrap">${T[0]} <span style="font-size:.75rem">${esc(T[1])}</span></td>
+      <td><b>${esc(m.employe||'—')}</b>${r?` <span class="badge ${grade(r).cls}" style="font-size:.65rem">${grade(r).nom}</span>`:''}</td>
+      <td style="max-width:340px;font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(m.details||'')}">${esc(String(m.details||'').split('\n')[0])}${meta?`<div style="font-size:.7rem;color:var(--muted);opacity:.8">${meta}</div>`:''}</td>
+      <td>${m.quantite?`<b>${fmt(+m.quantite)}</b>`:'—'}${m.montant?`<div class="gold" style="font-size:.72rem">${money(+m.montant)}</div>`:''}</td>
+      <td style="text-align:right">${done?'<span class="up" style="font-size:.75rem">✔ importé</span>':canImp?`
+        <select class="field" style="width:130px;display:inline-block;padding:5px 8px;font-size:.75rem" id="dlsel_${m.id}">
+          ${S.runners.map(x=>`<option value="${x.id}" ${r&&x.id===r.id?'selected':''}>${esc(x.nom)}</option>`).join('')}
+        </select>
+        <button class="btn btn-sm btn-gold" onclick="dlImport(${m.id},${+m.quantite})" title="Ajoute cette vente aux barils du runner choisi">⬇</button>`:''}</td>
+    </tr>`;
+  }).join('');
+  $('#main').innerHTML = `
+  <div class="topbar">
+    <div><h2>Logs en direct</h2><div class="sub">Écrits par le bot de l'entreprise · mise à jour instantanée · ${L.length} événement(s) chargé(s)</div></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="dlogs()">↻ Recharger</button>
+      <button class="btn btn-ghost" onclick="dlogsAncien()" title="L'ancien détour par GitHub Actions (15 min de retard) — conservé en secours">🗄 Ancien système</button>
+    </div>
+  </div>
+  <div id="dl-zone">
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+    <div class="panel" style="flex:1;min-width:150px;padding:14px 18px"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Événements aujourd'hui</div><div style="font-size:1.5rem;font-weight:700">${fmt(jour.length)}</div></div>
+    <div class="panel" style="flex:1;min-width:150px;padding:14px 18px"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Ventes du jour</div><div style="font-size:1.5rem;font-weight:700">${fmt(bJour)} <span style="font-size:.8rem;color:var(--muted)">barils</span></div><div class="gold" style="font-size:.8rem">${money(caJour)}</div></div>
+    <div class="panel" style="flex:1;min-width:150px;padding:14px 18px"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Employés vus aujourd'hui</div><div style="font-size:1.5rem;font-weight:700">${fmt(actifs)}</div></div>
+  </div>
+  ${!L.length?`<div class="panel"><h3>📡 En attente des premiers logs</h3><p style="color:var(--muted);font-size:.88rem;line-height:1.7">Le bot est branché mais n'a encore rien envoyé. Dès qu'un événement se produit (vente, coffre, véhicule, prise de service…), il s'affichera ici tout seul — sans recharger la page.</p></div>`:`
+  <div class="panel" style="padding:12px 16px;margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+    <select class="field" style="width:auto;display:inline-block;padding:6px 10px" onchange="DL.type=this.value;dlRender()">
+      <option value="">Tous les types</option>
+      ${types.map(t=>`<option value="${esc(t)}" ${DL.type===t?'selected':''}>${dlLbl(t)[0]} ${esc(dlLbl(t)[1])}</option>`).join('')}
+    </select>
+    <input class="field" style="width:220px;display:inline-block;padding:6px 10px" placeholder="Filtrer par employé, puis Entrée" value="${esc(DL.q)}" onchange="DL.q=this.value.toLowerCase().trim();dlRender()">
+    ${(DL.type||DL.q)?`<button class="btn btn-ghost btn-sm" onclick="DL.type='';DL.q='';dlRender()">✕ Effacer les filtres</button><span style="font-size:.8rem;color:var(--muted)">${f.length} résultat(s)</span>`:''}
+  </div>
+  <div class="panel" style="padding:8px 16px;overflow-x:auto">
+    <table><thead><tr><th>Date</th><th>Type</th><th>Qui</th><th>Détails</th><th>Quantité</th><th style="text-align:right">Import</th></tr></thead>
+    <tbody>${rows||'<tr><td colspan="6" style="color:var(--muted);padding:14px">Aucun résultat avec ces filtres.</td></tr>'}</tbody></table>
+  </div>`}
+  </div>`;
+}
+function dlImport(id,qte){
+  const sel=document.getElementById('dlsel_'+id); if(!sel) return;
+  const r=S.runners.find(x=>x.id===+sel.value); if(!r) return;
+  r.runs.push({t:Date.now(),b:qte}); r.barils+=qte; r.total+=qte;
+  S.imported.push('sb_'+id); save(); dlRender();
+  toast(`⬇ ${r.nom} : +${fmt(qte)} barils importés depuis les logs`);
+}
+async function dlogsAncien(){
   $('#main').innerHTML = `<div class="topbar"><div><h2>Logs Discord</h2><div class="sub">Salon du compte entreprise — synchronisé toutes les 15 min par GitHub Actions</div></div>
-  <button class="btn btn-ghost" onclick="dlogs()">↻ Rafraîchir</button></div><div class="panel"><div class="empty">Chargement…</div></div>`;
+  <button class="btn btn-ghost" onclick="dlogsAncien()">↻ Rafraîchir</button></div><div class="panel"><div class="empty">Chargement…</div></div>`;
   let d;
   try{
     const r = await fetch('data/discord-logs.json?ts='+Date.now(),{cache:'no-store'});
@@ -4662,7 +4763,7 @@ async function dlogs(){
     <div><h2>Logs Discord</h2><div class="sub">Dernière synchro : ${new Date(d.maj).toLocaleString('fr-FR')} · ${d.messages.length} messages</div></div>
     <div style="display:flex;gap:10px">
       ${auto.length?`<button class="btn btn-gold" onclick="importAll()">⬇ Importer les ${auto.length} runs reconnus</button>`:''}
-      <button class="btn btn-ghost" onclick="dlogs()">↻ Rafraîchir</button>
+      <button class="btn btn-ghost" onclick="dlogsAncien()">↻ Rafraîchir</button>
     </div>
   </div>
   ${importables.length?`<div class="warn" style="border-color:rgba(232,98,44,.35);background:rgba(232,98,44,.07);color:var(--accent)">📥 ${importables.length} entrée(s) avec quantité détectée en attente d'import${auto.length?` — dont ${auto.length} avec runner reconnu automatiquement`:''}</div>`:''}
@@ -4677,7 +4778,7 @@ function importLog(id, qte){
   const r = S.runners.find(x=>x.id===rid);
   if(!r) return;
   r.runs.push({t:Date.now(),b:qte}); r.barils+=qte; r.total+=qte;
-  S.imported.push(id); save(); dlogs();
+  S.imported.push(id); save(); dlogsAncien();
   toast(`⬇ ${r.nom} : +${fmt(qte)} barils importés depuis Discord`);
 }
 function importAll(){
@@ -4690,7 +4791,7 @@ function importAll(){
     r.runs.push({t:Date.now(),b:m.quantite}); r.barils+=m.quantite; r.total+=m.quantite;
     S.imported.push(m.id); n++;
   });
-  save(); dlogs(); toast(`⬇ ${n} run(s) importé(s) depuis les logs Discord`);
+  save(); dlogsAncien(); toast(`⬇ ${n} run(s) importé(s) depuis les logs Discord`);
 }
 
 /* ================== PARAMÈTRES ================== */
