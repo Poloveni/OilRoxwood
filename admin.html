@@ -4622,8 +4622,10 @@ async function fbDel(id){
 /* ================== LOGS DISCORD ================== */
 const TYPE_ICON={vente:'💵',recolte:'⛏️',raffinage:'🏭',depot:'📦',retrait:'📤',autre:'📄'};
 /* ---- Logs en direct : écrits par le bot de l'entreprise dans Supabase.
-   Contrairement à l'ancien détour (GitHub Actions toutes les 15 min), ici
-   chaque événement arrive à la seconde où le bot l'enregistre. ---- */
+   Chaque événement arrive à la seconde. Pour éviter toute saccade, un
+   nouvel événement NE redessine PAS la page : sa ligne se glisse en haut
+   du tableau (petit flash doré) et les compteurs se mettent à jour en
+   place. Le redessin complet n'a lieu que sur action de l'utilisateur. ---- */
 const DL={data:null,ch:null,type:'',q:''};
 const DL_TYPES={
   vente:['💰','Vente'], achat_fer:['⚙️','Achat de fer'],
@@ -4635,6 +4637,11 @@ const DL_TYPES={
   retrait:['📤','Retrait'], paie:['💵','Paie'], autre:['📄','Autre'],
 };
 function dlLbl(t){ return DL_TYPES[t]||['📄',t||'?']; }
+(function(){ /* flash discret sur les lignes fraîchement arrivées */
+  const st=document.createElement('style');
+  st.textContent='@keyframes dlFlash{from{background:rgba(232,180,76,.22)}to{background:transparent}}#dl-tbody tr.dl-new{animation:dlFlash 1.8s ease-out}';
+  document.head.appendChild(st);
+})();
 async function dlogs(){
   if(!SYNC.cli) return dlogsAncien();
   $('#main').innerHTML = `<div class="topbar"><div><h2>Logs en direct</h2><div class="sub">Chargement…</div></div></div><div class="panel"><div class="empty">Chargement…</div></div>`;
@@ -4647,48 +4654,75 @@ async function dlogs(){
         if(!DL.data) DL.data=[];
         DL.data.unshift(pl.new);
         if(DL.data.length>400) DL.data.pop();
-        if(document.getElementById('dl-zone')) dlRender();
+        dlLive(pl.new);
       }).subscribe();
   }
   dlRender();
+}
+/* Une ligne du tableau (partagée entre le rendu complet et l'arrivée live). */
+function dlRow(m){
+  const T=dlLbl(m.type);
+  const r=m.employe?S.runners.find(x=>x.nom.toLowerCase()===String(m.employe).toLowerCase()||String(m.employe).toLowerCase().includes(x.nom.toLowerCase())):null;
+  const key='sb_'+m.id, done=S.imported.includes(key);
+  const canImp=m.type==='vente'&&+m.quantite>0&&!done;
+  let meta='';
+  if(m.meta&&typeof m.meta==='object'&&Object.keys(m.meta).length){
+    meta=Object.entries(m.meta).slice(0,2)
+      .map(([k,v])=>esc(k)+' : '+esc(typeof v==='object'?JSON.stringify(v):String(v))).join(' · ');
+  }
+  return `<tr style="${done?'opacity:.45':''}">
+    <td style="white-space:nowrap;color:var(--muted);font-size:.76rem">${new Date(m.ts).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+    <td style="white-space:nowrap">${T[0]} <span style="font-size:.75rem">${esc(T[1])}</span></td>
+    <td><b>${esc(m.employe||'—')}</b>${r?` <span class="badge ${grade(r).cls}" style="font-size:.65rem">${grade(r).nom}</span>`:''}</td>
+    <td style="max-width:340px;font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(m.details||'')}">${esc(String(m.details||'').split('\n')[0])}${meta?`<div style="font-size:.7rem;color:var(--muted);opacity:.8">${meta}</div>`:''}</td>
+    <td>${m.quantite?`<b>${fmt(+m.quantite)}</b>`:'—'}${m.montant?`<div class="gold" style="font-size:.72rem">${money(+m.montant)}</div>`:''}</td>
+    <td style="text-align:right">${done?'<span class="up" style="font-size:.75rem">✔ importé</span>':canImp?`
+      <select class="field" style="width:130px;display:inline-block;padding:5px 8px;font-size:.75rem" id="dlsel_${m.id}">
+        ${S.runners.map(x=>`<option value="${x.id}" ${r&&x.id===r.id?'selected':''}>${esc(x.nom)}</option>`).join('')}
+      </select>
+      <button class="btn btn-sm btn-gold" onclick="dlImport(${m.id},${+m.quantite})" title="Ajoute cette vente aux barils du runner choisi">⬇</button>`:''}</td>
+  </tr>`;
+}
+/* Les 4 compteurs du jour, recalculés puis écrits EN PLACE (pas de redessin). */
+function dlTuiles(){
+  const L=DL.data||[];
+  const j0=new Date(); j0.setHours(0,0,0,0);
+  const jour=L.filter(x=>new Date(x.ts)>=j0);
+  const ventes=jour.filter(x=>x.type==='vente');
+  const T={evts:jour.length,
+    b:ventes.reduce((a,x)=>a+(+x.quantite||0),0),
+    ca:ventes.reduce((a,x)=>a+(+x.montant||0),0),
+    actifs:new Set(jour.map(x=>x.employe).filter(Boolean)).size};
+  const put=(id,html)=>{const e=document.getElementById(id); if(e) e.innerHTML=html;};
+  put('dl-t-evts',fmt(T.evts));
+  put('dl-t-b',fmt(T.b)+' <span style="font-size:.8rem;color:var(--muted)">barils</span>');
+  put('dl-t-ca',money(T.ca));
+  put('dl-t-actifs',fmt(T.actifs));
+  put('dl-compte',(DL.data||[]).length+' événement(s) chargé(s)');
+  return T;
+}
+/* Arrivée d'un événement pendant que la vue est ouverte : insertion douce. */
+function dlLive(m){
+  if(!document.getElementById('dl-zone')) return;          // vue fermée : rien à faire
+  const tb=document.getElementById('dl-tbody');
+  if(!tb) return dlRender();                               // on était sur l'état vide → premier rendu complet
+  dlTuiles();
+  if(DL.type&&m.type!==DL.type) return;                    // filtré : compteurs à jour, ligne non affichée
+  if(DL.q&&!String(m.employe||'').toLowerCase().includes(DL.q)) return;
+  const vide=tb.querySelector('td[colspan]');              // ligne « aucun résultat »
+  if(vide) vide.parentElement.remove();
+  tb.insertAdjacentHTML('afterbegin',dlRow(m));
+  const tr=tb.firstElementChild; if(tr) tr.classList.add('dl-new');
+  while(tb.children.length>150) tb.lastElementChild.remove();
 }
 function dlRender(){
   const L=DL.data||[];
   const types=[...new Set(L.map(x=>x.type))].sort();
   const f=L.filter(x=>(!DL.type||x.type===DL.type)&&(!DL.q||String(x.employe||'').toLowerCase().includes(DL.q)));
-  const j0=new Date(); j0.setHours(0,0,0,0);
-  const jour=L.filter(x=>new Date(x.ts)>=j0);
-  const ventes=jour.filter(x=>x.type==='vente');
-  const caJour=ventes.reduce((a,x)=>a+(+x.montant||0),0);
-  const bJour=ventes.reduce((a,x)=>a+(+x.quantite||0),0);
-  const actifs=new Set(jour.map(x=>x.employe).filter(Boolean)).size;
-  const match=n=>n?S.runners.find(r=>r.nom.toLowerCase()===String(n).toLowerCase()||String(n).toLowerCase().includes(r.nom.toLowerCase())):null;
-  const rows=f.slice(0,150).map(m=>{
-    const T=dlLbl(m.type);
-    const r=match(m.employe);
-    const key='sb_'+m.id, done=S.imported.includes(key);
-    const canImp=m.type==='vente'&&+m.quantite>0&&!done;
-    let meta='';
-    if(m.meta&&typeof m.meta==='object'&&Object.keys(m.meta).length){
-      meta=Object.entries(m.meta).slice(0,2)
-        .map(([k,v])=>esc(k)+' : '+esc(typeof v==='object'?JSON.stringify(v):String(v))).join(' · ');
-    }
-    return `<tr style="${done?'opacity:.45':''}">
-      <td style="white-space:nowrap;color:var(--muted);font-size:.76rem">${new Date(m.ts).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
-      <td style="white-space:nowrap">${T[0]} <span style="font-size:.75rem">${esc(T[1])}</span></td>
-      <td><b>${esc(m.employe||'—')}</b>${r?` <span class="badge ${grade(r).cls}" style="font-size:.65rem">${grade(r).nom}</span>`:''}</td>
-      <td style="max-width:340px;font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(m.details||'')}">${esc(String(m.details||'').split('\n')[0])}${meta?`<div style="font-size:.7rem;color:var(--muted);opacity:.8">${meta}</div>`:''}</td>
-      <td>${m.quantite?`<b>${fmt(+m.quantite)}</b>`:'—'}${m.montant?`<div class="gold" style="font-size:.72rem">${money(+m.montant)}</div>`:''}</td>
-      <td style="text-align:right">${done?'<span class="up" style="font-size:.75rem">✔ importé</span>':canImp?`
-        <select class="field" style="width:130px;display:inline-block;padding:5px 8px;font-size:.75rem" id="dlsel_${m.id}">
-          ${S.runners.map(x=>`<option value="${x.id}" ${r&&x.id===r.id?'selected':''}>${esc(x.nom)}</option>`).join('')}
-        </select>
-        <button class="btn btn-sm btn-gold" onclick="dlImport(${m.id},${+m.quantite})" title="Ajoute cette vente aux barils du runner choisi">⬇</button>`:''}</td>
-    </tr>`;
-  }).join('');
+  const rows=f.slice(0,150).map(dlRow).join('');
   $('#main').innerHTML = `
   <div class="topbar">
-    <div><h2>Logs en direct</h2><div class="sub">Écrits par le bot de l'entreprise · mise à jour instantanée · ${L.length} événement(s) chargé(s)</div></div>
+    <div><h2>Logs en direct</h2><div class="sub">Écrits par le bot de l'entreprise · mise à jour instantanée · <span id="dl-compte">${L.length} événement(s) chargé(s)</span></div></div>
     <div style="display:flex;gap:10px">
       <button class="btn btn-ghost" onclick="dlogs()">↻ Recharger</button>
       <button class="btn btn-ghost" onclick="dlogsAncien()" title="L'ancien détour par GitHub Actions (15 min de retard) — conservé en secours">🗄 Ancien système</button>
@@ -4696,9 +4730,9 @@ function dlRender(){
   </div>
   <div id="dl-zone">
   <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
-    <div class="panel" style="flex:1;min-width:150px;padding:14px 18px"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Événements aujourd'hui</div><div style="font-size:1.5rem;font-weight:700">${fmt(jour.length)}</div></div>
-    <div class="panel" style="flex:1;min-width:150px;padding:14px 18px"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Ventes du jour</div><div style="font-size:1.5rem;font-weight:700">${fmt(bJour)} <span style="font-size:.8rem;color:var(--muted)">barils</span></div><div class="gold" style="font-size:.8rem">${money(caJour)}</div></div>
-    <div class="panel" style="flex:1;min-width:150px;padding:14px 18px"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Employés vus aujourd'hui</div><div style="font-size:1.5rem;font-weight:700">${fmt(actifs)}</div></div>
+    <div class="panel" style="flex:1;min-width:150px;padding:14px 18px"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Événements aujourd'hui</div><div style="font-size:1.5rem;font-weight:700" id="dl-t-evts"></div></div>
+    <div class="panel" style="flex:1;min-width:150px;padding:14px 18px"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Ventes du jour</div><div style="font-size:1.5rem;font-weight:700" id="dl-t-b"></div><div class="gold" style="font-size:.8rem" id="dl-t-ca"></div></div>
+    <div class="panel" style="flex:1;min-width:150px;padding:14px 18px"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Employés vus aujourd'hui</div><div style="font-size:1.5rem;font-weight:700" id="dl-t-actifs"></div></div>
   </div>
   ${!L.length?`<div class="panel"><h3>📡 En attente des premiers logs</h3><p style="color:var(--muted);font-size:.88rem;line-height:1.7">Le bot est branché mais n'a encore rien envoyé. Dès qu'un événement se produit (vente, coffre, véhicule, prise de service…), il s'affichera ici tout seul — sans recharger la page.</p></div>`:`
   <div class="panel" style="padding:12px 16px;margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
@@ -4711,9 +4745,10 @@ function dlRender(){
   </div>
   <div class="panel" style="padding:8px 16px;overflow-x:auto">
     <table><thead><tr><th>Date</th><th>Type</th><th>Qui</th><th>Détails</th><th>Quantité</th><th style="text-align:right">Import</th></tr></thead>
-    <tbody>${rows||'<tr><td colspan="6" style="color:var(--muted);padding:14px">Aucun résultat avec ces filtres.</td></tr>'}</tbody></table>
+    <tbody id="dl-tbody">${rows||'<tr><td colspan="6" style="color:var(--muted);padding:14px">Aucun résultat avec ces filtres.</td></tr>'}</tbody></table>
   </div>`}
   </div>`;
+  dlTuiles();
 }
 function dlImport(id,qte){
   const sel=document.getElementById('dlsel_'+id); if(!sel) return;
