@@ -4621,48 +4621,129 @@ async function fbDel(id){
 
 /* ================== LOGS DISCORD ================== */
 const TYPE_ICON={vente:'💵',recolte:'⛏️',raffinage:'🏭',depot:'📦',retrait:'📤',autre:'📄'};
-/* ---- Logs en direct : écrits par le bot de l'entreprise dans Supabase.
-   Chaque événement arrive à la seconde. Pour éviter toute saccade, un
-   nouvel événement NE redessine PAS la page : sa ligne se glisse en haut
-   du tableau (petit flash doré) et les compteurs se mettent à jour en
-   place. Le redessin complet n'a lieu que sur action de l'utilisateur. ---- */
-const DL={data:null,ch:null,type:'',q:''};
+/* ---- Logs en direct v2 : écrits par le bot de l'entreprise dans Supabase.
+   Recherche avancée, export CSV, tri, pagination, panneau de détails.
+   Un événement temps réel s'insère sans redessiner (aucune saccade). ---- */
+const DL={data:null,ch:null,plage:false,
+  f:{domaine:'',type:'',joueur:'',du:'',au:'',q:''},
+  tri:{col:'ts',dir:-1},page:1,parPage:25,sel:null};
 const DL_TYPES={
   vente:['💰','Vente'], achat_fer:['⚙️','Achat de fer'],
   coffre_depot:['📥','Dépôt coffre'], coffre_retrait:['📤','Retrait coffre'],
   vehicule_spawn:['🚛','Sortie véhicule'], compte_entreprise:['🏦','Compte entreprise'],
   facture:['🧾','Facture'], annonce:['📢','Annonce'],
   prise_service:['🟢','Prise de service'], fin_service:['🔴','Fin de service'],
-  recolte:['⛏️','Récolte'], raffinage:['🏭','Raffinage'], depot:['📥','Dépôt'],
-  retrait:['📤','Retrait'], paie:['💵','Paie'], autre:['📄','Autre'],
+};
+const DL_DOMAINES={
+  coffres:{lbl:'Coffres',types:['coffre_depot','coffre_retrait']},
+  ventes:{lbl:'Ventes',types:['vente']},
+  fer:{lbl:'Fer',types:['achat_fer']},
+  vehicules:{lbl:'Véhicules',types:['vehicule_spawn']},
+  banque:{lbl:'Compte entreprise',types:['compte_entreprise']},
+  factures:{lbl:'Factures',types:['facture']},
+  annonces:{lbl:'Annonces',types:['annonce']},
+  service:{lbl:'Service',types:['prise_service','fin_service']},
 };
 function dlLbl(t){ return DL_TYPES[t]||['📄',t||'?']; }
-(function(){ /* flash discret sur les lignes fraîchement arrivées */
+(function(){
   const st=document.createElement('style');
-  st.textContent='@keyframes dlFlash{from{background:rgba(232,180,76,.22)}to{background:transparent}}#dl-tbody tr.dl-new{animation:dlFlash 1.8s ease-out}';
+  st.textContent='@keyframes dlFlash{from{background:rgba(232,180,76,.22)}to{background:transparent}}'+
+    '#dl-tbody tr.dl-new{animation:dlFlash 1.8s ease-out}'+
+    '#dl-tbody tr{cursor:pointer}#dl-tbody tr:hover{background:rgba(255,255,255,.03)}'+
+    '#dl-tbody tr.dl-sel{background:rgba(232,98,44,.08)}'+
+    '.dl-th-tri{cursor:pointer;user-select:none}.dl-th-tri:hover{color:var(--text)}'+
+    '.dl-delta-p{color:#3fbf7f;font-size:.72rem}.dl-delta-n{color:#e35d4c;font-size:.72rem}'+
+    '@media(max-width:1100px){#dl-cote{display:none}}';
   document.head.appendChild(st);
 })();
 async function dlogs(){
   if(!SYNC.cli) return dlogsAncien();
   $('#main').innerHTML = `<div class="topbar"><div><h2>Logs en direct</h2><div class="sub">Chargement…</div></div></div><div class="panel"><div class="empty">Chargement…</div></div>`;
-  const {data,error}=await SYNC.cli.from('oilroxwood_bot_logs').select('*').order('ts',{ascending:false}).limit(300);
-  if(error){ toast('⚠️ Lecture des logs impossible : '+error.message); return dlogsAncien(); }
-  DL.data=data||[];
+  await dlCharger();
   if(!DL.ch){
     DL.ch=SYNC.cli.channel('bot-logs')
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'oilroxwood_bot_logs'},pl=>{
         if(!DL.data) DL.data=[];
         DL.data.unshift(pl.new);
-        if(DL.data.length>400) DL.data.pop();
+        if(DL.data.length>2000) DL.data.pop();
         dlLive(pl.new);
       }).subscribe();
   }
   dlRender();
 }
-/* Une ligne du tableau (partagée entre le rendu complet et l'arrivée live). */
+/* Chargement : récent par défaut ; si des dates sont posées, on interroge
+   la base sur la plage exacte (le filtre ne se limite pas à ce qui est chargé). */
+async function dlCharger(){
+  let q=SYNC.cli.from('oilroxwood_bot_logs').select('*').order('ts',{ascending:false});
+  if(DL.f.du) q=q.gte('ts',new Date(DL.f.du+'T00:00:00').toISOString());
+  if(DL.f.au) q=q.lte('ts',new Date(DL.f.au+'T23:59:59').toISOString());
+  const {data,error}=await q.limit(2000);
+  if(error){ toast('⚠️ Lecture des logs impossible : '+error.message); DL.data=DL.data||[]; return; }
+  DL.data=data||[]; DL.plage=!!(DL.f.du||DL.f.au);
+}
+function dlFiltrer(L){
+  const F=DL.f;
+  const typesDom=F.domaine&&DL_DOMAINES[F.domaine]?DL_DOMAINES[F.domaine].types:null;
+  return L.filter(x=>{
+    if(typesDom&&!typesDom.includes(x.type)) return false;
+    if(F.type&&x.type!==F.type) return false;
+    if(F.joueur&&!String(x.employe||'').toLowerCase().includes(F.joueur)) return false;
+    if(F.du&&new Date(x.ts)<new Date(F.du+'T00:00:00')) return false;
+    if(F.au&&new Date(x.ts)>new Date(F.au+'T23:59:59')) return false;
+    if(F.q){
+      const blob=(String(x.employe||'')+' '+String(x.details||'')+' '+String(x.type||'')+' '+JSON.stringify(x.meta||{})).toLowerCase();
+      if(!blob.includes(F.q)) return false;
+    }
+    return true;
+  });
+}
+function dlTrier(L){
+  const {col,dir}=DL.tri;
+  return [...L].sort((a,b)=>{
+    const va=col==='ts'?new Date(a.ts).getTime():+a[col]||0;
+    const vb=col==='ts'?new Date(b.ts).getTime():+b[col]||0;
+    return (va-vb)*dir;
+  });
+}
+function dlDelta(jour,hier){
+  if(!hier) return '';
+  const p=((jour-hier)/hier*100);
+  const cls=p>=0?'dl-delta-p':'dl-delta-n';
+  return `<div class="${cls}">${p>=0?'↑':'↓'} ${Math.abs(p).toFixed(1)}% vs hier</div>`;
+}
+function dlStats(){
+  const L=DL.data||[];
+  const j0=new Date(); j0.setHours(0,0,0,0);
+  const h0=new Date(j0.getTime()-86400000);
+  const jour=L.filter(x=>new Date(x.ts)>=j0);
+  const hier=L.filter(x=>{const d=new Date(x.ts);return d>=h0&&d<j0;});
+  const n=(l,t)=>l.filter(x=>x.type===t).length;
+  const somme=(l,t,c)=>l.filter(x=>x.type===t).reduce((a,x)=>a+(+x[c]||0),0);
+  // « en ligne » : dernier événement de service du jour = prise_service
+  const dern={};
+  jour.filter(x=>x.type==='prise_service'||x.type==='fin_service')
+      .forEach(x=>{ const k=x.employe||'?'; if(!dern[k]||new Date(x.ts)>new Date(dern[k].ts)) dern[k]=x; });
+  const enLigne=Object.values(dern).filter(x=>x.type==='prise_service').length;
+  return {jour,hier,
+    evts:[jour.length,hier.length],
+    retraits:[n(jour,'coffre_retrait'),n(hier,'coffre_retrait')],
+    depots:[n(jour,'coffre_depot'),n(hier,'coffre_depot')],
+    vBarils:[somme(jour,'vente','quantite'),somme(hier,'vente','quantite')],
+    vDollars:somme(jour,'vente','montant'),
+    enLigne, vus:new Set(jour.map(x=>x.employe).filter(Boolean)).size};
+}
+function dlTuiles(){
+  const S2=dlStats();
+  const t=(id,html)=>{const e=document.getElementById(id); if(e) e.innerHTML=html;};
+  t('dl-t-evts',fmt(S2.evts[0])+dlDelta(S2.evts[0],S2.evts[1]));
+  t('dl-t-ret',fmt(S2.retraits[0])+dlDelta(S2.retraits[0],S2.retraits[1]));
+  t('dl-t-dep',fmt(S2.depots[0])+dlDelta(S2.depots[0],S2.depots[1]));
+  t('dl-t-vb',fmt(S2.vBarils[0])+' <span style="font-size:.75rem;color:var(--muted)">barils</span><div class="gold" style="font-size:.78rem">'+money(S2.vDollars)+'</div>'+dlDelta(S2.vBarils[0],S2.vBarils[1]));
+  t('dl-t-el',fmt(S2.enLigne)+' <span style="font-size:.75rem;color:var(--muted)">/ '+fmt(S2.vus)+' vus</span>');
+  t('dl-compte',(DL.data||[]).length+' événement(s) chargé(s)'+(DL.plage?' sur la période':''));
+}
 function dlRow(m){
   const T=dlLbl(m.type);
-  const r=m.employe?S.runners.find(x=>x.nom.toLowerCase()===String(m.employe).toLowerCase()||String(m.employe).toLowerCase().includes(x.nom.toLowerCase())):null;
   const key='sb_'+m.id, done=S.imported.includes(key);
   const canImp=m.type==='vente'&&+m.quantite>0&&!done;
   let meta='';
@@ -4670,85 +4751,188 @@ function dlRow(m){
     meta=Object.entries(m.meta).slice(0,2)
       .map(([k,v])=>esc(k)+' : '+esc(typeof v==='object'?JSON.stringify(v):String(v))).join(' · ');
   }
-  return `<tr style="${done?'opacity:.45':''}">
+  return `<tr data-dlid="${m.id}" class="${DL.sel===m.id?'dl-sel':''}" onclick="dlDetails(${m.id})">
     <td style="white-space:nowrap;color:var(--muted);font-size:.76rem">${new Date(m.ts).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
     <td style="white-space:nowrap">${T[0]} <span style="font-size:.75rem">${esc(T[1])}</span></td>
-    <td><b>${esc(m.employe||'—')}</b>${r?` <span class="badge ${grade(r).cls}" style="font-size:.65rem">${grade(r).nom}</span>`:''}</td>
-    <td style="max-width:340px;font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(m.details||'')}">${esc(String(m.details||'').split('\n')[0])}${meta?`<div style="font-size:.7rem;color:var(--muted);opacity:.8">${meta}</div>`:''}</td>
+    <td><b>${esc(m.employe||'—')}</b></td>
+    <td style="max-width:320px;font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(m.details||'')}">${esc(String(m.details||'').split('\n')[0])}${meta?`<div style="font-size:.7rem;color:var(--muted);opacity:.8">${meta}</div>`:''}</td>
     <td>${m.quantite?`<b>${fmt(+m.quantite)}</b>`:'—'}${m.montant?`<div class="gold" style="font-size:.72rem">${money(+m.montant)}</div>`:''}</td>
-    <td style="text-align:right">${done?'<span class="up" style="font-size:.75rem">✔ importé</span>':canImp?`
-      <select class="field" style="width:130px;display:inline-block;padding:5px 8px;font-size:.75rem" id="dlsel_${m.id}">
-        ${S.runners.map(x=>`<option value="${x.id}" ${r&&x.id===r.id?'selected':''}>${esc(x.nom)}</option>`).join('')}
+    <td style="text-align:right" onclick="event.stopPropagation()">${done?'<span class="up" style="font-size:.75rem">✔</span>':canImp?`
+      <select class="field" style="width:120px;display:inline-block;padding:5px 8px;font-size:.75rem" id="dlsel_${m.id}">
+        ${S.runners.map(x=>`<option value="${x.id}">${esc(x.nom)}</option>`).join('')}
       </select>
-      <button class="btn btn-sm btn-gold" onclick="dlImport(${m.id},${+m.quantite})" title="Ajoute cette vente aux barils du runner choisi">⬇</button>`:''}</td>
+      <button class="btn btn-sm btn-gold" onclick="dlImport(${m.id},${+m.quantite})">⬇</button>`:'—'}</td>
   </tr>`;
 }
-/* Les 4 compteurs du jour, recalculés puis écrits EN PLACE (pas de redessin). */
-function dlTuiles(){
-  const L=DL.data||[];
-  const j0=new Date(); j0.setHours(0,0,0,0);
-  const jour=L.filter(x=>new Date(x.ts)>=j0);
-  const ventes=jour.filter(x=>x.type==='vente');
-  const T={evts:jour.length,
-    b:ventes.reduce((a,x)=>a+(+x.quantite||0),0),
-    ca:ventes.reduce((a,x)=>a+(+x.montant||0),0),
-    actifs:new Set(jour.map(x=>x.employe).filter(Boolean)).size};
-  const put=(id,html)=>{const e=document.getElementById(id); if(e) e.innerHTML=html;};
-  put('dl-t-evts',fmt(T.evts));
-  put('dl-t-b',fmt(T.b)+' <span style="font-size:.8rem;color:var(--muted)">barils</span>');
-  put('dl-t-ca',money(T.ca));
-  put('dl-t-actifs',fmt(T.actifs));
-  put('dl-compte',(DL.data||[]).length+' événement(s) chargé(s)');
-  return T;
-}
-/* Arrivée d'un événement pendant que la vue est ouverte : insertion douce. */
 function dlLive(m){
-  if(!document.getElementById('dl-zone')) return;          // vue fermée : rien à faire
+  if(!document.getElementById('dl-zone')) return;
   const tb=document.getElementById('dl-tbody');
-  if(!tb) return dlRender();                               // on était sur l'état vide → premier rendu complet
+  if(!tb) return dlRender();
   dlTuiles();
-  if(DL.type&&m.type!==DL.type) return;                    // filtré : compteurs à jour, ligne non affichée
-  if(DL.q&&!String(m.employe||'').toLowerCase().includes(DL.q)) return;
-  const vide=tb.querySelector('td[colspan]');              // ligne « aucun résultat »
-  if(vide) vide.parentElement.remove();
+  if(dlFiltrer([m]).length===0) return;                      // hors filtres
+  if(DL.page!==1||DL.tri.col!=='ts'||DL.tri.dir!==-1){       // pas en tête de liste
+    const c=document.getElementById('dl-nb'); if(c) c.textContent=fmt(dlFiltrer(DL.data).length)+' résultat(s)';
+    return;
+  }
+  const vide=tb.querySelector('td[colspan]'); if(vide) vide.parentElement.remove();
   tb.insertAdjacentHTML('afterbegin',dlRow(m));
   const tr=tb.firstElementChild; if(tr) tr.classList.add('dl-new');
-  while(tb.children.length>150) tb.lastElementChild.remove();
+  while(tb.children.length>DL.parPage) tb.lastElementChild.remove();
+  const c=document.getElementById('dl-nb'); if(c) c.textContent=fmt(dlFiltrer(DL.data).length)+' résultat(s)';
 }
+window.dlMajF=async function(champ,val,recharge){
+  DL.f[champ]=champ==='joueur'||champ==='q'?String(val).toLowerCase().trim():val;
+  DL.page=1;
+  if(recharge) await dlCharger();
+  dlRender();
+};
+window.dlPeriode=async function(v){
+  const j=new Date(); j.setHours(0,0,0,0);
+  const iso=d=>d.toISOString().slice(0,10);
+  if(v==='auj'){DL.f.du=iso(j);DL.f.au=iso(j);}
+  else if(v==='hier'){const h=new Date(j.getTime()-86400000);DL.f.du=iso(h);DL.f.au=iso(h);}
+  else if(v==='7j'){DL.f.du=iso(new Date(j.getTime()-6*86400000));DL.f.au=iso(j);}
+  else if(v==='30j'){DL.f.du=iso(new Date(j.getTime()-29*86400000));DL.f.au=iso(j);}
+  else {DL.f.du='';DL.f.au='';}
+  DL.page=1; await dlCharger(); dlRender();
+};
+window.dlReset=async function(){
+  DL.f={domaine:'',type:'',joueur:'',du:'',au:'',q:''}; DL.page=1; DL.sel=null;
+  await dlCharger(); dlRender();
+};
+window.dlTriCol=function(col){
+  if(DL.tri.col===col) DL.tri.dir*=-1; else DL.tri={col,dir:-1};
+  dlRender();
+};
+window.dlPage=function(p){ DL.page=p; dlRender(); };
+window.dlParPage=function(n){ DL.parPage=+n; DL.page=1; dlRender(); };
+window.dlSauverFiltre=function(){
+  try{ localStorage.setItem('orx_dl_filtre',JSON.stringify(DL.f)); toast('⭐ Filtre enregistré — il sera proposé à ta prochaine visite'); }catch(e){}
+};
+window.dlFiltreSauve=async function(){
+  try{ const f=JSON.parse(localStorage.getItem('orx_dl_filtre')||'null'); if(!f) return toast('Aucun filtre enregistré');
+    DL.f=f; DL.page=1; await dlCharger(); dlRender(); }catch(e){}
+};
+window.dlCSV=function(){
+  const L=dlTrier(dlFiltrer(DL.data||[]));
+  const esc2=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const lignes=[['date','type','employe','quantite','montant','details','meta'].join(';')]
+    .concat(L.map(m=>[m.ts,m.type,m.employe||'',m.quantite||'',m.montant||'',
+      String(m.details||'').replace(/\r?\n/g,' '),JSON.stringify(m.meta||{})].map(esc2).join(';')));
+  const blob=new Blob(['\ufeff'+lignes.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='logs-oilroxwood-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  toast('📤 '+L.length+' ligne(s) exportée(s)');
+};
+window.dlDetails=function(id){
+  DL.sel=id;
+  document.querySelectorAll('#dl-tbody tr').forEach(tr=>tr.classList.toggle('dl-sel',+tr.dataset.dlid===id));
+  const m=(DL.data||[]).find(x=>x.id===id);
+  const cote=document.getElementById('dl-cote');
+  if(!cote||!m) return;
+  const T=dlLbl(m.type); const me=m.meta||{};
+  const bloc=(titre,val)=>val?`<div style="margin-top:10px"><div style="font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted)">${titre}</div><div style="font-size:.85rem;margin-top:2px;word-break:break-word">${val}</div></div>`:'';
+  const dejaVus=['target_position','position','license','steam','discord_url','note','avant','apres','serveur','user_id','item','objet'];
+  const reste=Object.entries(me).filter(([k])=>!dejaVus.includes(k)).slice(0,6)
+    .map(([k,v])=>bloc(esc(k),esc(typeof v==='object'?JSON.stringify(v):String(v)))).join('');
+  const pos=me.target_position||me.position;
+  cote.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:.78rem;letter-spacing:1.4px;text-transform:uppercase;font-weight:700">Détails de l'événement</div>
+      <button class="btn btn-sm btn-ghost" onclick="DL.sel=null;document.getElementById('dl-cote').innerHTML='';document.querySelectorAll('#dl-tbody tr').forEach(t=>t.classList.remove('dl-sel'))">✕</button>
+    </div>
+    ${bloc('Date / Heure',new Date(m.ts).toLocaleString('fr-FR'))}
+    ${bloc('Type',T[0]+' '+esc(T[1]))}
+    ${bloc('Joueur',esc(m.employe||'—')+(me.user_id?`<div style="font-size:.72rem;color:var(--muted)">id : ${esc(me.user_id)}</div>`:'')+(me.license?`<div style="font-size:.72rem;color:var(--muted)">license : ${esc(me.license)}</div>`:'')+(me.steam?`<div style="font-size:.72rem;color:var(--muted)">steam : ${esc(me.steam)}</div>`:''))}
+    ${bloc('Objet',esc(me.item||me.objet||String(m.details||'').split('\n')[0]||''))}
+    ${bloc('Quantité',m.quantite!=null?fmt(+m.quantite):'')}
+    ${bloc('Montant',m.montant!=null?money(+m.montant):'')}
+    ${pos?bloc('Position',esc(String(pos))+` <button class="btn btn-sm btn-ghost" title="Copier" onclick="navigator.clipboard&&navigator.clipboard.writeText('${esc(String(pos))}').then(()=>toast('📋 Position copiée'))">📋</button>`):''}
+    ${bloc('Avant',me.avant!=null?esc(String(me.avant)):'')}
+    ${bloc('Après',me.apres!=null?esc(String(me.apres)):'')}
+    ${bloc('Serveur',esc(me.serveur||'Oil Roxwood'))}
+    ${me.discord_url?bloc('Discord',`<a href="${esc(me.discord_url)}" target="_blank" rel="noopener" style="color:var(--accent)">Ouvrir dans Discord ↗</a>`):''}
+    ${bloc('Note',me.note?esc(String(me.note)):'')}
+    ${reste}`;
+};
 function dlRender(){
   const L=DL.data||[];
-  const types=[...new Set(L.map(x=>x.type))].sort();
-  const f=L.filter(x=>(!DL.type||x.type===DL.type)&&(!DL.q||String(x.employe||'').toLowerCase().includes(DL.q)));
-  const rows=f.slice(0,150).map(dlRow).join('');
+  const filtres=dlFiltrer(L);
+  const tries=dlTrier(filtres);
+  const nbPages=Math.max(1,Math.ceil(tries.length/DL.parPage));
+  if(DL.page>nbPages) DL.page=nbPages;
+  const debut=(DL.page-1)*DL.parPage;
+  const pageL=tries.slice(debut,debut+DL.parPage);
+  const typesDispo=DL.f.domaine&&DL_DOMAINES[DL.f.domaine]?DL_DOMAINES[DL.f.domaine].types:[...new Set(L.map(x=>x.type))].sort();
+  const fl=(champ)=>DL.f[champ]?' style="border-color:var(--accent)"':'';
+  const triIco=c=>DL.tri.col===c?(DL.tri.dir===-1?' ↓':' ↑'):' ⇅';
+  const pages=[];
+  for(let i=1;i<=nbPages;i++){ if(i<=3||i>nbPages-1||Math.abs(i-DL.page)<=1) pages.push(i); }
+  const pagesU=[...new Set(pages)].sort((a,b)=>a-b);
+  let pagesHtml=''; let prev=0;
+  pagesU.forEach(i=>{ if(i-prev>1) pagesHtml+='<span style="color:var(--muted)">…</span>'; prev=i;
+    pagesHtml+=`<button class="btn btn-sm ${i===DL.page?'btn-gold':'btn-ghost'}" onclick="dlPage(${i})">${i}</button>`; });
   $('#main').innerHTML = `
   <div class="topbar">
-    <div><h2>Logs en direct</h2><div class="sub">Écrits par le bot de l'entreprise · mise à jour instantanée · <span id="dl-compte">${L.length} événement(s) chargé(s)</span></div></div>
+    <div><h2>Logs en direct</h2><div class="sub">Écrits par le bot de l'entreprise · mise à jour instantanée · <span id="dl-compte"></span></div></div>
     <div style="display:flex;gap:10px">
       <button class="btn btn-ghost" onclick="dlogs()">↻ Recharger</button>
-      <button class="btn btn-ghost" onclick="dlogsAncien()" title="L'ancien détour par GitHub Actions (15 min de retard) — conservé en secours">🗄 Ancien système</button>
+      <button class="btn btn-ghost" onclick="dlogsAncien()" title="Ancien détour GitHub Actions — conservé en secours">🗄 Ancien système</button>
     </div>
   </div>
   <div id="dl-zone">
-  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
-    <div class="panel" style="flex:1;min-width:150px;padding:14px 18px"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Événements aujourd'hui</div><div style="font-size:1.5rem;font-weight:700" id="dl-t-evts"></div></div>
-    <div class="panel" style="flex:1;min-width:150px;padding:14px 18px"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Ventes du jour</div><div style="font-size:1.5rem;font-weight:700" id="dl-t-b"></div><div class="gold" style="font-size:.8rem" id="dl-t-ca"></div></div>
-    <div class="panel" style="flex:1;min-width:150px;padding:14px 18px"><div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Employés vus aujourd'hui</div><div style="font-size:1.5rem;font-weight:700" id="dl-t-actifs"></div></div>
+  <div class="panel" style="padding:12px 16px;margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+    <div><label style="font-size:.66rem">Domaine</label><select class="field"${fl('domaine')} style="width:150px;padding:6px 10px" onchange="DL.f.type='';dlMajF('domaine',this.value)">
+      <option value="">Tous</option>${Object.entries(DL_DOMAINES).map(([k,d])=>`<option value="${k}" ${DL.f.domaine===k?'selected':''}>${esc(d.lbl)}</option>`).join('')}</select></div>
+    <div><label style="font-size:.66rem">Action</label><select class="field"${fl('type')} style="width:160px;padding:6px 10px" onchange="dlMajF('type',this.value)">
+      <option value="">Toutes</option>${typesDispo.map(t=>`<option value="${esc(t)}" ${DL.f.type===t?'selected':''}>${dlLbl(t)[0]} ${esc(dlLbl(t)[1])}</option>`).join('')}</select></div>
+    <div><label style="font-size:.66rem">Joueur</label><input class="field"${fl('joueur')} style="width:170px;padding:6px 10px" placeholder="Rechercher un joueur…" value="${esc(DL.f.joueur)}" onchange="dlMajF('joueur',this.value)"></div>
+    <div><label style="font-size:.66rem">Date début</label><input type="date" class="field"${fl('du')} style="width:150px;padding:6px 10px" value="${esc(DL.f.du)}" onchange="dlMajF('du',this.value,true)"></div>
+    <div><label style="font-size:.66rem">Date fin</label><input type="date" class="field"${fl('au')} style="width:150px;padding:6px 10px" value="${esc(DL.f.au)}" onchange="dlMajF('au',this.value,true)"></div>
+    <div><label style="font-size:.66rem">Période rapide</label><select class="field" style="width:130px;padding:6px 10px" onchange="dlPeriode(this.value)">
+      <option value="">—</option><option value="auj">Aujourd'hui</option><option value="hier">Hier</option><option value="7j">7 jours</option><option value="30j">30 jours</option></select></div>
+    <button class="btn btn-ghost" onclick="dlReset()">Réinitialiser</button>
   </div>
-  ${!L.length?`<div class="panel"><h3>📡 En attente des premiers logs</h3><p style="color:var(--muted);font-size:.88rem;line-height:1.7">Le bot est branché mais n'a encore rien envoyé. Dès qu'un événement se produit (vente, coffre, véhicule, prise de service…), il s'affichera ici tout seul — sans recharger la page.</p></div>`:`
-  <div class="panel" style="padding:12px 16px;margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-    <select class="field" style="width:auto;display:inline-block;padding:6px 10px" onchange="DL.type=this.value;dlRender()">
-      <option value="">Tous les types</option>
-      ${types.map(t=>`<option value="${esc(t)}" ${DL.type===t?'selected':''}>${dlLbl(t)[0]} ${esc(dlLbl(t)[1])}</option>`).join('')}
-    </select>
-    <input class="field" style="width:220px;display:inline-block;padding:6px 10px" placeholder="Filtrer par employé, puis Entrée" value="${esc(DL.q)}" onchange="DL.q=this.value.toLowerCase().trim();dlRender()">
-    ${(DL.type||DL.q)?`<button class="btn btn-ghost btn-sm" onclick="DL.type='';DL.q='';dlRender()">✕ Effacer les filtres</button><span style="font-size:.8rem;color:var(--muted)">${f.length} résultat(s)</span>`:''}
+  <div class="panel" style="padding:10px 16px;margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+    <input class="field"${fl('q')} style="flex:1;min-width:220px;padding:8px 12px" placeholder="🔍 Recherche dans les logs… (puis Entrée)" value="${esc(DL.f.q)}" onchange="dlMajF('q',this.value)">
+    <button class="btn btn-ghost" onclick="dlSauverFiltre()">⭐ Enregistrer le filtre</button>
+    <button class="btn btn-ghost" onclick="dlFiltreSauve()" title="Réapplique le dernier filtre enregistré">↩ Filtre enregistré</button>
+    <button class="btn btn-gold" onclick="dlCSV()">⬇ Exporter CSV</button>
   </div>
-  <div class="panel" style="padding:8px 16px;overflow-x:auto">
-    <table><thead><tr><th>Date</th><th>Type</th><th>Qui</th><th>Détails</th><th>Quantité</th><th style="text-align:right">Import</th></tr></thead>
-    <tbody id="dl-tbody">${rows||'<tr><td colspan="6" style="color:var(--muted);padding:14px">Aucun résultat avec ces filtres.</td></tr>'}</tbody></table>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+    ${[['dl-t-evts','Événements aujourd\'hui'],['dl-t-ret','Retraits coffre'],['dl-t-dep','Dépôts coffre'],['dl-t-vb','Ventes du jour'],['dl-t-el','Employés en ligne']]
+      .map(([id,lbl])=>`<div class="panel" style="flex:1;min-width:145px;padding:13px 16px"><div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">${lbl}</div><div style="font-size:1.4rem;font-weight:700" id="${id}"></div></div>`).join('')}
+  </div>
+  ${!L.length?`<div class="panel"><h3>📡 En attente des premiers logs</h3><p style="color:var(--muted);font-size:.88rem;line-height:1.7">Le bot est branché mais n'a encore rien envoyé sur cette période.</p></div>`:`
+  <div style="display:flex;gap:12px;align-items:flex-start">
+    <div style="flex:1;min-width:0">
+      <div class="panel" style="padding:8px 16px;overflow-x:auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0"><span id="dl-nb" style="font-size:.8rem;color:var(--muted)">${fmt(filtres.length)} résultat(s)</span>
+        ${(DL.f.domaine||DL.f.type||DL.f.joueur||DL.f.du||DL.f.q)?'<button class="btn btn-sm btn-ghost" onclick="dlReset()">✕ Effacer les filtres</button>':''}</div>
+        <table><thead><tr>
+          <th class="dl-th-tri" onclick="dlTriCol('ts')">Date${triIco('ts')}</th><th>Type</th><th>Qui</th><th>Détails</th>
+          <th class="dl-th-tri" onclick="dlTriCol('quantite')">Quantité${triIco('quantite')}</th><th style="text-align:right">Import</th></tr></thead>
+        <tbody id="dl-tbody">${pageL.map(dlRow).join('')||'<tr><td colspan="6" style="color:var(--muted);padding:14px">Aucun résultat avec ces filtres.</td></tr>'}</tbody></table>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0 4px">
+          <span style="font-size:.78rem;color:var(--muted)">Afficher
+            <select class="field" style="width:70px;display:inline-block;padding:4px 8px" onchange="dlParPage(this.value)">
+              ${[25,50,100].map(n=>`<option ${DL.parPage===n?'selected':''}>${n}</option>`).join('')}</select> lignes par page</span>
+          <span style="font-size:.78rem;color:var(--muted)">${fmt(debut+1)} à ${fmt(Math.min(debut+DL.parPage,filtres.length))} sur ${fmt(filtres.length)}</span>
+          <span style="display:flex;gap:4px;align-items:center">
+            <button class="btn btn-sm btn-ghost" ${DL.page<=1?'disabled':''} onclick="dlPage(${DL.page-1})">‹</button>
+            ${pagesHtml}
+            <button class="btn btn-sm btn-ghost" ${DL.page>=nbPages?'disabled':''} onclick="dlPage(${DL.page+1})">›</button>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div id="dl-cote" class="panel" style="width:300px;flex-shrink:0;padding:14px 16px;position:sticky;top:12px"></div>
   </div>`}
   </div>`;
   dlTuiles();
+  if(DL.sel) dlDetails(DL.sel);
 }
 function dlImport(id,qte){
   const sel=document.getElementById('dlsel_'+id); if(!sel) return;
