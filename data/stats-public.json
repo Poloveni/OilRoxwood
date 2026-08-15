@@ -1,18 +1,18 @@
 {
- "ca": 865115,
- "maj": "2026-08-15T02:33:37.835Z",
+ "ca": 773880,
+ "maj": "2026-08-15T12:10:03.412Z",
  "top3": [
-  {
-   "nom": "Mike Brooks",
-   "barils": 13004
-  },
   {
    "nom": "Djawad Tal",
    "barils": 12792
   },
   {
    "nom": "Thomas Boyer",
-   "barils": 10925
+   "barils": 10180
+  },
+  {
+   "nom": "Surko Varenthis",
+   "barils": 9856
   }
  ],
  "runners": [
@@ -38,10 +38,10 @@
    "nom": "Thomas Boyer",
    "grade": 0,
    "poste": "RH",
-   "prime": 27312.5,
+   "prime": 25450,
    "quota": 0,
-   "total": 10925,
-   "barils": 10925
+   "total": 10180,
+   "barils": 10180
   },
   {
    "nom": "Emma Collins-rodriguez",
@@ -83,10 +83,10 @@
    "nom": "Ilyes Moutaouk",
    "grade": 3,
    "poste": null,
-   "prime": 16250,
+   "prime": 0,
    "quota": 6500,
-   "total": 5856,
-   "barils": 6500
+   "total": 2572,
+   "barils": 3216
   },
   {
    "nom": "Djawad Tal",
@@ -101,10 +101,10 @@
    "nom": "Lucas Vettel",
    "grade": 3,
    "poste": null,
-   "prime": 25580,
+   "prime": 19780,
    "quota": 6500,
-   "total": 8610,
-   "barils": 10232
+   "total": 6290,
+   "barils": 7912
   },
   {
    "nom": "Morino Collins",
@@ -200,10 +200,10 @@
    "nom": "Jason Harper",
    "grade": 0,
    "poste": null,
-   "prime": 4204,
+   "prime": 0,
    "quota": 3000,
-   "total": 3452,
-   "barils": 4204
+   "total": 1946,
+   "barils": 2698
   },
   {
    "nom": "Tyrone Harper",
@@ -211,8 +211,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 2596,
-   "barils": 2918
+   "total": 1300,
+   "barils": 1622
   },
   {
    "nom": "Jesse Delane",
@@ -245,10 +245,10 @@
    "nom": "Surko Varenthis",
    "grade": 0,
    "poste": null,
-   "prime": 10498,
+   "prime": 9856,
    "quota": 3000,
-   "total": 8592,
-   "barils": 10498
+   "total": 7950,
+   "barils": 9856
   },
   {
    "nom": "Julio Collins",
@@ -265,8 +265,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 1397,
-   "barils": 1397
+   "total": 1250,
+   "barils": 1250
   },
   {
    "nom": "Harley Smith",
@@ -326,10 +326,10 @@
    "nom": "William Carter",
    "grade": 0,
    "poste": null,
-   "prime": 3468,
+   "prime": 0,
    "quota": 3000,
-   "total": 3150,
-   "barils": 3468
+   "total": 2518,
+   "barils": 2836
   },
   {
    "nom": "Adam Wade",
@@ -344,10 +344,10 @@
    "nom": "Robert Redfield",
    "grade": 0,
    "poste": null,
-   "prime": 5674,
+   "prime": 5046,
    "quota": 3000,
-   "total": 5030,
-   "barils": 5674
+   "total": 4402,
+   "barils": 5046
   },
   {
    "nom": "Luiz Gonzalez",
@@ -391,17 +391,17 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 2211,
-   "barils": 2211
+   "total": 1578,
+   "barils": 1578
   },
   {
    "nom": "Mike Brooks",
    "grade": 0,
    "poste": null,
-   "prime": 13004,
+   "prime": 9632,
    "quota": 3000,
-   "total": 14796,
-   "barils": 13004
+   "total": 11424,
+   "barils": 9632
   },
   {
    "nom": "Savannah Brooks",
@@ -427,8 +427,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 1300,
-   "barils": 1951
+   "total": 0,
+   "barils": 651
   },
   {
    "nom": "Emilio Falcon",
@@ -445,8 +445,17 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 2208,
-   "barils": 2832
+   "total": 1568,
+   "barils": 2192
+  },
+  {
+   "nom": "Emilio Varga",
+   "grade": 0,
+   "poste": "Patron",
+   "prime": 0,
+   "quota": 0,
+   "total": 0,
+   "barils": 0
   },
   {
    "nom": "Helena Rhosé",
@@ -454,8 +463,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 500,
-   "barils": 1145
+   "total": 0,
+   "barils": 645
   },
   {
    "nom": "Elliot Adkins",
@@ -463,8 +472,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 602,
-   "barils": 916
+   "total": 0,
+   "barils": 314
   },
   {
    "nom": "Luis Santoro",
@@ -483,38 +492,11 @@
    "quota": 0,
    "total": 0,
    "barils": 546
-  },
-  {
-   "nom": "Léon Varga-caldéron",
-   "grade": 0,
-   "poste": "Patron",
-   "prime": 0,
-   "quota": 0,
-   "total": 0,
-   "barils": 0
-  },
-  {
-   "nom": "Diego Herrera",
-   "grade": 0,
-   "poste": "Co Patron",
-   "prime": 0,
-   "quota": 0,
-   "total": 0,
-   "barils": 0
-  },
-  {
-   "nom": "Tony Bellino",
-   "grade": 0,
-   "poste": null,
-   "prime": 0,
-   "quota": 3000,
-   "total": 0,
-   "barils": 0
   }
  ],
  "semaine": 33,
- "effectif": 55,
+ "effectif": 53,
  "objectif": 275000,
- "totalBarils": 173023,
+ "totalBarils": 154776,
  "clientsServis": 37
 }
