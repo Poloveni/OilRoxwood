@@ -1,18 +1,18 @@
 {
- "ca": 551355,
- "maj": "2026-08-20T14:43:28.316Z",
+ "ca": 640325,
+ "maj": "2026-08-20T15:15:53.205Z",
  "top3": [
   {
    "nom": "Mike Brooks",
-   "barils": 17988
+   "barils": 19401
+  },
+  {
+   "nom": "Alex Turner",
+   "barils": 8753
   },
   {
    "nom": "Bobby Rousseau",
    "barils": 6794
-  },
-  {
-   "nom": "Morino Collins",
-   "barils": 6736
   }
  ],
  "runners": [
@@ -47,10 +47,10 @@
    "nom": "Ilyes Moutaouk",
    "grade": 3,
    "poste": null,
-   "prime": 0,
+   "prime": 16250,
    "quota": 6500,
-   "total": 2586,
-   "barils": 2586
+   "total": 6500,
+   "barils": 6500
   },
   {
    "nom": "Lucas Vettel",
@@ -65,10 +65,10 @@
    "nom": "Mike Brooks",
    "grade": 3,
    "poste": null,
-   "prime": 44970,
+   "prime": 48502.5,
    "quota": 6500,
-   "total": 18626,
-   "barils": 17988
+   "total": 20039,
+   "barils": 19401
   },
   {
    "nom": "Morino Collins",
@@ -83,10 +83,10 @@
    "nom": "Adel Dulax",
    "grade": 1,
    "poste": null,
-   "prime": 0,
+   "prime": 4950,
    "quota": 3000,
-   "total": 2640,
-   "barils": 2640
+   "total": 3300,
+   "barils": 3300
   },
   {
    "nom": "Helena Rhosé",
@@ -112,8 +112,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 648,
-   "barils": 648
+   "total": 1298,
+   "barils": 1298
   },
   {
    "nom": "Cléa Nova",
@@ -146,10 +146,10 @@
    "nom": "Thomas Boyer",
    "grade": 0,
    "poste": "RH",
-   "prime": 0,
+   "prime": 3685,
    "quota": 0,
-   "total": 0,
-   "barils": 0
+   "total": 1474,
+   "barils": 1474
   },
   {
    "nom": "Emma Collins-rodriguez",
@@ -310,8 +310,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 622,
-   "barils": 622
+   "total": 1252,
+   "barils": 1252
   },
   {
    "nom": "Alexis Lavollette",
@@ -335,10 +335,10 @@
    "nom": "Alex Turner",
    "grade": 0,
    "poste": null,
-   "prime": 4853,
+   "prime": 8753,
    "quota": 3000,
-   "total": 1951,
-   "barils": 4853
+   "total": 5851,
+   "barils": 8753
   },
   {
    "nom": "Baza Kov",
@@ -382,8 +382,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 1551,
-   "barils": 1551
+   "total": 2512,
+   "barils": 2512
   },
   {
    "nom": "Brian Collins",
@@ -400,8 +400,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 320,
-   "barils": 320
+   "total": 1582,
+   "barils": 1582
   },
   {
    "nom": "Django Shmitt",
@@ -418,8 +418,8 @@
    "poste": null,
    "prime": 0,
    "quota": 3000,
-   "total": 0,
-   "barils": 926
+   "total": 1298,
+   "barils": 2224
   },
   {
    "nom": "Mia Santorelli",
@@ -429,11 +429,65 @@
    "quota": 3000,
    "total": 0,
    "barils": 646
+  },
+  {
+   "nom": "Emilio Falcon",
+   "grade": 1,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Saad Lzaar",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 968
+  },
+  {
+   "nom": "Jayson Simth",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 328
+  },
+  {
+   "nom": "Billy Dan",
+   "grade": 0,
+   "poste": "Stagiaire",
+   "prime": 0,
+   "quota": 0,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Said Zawadi",
+   "grade": 0,
+   "poste": "Stagiaire",
+   "prime": 840,
+   "quota": 0,
+   "total": 0,
+   "barils": 336
+  },
+  {
+   "nom": "Yanis Black",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 0
   }
  ],
  "semaine": 34,
- "effectif": 46,
+ "effectif": 52,
  "objectif": 275000,
- "totalBarils": 110271,
+ "totalBarils": 128065,
  "clientsServis": 49
 }
