@@ -78,17 +78,25 @@ if os.path.exists(OUT):
         pass
 
 fetched, before = [], None
-for _ in range(3):
-    url = f"https://discord.com/api/v10/channels/{CHANNEL}/messages?limit=100"
-    if before:
-        url += f"&before={before}"
-    batch = api(url)
-    if not batch:
-        break
-    fetched += batch
-    before = batch[-1]["id"]
-    if len(batch) < 100:
-        break
+try:
+    for _ in range(3):
+        url = f"https://discord.com/api/v10/channels/{CHANNEL}/messages?limit=100"
+        if before:
+            url += f"&before={before}"
+        batch = api(url)
+        if not batch:
+            break
+        fetched += batch
+        before = batch[-1]["id"]
+        if len(batch) < 100:
+            break
+except urllib.error.HTTPError as e:
+    raison = {401: "token invalide",
+              403: "le bot n'a pas accès à ce salon — il lui faut « Voir le salon » "
+                   "et « Lire l'historique des messages »",
+              404: "salon introuvable — vérifier DISCORD_FER_CHANNEL_ID"}.get(e.code, f"HTTP {e.code}")
+    print(f"Salon {CHANNEL} illisible : {raison}")
+    sys.exit(0)   # on n'écrase pas le fichier existant et on n'interrompt pas le workflow
 
 for msg in fetched:
     p = parse(msg)

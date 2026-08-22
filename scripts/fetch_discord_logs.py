@@ -4,12 +4,14 @@ et les écrit dans data/discord-logs.json pour le dashboard admin.
 
 Nécessite les variables d'environnement :
   DISCORD_BOT_TOKEN   — token du bot (secret GitHub)
-  DISCORD_CHANNEL_ID  — ID du salon de logs (secret GitHub)
+  DISCORD_CHANNEL_ID  — ID du salon de logs, ou plusieurs séparés par des virgules
+                        (secret GitHub)
 """
 import json, os, re, sys, urllib.request
 
 TOKEN = os.environ.get("DISCORD_BOT_TOKEN", "").strip()
-CHANNEL = os.environ.get("DISCORD_CHANNEL_ID", "").strip()
+CHANNELS = [c for c in re.split(r"[,\s;/]+", os.environ.get("DISCORD_CHANNEL_ID", "").strip()) if c.isdigit()]
+CHANNEL = CHANNELS[0] if CHANNELS else ""
 OUT = "data/discord-logs.json"
 MAX_KEPT = 500  # nombre max de messages conservés dans le JSON
 
@@ -95,19 +97,41 @@ if os.path.exists(OUT):
     except Exception:
         pass
 
-# --- récupération (jusqu'à 300 messages, du plus récent au plus ancien) ---
-fetched, before = [], None
-for _ in range(3):
-    url = f"https://discord.com/api/v10/channels/{CHANNEL}/messages?limit=100"
-    if before:
-        url += f"&before={before}"
-    batch = api(url)
-    if not batch:
-        break
-    fetched += batch
-    before = batch[-1]["id"]
-    if len(batch) < 100:
-        break
+# --- récupération : jusqu'à 300 messages par salon, du plus récent au plus ancien ---
+# Un salon inaccessible (403) n'interrompt plus la récupération des autres.
+fetched = []
+ok_salons, ko_salons = [], []
+for ch in CHANNELS:
+    before, pris = None, 0
+    try:
+        for _ in range(3):
+            url = f"https://discord.com/api/v10/channels/{ch}/messages?limit=100"
+            if before:
+                url += f"&before={before}"
+            batch = api(url)
+            if not batch:
+                break
+            fetched += batch
+            pris += len(batch)
+            before = batch[-1]["id"]
+            if len(batch) < 100:
+                break
+        ok_salons.append(f"{ch} ({pris} msg)")
+    except urllib.error.HTTPError as e:
+        raison = {401: "token invalide", 403: "le bot n'a pas accès à ce salon",
+                  404: "salon introuvable"}.get(e.code, f"HTTP {e.code}")
+        ko_salons.append(f"{ch} — {raison}")
+    except Exception as e:
+        ko_salons.append(f"{ch} — {e}")
+
+print(f"Salons lus  : {len(ok_salons)}/{len(CHANNELS)}")
+for s in ok_salons:
+    print("   OK  ", s)
+for s in ko_salons:
+    print("   ÉCHEC", s)
+if not ok_salons:
+    print("Aucun salon accessible — vérifier que le bot est sur le serveur "
+          "et qu'il a « Voir le salon » + « Lire l'historique des messages ».")
 
 for msg in fetched:
     t = text_of(msg)
