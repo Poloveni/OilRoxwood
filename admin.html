@@ -507,7 +507,7 @@ function load(){
 }
 /* ---- synchro par sections : chaque famille de données a sa propre date ----
    Évite qu'un admin qui touche l'effectif écrase la facture qu'un autre vient de créer. */
-const SEC_KEYS=['runners','weeks','sheets','fact','users','pending','fer','settings','absences','primesExtra','quotasCom','quotasComHist','journal','bilanExtra','closeUndo','bilanForce','prodDer'];
+const SEC_KEYS=['runners','weeks','sheets','fact','users','pending','fer','settings','absences','primesExtra','quotasCom','quotasComHist','journal','bilanExtra','closeUndo','bilanForce','prodDer','imported','_qcFix1','_wkFix1'];
 /* ---- heure de référence : celle du serveur Supabase, pas celle du PC ----
    Un utilisateur avec une horloge décalée datait ses modifs « dans le futur » et écrasait tout. */
 let CLOCK_SKEW=0;
@@ -878,14 +878,17 @@ function enter(){
     else if(cu2&&!localStorage.getItem('orx_tour_'+agKey())) localStorage.setItem('orx_tour_'+agKey(),'1'); // anciens comptes : pas de visite imposée
   },1500);
   let _rsz; addEventListener('resize',()=>{ clearTimeout(_rsz); _rsz=setTimeout(applyPerms,200); });
-  const wk=semaineCal(); if(S.settings.semaine!==wk){ S.settings.semaine=wk; save(); } // semaine calendaire (heure de Paris) — save uniquement si elle change
+  /* La semaine de travail n'avance QUE sur « Clôturer la semaine » (ou en la modifiant à la main
+     dans les Paramètres). Avant, elle basculait toute seule le lundi à 00h00, et la clôture faite
+     le lundi matin comptait déjà les recrutements sur la semaine neuve. */
+  if(!S.settings.semaine){ S.settings.semaine=semaineCal(); save(); } // première installation uniquement
   show('overview');
   // effectif ← tablette (le pull Supabase a déjà eu lieu au chargement de la page)
   setTimeout(async()=>{
     initSync();
     await ensureSheets();
     const r=isMembre()?null:syncRunners(true);
-    S.settings.semaine=semaineCal();
+    if(!S.settings.semaine) S.settings.semaine=semaineCal(); // idem : jamais de bascule automatique
     rerender();
   }, 50);
 }
@@ -1772,6 +1775,7 @@ function undoClose(){
   const snap=JSON.parse(S.closeUndo.snap);
   S.runners=snap.runners; S.weeks=snap.weeks; S.settings=snap.settings; S.sheets=snap.sheets;
   if(snap.quotasCom!==undefined){ S.quotasCom=snap.quotasCom; S.quotasComHist=snap.quotasComHist; }
+  else toast('⚠️ Cette sauvegarde est antérieure au suivi des quotas commerciaux : les achats de fer n\'ont pas pu être restaurés');
   if(snap.primesExtra!==undefined) S.primesExtra=snap.primesExtra;
   delete S.closeUndo;
   save(); sbPushNow(); rerender();
@@ -2521,10 +2525,32 @@ function saveFact(){
   const cRel=cli(FD.client);
   if(cRel){ cRel.lastCmd=FD.date; delete cRel.relance; }
   // cohérence Ventes de la semaine : les bidons facturés s'y ajoutent automatiquement
-  const qteB=FD.lignes.filter(l=>l.ref==='CMD'||/bidon/i.test(ligneCalc(l).desc||'')).reduce((a,l)=>a+nn(l.qte),0);
+  const estBidon=l=>{
+    const d=String((ligneCalc(l).desc)||'')+' '+String(l.ref||'');
+    return l.ref==='CMD'||l.ref==='OFFERT'||/bidon|essence|carburant|baril|f[uû]t/i.test(d);
+  };
+  const qteB=FD.lignes.filter(estBidon).reduce((a,l)=>a+nn(l.qte),0);
+  const qteTot=FD.lignes.reduce((a,l)=>a+nn(l.qte),0);
   if(qteB>0){
-    const addVente=()=>{ S.sheets.ventesSem.push({date:FD.date,client:FD.client,quantite:qteB,qui:FD.emetteur||''}); save(); };
-    if(S.sheets&&S.sheets.ventesSem) addVente(); else ensureSheets().then(addVente);
+    // plusieurs émetteurs (« Julio Collins, Stella Collins ») : une ligne chacun, quantité répartie
+    const noms=String(FD.emetteur||'').split(/\s*(?:,|;|\/|&|\+|\bet\b)\s*/i).map(s=>s.trim()).filter(Boolean);
+    const parts = noms.length>1
+      ? noms.map((nom,i)=>({nom, q: Math.floor(qteB/noms.length) + (i<qteB%noms.length?1:0)})).filter(x=>x.q>0)
+      : [{nom:(noms[0]||''), q:qteB}];
+    const addVente=()=>{
+      parts.forEach(x=>S.sheets.ventesSem.push({date:FD.date,client:FD.client,quantite:x.q,qui:x.nom}));
+      save();
+    };
+    if(S.sheets&&S.sheets.ventesSem) addVente();
+    else ensureSheets().then(addVente).catch(e=>{
+      // ne jamais perdre l'information en silence
+      jlog(`⚠️ Facture n°${FD.num} : ajout aux Ventes de la semaine impossible (${e&&e.message||e})`);
+      toast('⚠️ Facture enregistrée, mais NON ajoutée aux Ventes de la semaine — à saisir à la main');
+    });
+  } else if(qteTot>0){
+    // aucune ligne reconnue comme bidon : on prévient au lieu d'ignorer silencieusement
+    jlog(`⚠️ Facture n°${FD.num} (${FD.client}) : aucune ligne reconnue comme bidon, rien ajouté aux Ventes de la semaine`);
+    toast('⚠️ Aucune ligne reconnue comme bidon — rien n\'a été ajouté aux Ventes de la semaine');
   }
   sendLog('🧾 Facture n°'+FD.num, `Client : **${FD.client}**\nTotal TTC : **${money(factTotaux().ttc)}**\nÉmise par : ${FD.emetteur||'—'}`, 0xa78bfa);
   newDraft(); save(); factures(); toast('💾 Facture enregistrée');
