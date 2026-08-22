@@ -631,7 +631,14 @@ function initSync(){
       }
       else checkDiscordAuth(); // en attente de validation : entre automatiquement dès que la direction valide
     })
-    .subscribe(st=>{ if(st==='SUBSCRIBED') syncDot(true,'Temps réel actif'); });
+    .subscribe(st=>{
+      if(st==='SUBSCRIBED'){
+        syncDot(true,'Temps réel actif');
+        if(SYNC.lost){ SYNC.lost=false; sbResync(); } // on rattrape ce qu'on a manqué pendant la coupure
+      } else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT'||st==='CLOSED'){
+        SYNC.lost=true; syncDot(false,'Temps réel interrompu — resynchronisation au retour');
+      }
+    });
   // présence : « untel est en train de modifier » (éphémère, jamais stocké)
   SYNC.pres=SYNC.cli.channel('presence-edit');
   SYNC.pres.on('broadcast',{event:'edit'},p=>{
@@ -693,19 +700,81 @@ async function sbPull(){
 function sbQueue(){ if(!SYNC.on||!SYNC.ready) return; clearTimeout(SYNC.t); SYNC.t=setTimeout(sbPushNow,250); }
 // filet de sécurité : si on quitte la page avec un envoi en attente, on tente de l'expédier
 addEventListener('beforeunload',()=>{ if(SYNC.t){ clearTimeout(SYNC.t); SYNC.t=null; sbPushNow(); } });
+/* Envoi sécurisé : on relit la base, on fusionne, puis on n'écrit QUE si personne
+   n'a écrit entre-temps (jeton _rev). Sans ça, un onglet resté ouvert plusieurs heures
+   réécrivait tout son état périmé par-dessus le travail des autres. */
 async function sbPushNow(force){
   if(!SYNC.on) return;
   if(!force&&isMembre()) return; // les membres ne modifient jamais l'état partagé (sauf envoi forcé : demandes d'accès)
+  if(SYNC.pushing){ SYNC.again=true; return; } // un seul envoi à la fois dans cet onglet
+  SYNC.pushing=true;
   try{
-    const d=JSON.parse(JSON.stringify(S)); d._cid=SYNC.cid;
-    delete d.passHash; // jamais synchronisé : chaque navigateur garde le sien
-    delete d._fp;      // empreintes locales : inutiles aux autres
-    try{ d._statsPub=statsData(); }catch(e){} // paquet prêt à publier, récupéré par le robot GitHub toutes les 15 min
-    const {error}=await SYNC.cli.from('oilroxwood_etat').upsert({id:2,data:d,maj:new Date().toISOString()});
-    if(error) throw error;
-    syncDot(true,'Synchronisé · '+new Date().toLocaleTimeString('fr-FR'));
+    let ok=false;
+    for(let essai=0; essai<5 && !ok; essai++){
+      // 1) état réellement présent en base
+      const {data:row,error:eLire}=await SYNC.cli.from('oilroxwood_etat').select('data').eq('id',2).maybeSingle();
+      if(eLire) throw eLire;
+      const rem=row&&row.data;
+      const revDist=rem?(rem._rev||null):null;
+      // 2) on récupère ce qui est plus récent en base avant d'écrire
+      if(rem&&rem._majSec&&S._majSec&&((S.runners&&S.runners.length)||(S.users&&S.users.length))){
+        if(mergeRemote(rem).changed){
+          localStorage.setItem(LS_KEY,JSON.stringify(S));
+          if(sessionStorage.getItem('orx_auth')==='1'){ try{ applyPerms(); softRerender(); }catch(e){} }
+        }
+      }
+      // 3) paquet à envoyer
+      const d=JSON.parse(JSON.stringify(S)); d._cid=SYNC.cid;
+      delete d.passHash; // jamais synchronisé : chaque navigateur garde le sien
+      delete d._fp;      // empreintes locales : inutiles aux autres
+      d._rev=Math.random().toString(36).slice(2)+'-'+Date.now().toString(36); // jeton de version
+      try{ d._statsPub=statsData(); }catch(e){} // paquet prêt à publier, récupéré par le robot GitHub toutes les 15 min
+      // 4) écriture conditionnelle : refusée si la base a bougé depuis la lecture
+      if(!rem){
+        const ins=await SYNC.cli.from('oilroxwood_etat').insert({id:2,data:d,maj:new Date().toISOString()}).select('id');
+        if(!ins.error) ok=true;
+        else if(ins.error.code!=='23505') throw ins.error; // 23505 = créée par un autre entre-temps : on refait un tour
+      } else {
+        let q=SYNC.cli.from('oilroxwood_etat').update({data:d,maj:new Date().toISOString()}).eq('id',2);
+        q = revDist ? q.eq('data->>_rev',revDist) : q.is('data->>_rev',null);
+        const up=await q.select('id');
+        if(up.error) throw up.error;
+        if(up.data&&up.data.length) ok=true; // écriture acceptée
+        else await new Promise(r=>setTimeout(r,120+Math.random()*200)); // quelqu'un a écrit : on refusionne
+      }
+    }
+    if(ok) syncDot(true,'Synchronisé · '+new Date().toLocaleTimeString('fr-FR'));
+    else   syncDot(false,'Base occupée — nouvel essai automatique');
+    if(!ok){ clearTimeout(SYNC.t); SYNC.t=setTimeout(sbPushNow,1500); }
   }catch(e){ syncDot(false,'Échec d\'envoi — modifs gardées en local'); }
+  finally{
+    SYNC.pushing=false;
+    if(SYNC.again){ SYNC.again=false; sbQueue(); } // des modifs sont arrivées pendant l'envoi
+  }
 }
+
+/* Resynchronisation légère : relit la base et fusionne, sans forcer d'envoi.
+   Appelée au retour sur l'onglet, au retour du réseau, à la reconnexion et toutes les 5 min. */
+async function sbResync(){
+  if(!SYNC.on||!SYNC.ready||SYNC.pushing) return;
+  try{
+    const {data:row,error}=await SYNC.cli.from('oilroxwood_etat').select('data').eq('id',2).maybeSingle();
+    if(error) throw error;
+    const rem=row&&row.data;
+    if(!rem||rem._cid===SYNC.cid){ syncDot(true,'Synchronisé'); return; }
+    const localReal=(S.runners&&S.runners.length)||(S.users&&S.users.length);
+    if(rem._majSec&&S._majSec&&localReal){
+      const r=mergeRemote(rem);
+      localStorage.setItem(LS_KEY,JSON.stringify(S));
+      if(r.changed&&sessionStorage.getItem('orx_auth')==='1'){ try{ applyPerms(); softRerender(); }catch(e){} }
+      if(r.localNewer) sbQueue(); // nos sections plus récentes repartent vers la base
+    }
+    syncDot(true,'Synchronisé · '+new Date().toLocaleTimeString('fr-FR'));
+  }catch(e){ syncDot(false,'Resynchronisation impossible'); }
+}
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) sbResync(); });
+addEventListener('online',()=>sbResync());
+setInterval(()=>{ if(!document.hidden) sbResync(); },5*60*1000);
 
 /* ================== AUTH ================== */
 async function sha(t){
@@ -2211,6 +2280,9 @@ function factTotaux(f){
 }
 async function ensureFact(){
   if(S.fact) return;
+  /* garde-fou : ne JAMAIS recréer une facturation vide par-dessus des données existantes.
+     On vérifie d'abord auprès de la base — c'est ce qui effaçait toutes les factures. */
+  if(SYNC.on&&SYNC.ready){ await sbResync(); if(S.fact) return; }
   let seed={clients:[],articles:[],tva:[0,0.02,0.04,0.05]};
   try{ const r=await fetch('data/facturation-seed.json?ts='+Date.now(),{cache:'no-store'}); seed=await r.json(); }catch(e){}
   S.fact={clients:seed.clients,articles:seed.articles,tva:seed.tva||[0,0.02,0.04,0.05],factures:[],compteur:1};
@@ -2604,8 +2676,12 @@ function printFact(f){
 let REL_J=30, REL_SEARCH='';
 async function ensureSheets(){
   // charge le seed pour les feuilles manquantes (première fois OU nouvelles feuilles ajoutées)
-  const missing = S.sheets ? Object.keys(SHEETS_DEF).filter(k=>!S.sheets[k]) : Object.keys(SHEETS_DEF);
+  const manquantes=()=> S.sheets ? Object.keys(SHEETS_DEF).filter(k=>!S.sheets[k]) : Object.keys(SHEETS_DEF);
+  let missing = manquantes();
   if(S.sheets && !missing.length) return;
+  /* garde-fou : avant de repeupler une feuille avec le modèle figé du dépôt,
+     on vérifie que la base ne contient pas déjà la vraie version. */
+  if(SYNC.on&&SYNC.ready){ await sbResync(); missing = manquantes(); if(S.sheets && !missing.length) return; }
   if(!S.sheets) S.sheets={};
   try{
     const r=await fetch('data/feuilles-seed.json?ts='+Date.now(),{cache:'no-store'});
