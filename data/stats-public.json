@@ -1,11 +1,565 @@
 {
- "ca": 0,
- "maj": "2026-09-13T18:01:44.497Z",
- "top3": [],
- "runners": [],
+ "ca": 1198615,
+ "maj": "2026-09-13T22:06:41.764Z",
+ "top3": [
+  {
+   "nom": "Alex Turner",
+   "barils": 24017
+  },
+  {
+   "nom": "Eden Birds",
+   "barils": 18950
+  },
+  {
+   "nom": "Victor Sulivane",
+   "barils": 13938
+  }
+ ],
+ "runners": [
+  {
+   "nom": "Stella Collins",
+   "grade": 0,
+   "poste": "Patron",
+   "prime": 0,
+   "quota": 0,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Tyler Collins",
+   "grade": 0,
+   "poste": "Co Patron",
+   "prime": 0,
+   "quota": 0,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Diego Herrera",
+   "grade": 0,
+   "poste": "Co Patron",
+   "prime": 0,
+   "quota": 0,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Thomas Boyer",
+   "grade": 0,
+   "poste": "RH",
+   "prime": 10905,
+   "quota": 0,
+   "total": 717,
+   "barils": 4362
+  },
+  {
+   "nom": "Juan Sanchez",
+   "grade": 0,
+   "poste": "RH",
+   "prime": 13000,
+   "quota": 0,
+   "total": 0,
+   "barils": 5200
+  },
+  {
+   "nom": "Emma Collins-rodriguez",
+   "grade": 0,
+   "poste": "Responsable Commercial",
+   "prime": 6195,
+   "quota": 0,
+   "total": 0,
+   "barils": 2478
+  },
+  {
+   "nom": "William Rodriguez-collins",
+   "grade": 0,
+   "poste": "Commercial",
+   "prime": 4320,
+   "quota": 0,
+   "total": 0,
+   "barils": 1728
+  },
+  {
+   "nom": "Julio Collins",
+   "grade": 0,
+   "poste": "Commercial",
+   "prime": 0,
+   "quota": 0,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Laurent Roquel",
+   "grade": 0,
+   "poste": "Commercial",
+   "prime": 0,
+   "quota": 0,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Ashley Cooper",
+   "grade": 0,
+   "poste": "Responsable Runner",
+   "prime": 12532.5,
+   "quota": 0,
+   "total": 0,
+   "barils": 5013
+  },
+  {
+   "nom": "Jack Hamilton",
+   "grade": 3,
+   "poste": null,
+   "prime": 16397.5,
+   "quota": 6500,
+   "total": 0,
+   "barils": 6559
+  },
+  {
+   "nom": "Darian Nguyen",
+   "grade": 3,
+   "poste": null,
+   "prime": 17627.5,
+   "quota": 6500,
+   "total": 0,
+   "barils": 7051
+  },
+  {
+   "nom": "Alex Turner",
+   "grade": 3,
+   "poste": null,
+   "prime": 47500,
+   "quota": 6500,
+   "total": 0,
+   "barils": 24017
+  },
+  {
+   "nom": "Eden Birds",
+   "grade": 3,
+   "poste": null,
+   "prime": 47375,
+   "quota": 6500,
+   "total": 0,
+   "barils": 18950
+  },
+  {
+   "nom": "Junior Wills",
+   "grade": 3,
+   "poste": null,
+   "prime": 0,
+   "quota": 6500,
+   "total": 0,
+   "barils": 2194
+  },
+  {
+   "nom": "Mike Brooks",
+   "grade": 3,
+   "poste": null,
+   "prime": 0,
+   "quota": 6500,
+   "total": 0,
+   "barils": 5190
+  },
+  {
+   "nom": "Morino Collins",
+   "grade": 2,
+   "poste": null,
+   "prime": 10324,
+   "quota": 5000,
+   "total": 0,
+   "barils": 5162
+  },
+  {
+   "nom": "Victor Sulivane",
+   "grade": 2,
+   "poste": null,
+   "prime": 27876,
+   "quota": 5000,
+   "total": 0,
+   "barils": 13938
+  },
+  {
+   "nom": "Bobby Rousseau",
+   "grade": 2,
+   "poste": null,
+   "prime": 10308,
+   "quota": 5000,
+   "total": 0,
+   "barils": 5154
+  },
+  {
+   "nom": "Savannah Brooks",
+   "grade": 2,
+   "poste": null,
+   "prime": 10000,
+   "quota": 5000,
+   "total": 0,
+   "barils": 5000
+  },
+  {
+   "nom": "Jojo Lappach",
+   "grade": 2,
+   "poste": null,
+   "prime": 10344,
+   "quota": 5000,
+   "total": 0,
+   "barils": 5172
+  },
+  {
+   "nom": "Tommy Helfinger",
+   "grade": 1,
+   "poste": null,
+   "prime": 4545,
+   "quota": 3000,
+   "total": 0,
+   "barils": 3030
+  },
+  {
+   "nom": "Arthure Pilon",
+   "grade": 1,
+   "poste": null,
+   "prime": 7672.5,
+   "quota": 3000,
+   "total": 0,
+   "barils": 5115
+  },
+  {
+   "nom": "Marcus Johnson",
+   "grade": 1,
+   "poste": null,
+   "prime": 5353.5,
+   "quota": 3000,
+   "total": 0,
+   "barils": 3569
+  },
+  {
+   "nom": "Helena Rhosé",
+   "grade": 1,
+   "poste": null,
+   "prime": 4518,
+   "quota": 3000,
+   "total": 0,
+   "barils": 3012
+  },
+  {
+   "nom": "Amine Nasser",
+   "grade": 1,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Ilyes Moutaouk",
+   "grade": 1,
+   "poste": null,
+   "prime": 9507,
+   "quota": 3000,
+   "total": 0,
+   "barils": 6338
+  },
+  {
+   "nom": "Adel Dulax",
+   "grade": 1,
+   "poste": null,
+   "prime": 12001.5,
+   "quota": 3000,
+   "total": 0,
+   "barils": 8001
+  },
+  {
+   "nom": "Fred Montaigu",
+   "grade": 1,
+   "poste": null,
+   "prime": 4503,
+   "quota": 3000,
+   "total": 0,
+   "barils": 3002
+  },
+  {
+   "nom": "Ray Buffalo",
+   "grade": 1,
+   "poste": null,
+   "prime": 4609.5,
+   "quota": 3000,
+   "total": 0,
+   "barils": 3073
+  },
+  {
+   "nom": "Bjorn Frost",
+   "grade": 0,
+   "poste": null,
+   "prime": 3104,
+   "quota": 3000,
+   "total": 0,
+   "barils": 3104
+  },
+  {
+   "nom": "Ivar Frost",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 778
+  },
+  {
+   "nom": "Hitachi Hydro",
+   "grade": 0,
+   "poste": null,
+   "prime": 5170,
+   "quota": 3000,
+   "total": 0,
+   "barils": 5170
+  },
+  {
+   "nom": "Elliot Adkins",
+   "grade": 0,
+   "poste": null,
+   "prime": 3014,
+   "quota": 3000,
+   "total": 0,
+   "barils": 3014
+  },
+  {
+   "nom": "Pablo Escocha",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 956
+  },
+  {
+   "nom": "Keath Chop's",
+   "grade": 0,
+   "poste": null,
+   "prime": 10015,
+   "quota": 3000,
+   "total": 0,
+   "barils": 10015
+  },
+  {
+   "nom": "Nicolas Ismeurt",
+   "grade": 0,
+   "poste": null,
+   "prime": 4618,
+   "quota": 3000,
+   "total": 0,
+   "barils": 4618
+  },
+  {
+   "nom": "Bratan Leoneti",
+   "grade": 0,
+   "poste": null,
+   "prime": 10237,
+   "quota": 3000,
+   "total": 0,
+   "barils": 10237
+  },
+  {
+   "nom": "Jason White",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Junior Collins",
+   "grade": 0,
+   "poste": null,
+   "prime": 4798,
+   "quota": 3000,
+   "total": 0,
+   "barils": 4798
+  },
+  {
+   "nom": "Drew Miller",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 2522
+  },
+  {
+   "nom": "Louka Romelu",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 2492
+  },
+  {
+   "nom": "Tarek Rodriguez",
+   "grade": 0,
+   "poste": null,
+   "prime": 10037,
+   "quota": 3000,
+   "total": 0,
+   "barils": 10037
+  },
+  {
+   "nom": "Alex Bren",
+   "grade": 0,
+   "poste": null,
+   "prime": 4418,
+   "quota": 3000,
+   "total": 1477,
+   "barils": 4418
+  },
+  {
+   "nom": "Carla Braz",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Jymmi Doyle",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Kazuki Ishikawa",
+   "grade": 0,
+   "poste": null,
+   "prime": 3834,
+   "quota": 3000,
+   "total": 0,
+   "barils": 3834
+  },
+  {
+   "nom": "Lazario Ramirez",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 1126
+  },
+  {
+   "nom": "Brandon Parker",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 974
+  },
+  {
+   "nom": "Abdel Bren",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Aníbal Santamaría",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 1465
+  },
+  {
+   "nom": "Frank Smite",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 1282
+  },
+  {
+   "nom": "Mada Dillon",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 2098
+  },
+  {
+   "nom": "Cristóbal Perrera",
+   "grade": 0,
+   "poste": null,
+   "prime": 3216,
+   "quota": 3000,
+   "total": 0,
+   "barils": 3216
+  },
+  {
+   "nom": "Kamara Doue",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 1705
+  },
+  {
+   "nom": "Tony Bellino",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 1266,
+   "barils": 2388
+  },
+  {
+   "nom": "Daniel Cooper",
+   "grade": 0,
+   "poste": "Stagiaire",
+   "prime": 3305,
+   "quota": 0,
+   "total": 0,
+   "barils": 1322
+  },
+  {
+   "nom": "Alejandro Varrgas",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 0
+  },
+  {
+   "nom": "Jose Danielle",
+   "grade": 0,
+   "poste": null,
+   "prime": 0,
+   "quota": 3000,
+   "total": 0,
+   "barils": 632
+  },
+  {
+   "nom": "Xavier Collins",
+   "grade": 0,
+   "poste": null,
+   "prime": 5214,
+   "quota": 3000,
+   "total": 0,
+   "barils": 5214
+  }
+ ],
  "semaine": 37,
- "effectif": 0,
+ "effectif": 60,
  "objectif": 375000,
- "totalBarils": 0,
+ "totalBarils": 239723,
  "clientsServis": 98
 }
