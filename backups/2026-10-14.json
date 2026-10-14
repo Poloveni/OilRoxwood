@@ -2101,9 +2101,9 @@
    "quantite": 125
   }
  ],
- "_cid": "eay1fcxjx7d",
- "_maj": 1789338972688,
- "_rev": "9u5b2lcclvc-mu0e84rg",
+ "_cid": "nbuysy8vtf",
+ "_maj": 1790434206948,
+ "_rev": "1cx6ox006ih-mv15met0",
  "fact": {
   "tva": [
    0,
@@ -9758,7 +9758,7 @@
     "tel": "555 219 678",
     "actif": true,
     "avert": "",
-    "grade": "Raffineur",
+    "grade": "Intérimaire",
     "recrut": "",
     "arrivee": "2025-12-11",
     "contrat": true,
@@ -10064,7 +10064,7 @@
     "rib": "271953",
     "tel": "555-830-007",
     "avert": "",
-    "grade": "Raffineur Confirmé",
+    "grade": "Raffineur",
     "recrut": "Thomas Boyer",
     "arrivee": "2026-08-07",
     "contrat": true,
@@ -11092,7 +11092,7 @@
     "rib": "502521",
     "tel": "555916571",
     "avert": "",
-    "grade": "Raffineur Expert",
+    "grade": "Raffineur Confirmé",
     "recrut": "Thomas Boyer",
     "arrivee": "2026-09-02",
     "contrat": true,
@@ -11110,7 +11110,7 @@
     "rib": "188449",
     "tel": " 555-804-611",
     "avert": "",
-    "grade": "Raffineur",
+    "grade": "Intérimaire",
     "recrut": "Thomas Boyer",
     "arrivee": "2026-09-02",
     "contrat": true,
@@ -11218,7 +11218,7 @@
     "rib": "560414",
     "tel": "555-770-230",
     "avert": "",
-    "grade": "Raffineur",
+    "grade": "Intérimaire",
     "recrut": "Juan Sanchez",
     "arrivee": "2026-09-09",
     "contrat": true,
@@ -11236,7 +11236,7 @@
     "rib": "324259",
     "tel": " 555-141-095",
     "avert": "",
-    "grade": "Raffineur",
+    "grade": "Intérimaire",
     "recrut": "Juan Sanchez",
     "arrivee": "2026-09-09",
     "contrat": true,
@@ -11272,7 +11272,7 @@
     "rib": " 560 906",
     "tel": "555 601 545",
     "avert": "",
-    "grade": "Raffineur",
+    "grade": "Intérimaire",
     "recrut": "Thomas Boyer",
     "arrivee": "2026-09-09",
     "contrat": true,
@@ -18550,25 +18550,25 @@
   ]
  },
  "_majSec": {
-  "fer": 1787479382126,
+  "fer": 1790434206948,
   "fact": 1789318918327,
   "users": 1788606200637,
   "weeks": 1789338967473,
-  "sheets": 1789338972688,
-  "_qcFix1": 1787501685118,
-  "_wkFix1": 1787501685118,
+  "sheets": 1789382971796,
+  "_qcFix1": 1790434206948,
+  "_wkFix1": 1790434206948,
   "journal": 1789338972688,
-  "pending": 1787309681363,
-  "prodDer": 1789147041792,
-  "runners": 1789338967473,
+  "pending": 1790434206948,
+  "prodDer": 1789395746431,
+  "runners": 1789382971796,
   "absences": 1789244847079,
-  "imported": 1787501685118,
+  "imported": 1790434206948,
   "settings": 1789338967473,
   "closeUndo": 1789338967473,
-  "quotasCom": 1789338967473,
+  "quotasCom": 1790434206948,
   "bilanExtra": 1789337201336,
-  "bilanForce": 1787570501400,
-  "primesExtra": 1788130924768,
+  "bilanForce": 1790434206948,
+  "primesExtra": 1790434206948,
   "quotasComHist": 1789338967473
  },
  "_qcFix1": true,
@@ -20287,11 +20287,6 @@
     "date": "2026-08-30"
    },
    {
-    "q": {},
-    "qui": "Juan Sanchez",
-    "date": "2026-08-30"
-   },
-   {
     "q": {
      "bracelets + bagues": 1
     },
@@ -20417,11 +20412,11 @@
    "runs": [],
    "grade": 0,
    "poste": "RH",
-   "total": 717,
-   "barils": 0,
+   "total": 5079,
+   "barils": 4362,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 4362
   },
   {
    "id": 1789332727014,
@@ -20430,11 +20425,11 @@
    "runs": [],
    "grade": 0,
    "poste": "RH",
-   "total": 0,
-   "barils": 0,
+   "total": 5200,
+   "barils": 5200,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 5200
   },
   {
    "id": 1789332355778,
@@ -20443,11 +20438,11 @@
    "runs": [],
    "grade": 0,
    "poste": "Responsable Commercial",
-   "total": 0,
-   "barils": 0,
+   "total": 2478,
+   "barils": 2478,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 2478
   },
   {
    "id": 1789333132273,
@@ -20456,11 +20451,11 @@
    "runs": [],
    "grade": 0,
    "poste": "Commercial",
-   "total": 0,
-   "barils": 0,
+   "total": 1728,
+   "barils": 1728,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 1728
   },
   {
    "id": 1789333067938,
@@ -20495,11 +20490,11 @@
    "runs": [],
    "grade": 0,
    "poste": "Responsable Runner",
-   "total": 0,
-   "barils": 0,
+   "total": 5013,
+   "barils": 5013,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 5013
   },
   {
    "id": 1789332388208,
@@ -20508,11 +20503,11 @@
    "runs": [],
    "grade": 3,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 6559,
+   "barils": 6559,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 6559
   },
   {
    "id": 1789332598573,
@@ -20521,11 +20516,11 @@
    "runs": [],
    "grade": 3,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 7051,
+   "barils": 7051,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 7051
   },
   {
    "id": 1789332714282,
@@ -20534,11 +20529,11 @@
    "runs": [],
    "grade": 3,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 24017,
+   "barils": 24017,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 24017
   },
   {
    "id": 1789332897304,
@@ -20547,11 +20542,11 @@
    "runs": [],
    "grade": 3,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 18950,
+   "barils": 18950,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 18950
   },
   {
    "id": 1789333154639,
@@ -20560,11 +20555,11 @@
    "runs": [],
    "grade": 3,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 2194,
+   "barils": 2194,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 2194
   },
   {
    "id": 1789332631227,
@@ -20573,11 +20568,11 @@
    "runs": [],
    "grade": 3,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 5190,
+   "barils": 5190,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 5190
   },
   {
    "id": 1789332929662,
@@ -20586,24 +20581,24 @@
    "runs": [],
    "grade": 2,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 5162,
+   "barils": 5162,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 5162
   },
   {
    "id": 1789332678267,
    "nom": "Victor Sulivane",
    "src": "tablette",
    "runs": [],
-   "grade": 3,
+   "grade": 2,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 13938,
+   "barils": 13938,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 13938
   },
   {
    "id": 1789332427359,
@@ -20612,11 +20607,11 @@
    "runs": [],
    "grade": 2,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 5154,
+   "barils": 5154,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 5154
   },
   {
    "id": 1789332636313,
@@ -20625,11 +20620,11 @@
    "runs": [],
    "grade": 2,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 5000,
+   "barils": 5000,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 5000
   },
   {
    "id": 1789332787887,
@@ -20638,11 +20633,11 @@
    "runs": [],
    "grade": 2,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 5172,
+   "barils": 5172,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 5172
   },
   {
    "id": 1789332419182,
@@ -20651,11 +20646,11 @@
    "runs": [],
    "grade": 1,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 3030,
+   "barils": 3030,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 3030
   },
   {
    "id": 1789332874838,
@@ -20664,11 +20659,11 @@
    "runs": [],
    "grade": 1,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 5115,
+   "barils": 5115,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 5115
   },
   {
    "id": 1789332739232,
@@ -20677,11 +20672,11 @@
    "runs": [],
    "grade": 1,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 3569,
+   "barils": 3569,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 3569
   },
   {
    "id": 1789332366494,
@@ -20690,11 +20685,11 @@
    "runs": [],
    "grade": 1,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 3012,
+   "barils": 3012,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 3012
   },
   {
    "id": 1789333021577,
@@ -20716,24 +20711,24 @@
    "runs": [],
    "grade": 1,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 6338,
+   "barils": 6338,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 6338
   },
   {
    "id": 1789333009173,
    "nom": "Adel Dulax",
    "src": "tablette",
    "runs": [],
-   "grade": 2,
+   "grade": 1,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 8001,
+   "barils": 8001,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 8001
   },
   {
    "id": 1789332919683,
@@ -20742,11 +20737,11 @@
    "runs": [],
    "grade": 1,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 3002,
+   "barils": 3002,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 3002
   },
   {
    "id": 1789332952830,
@@ -20755,11 +20750,11 @@
    "runs": [],
    "grade": 1,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 3073,
+   "barils": 3073,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 3073
   },
   {
    "id": 1789332742612,
@@ -20768,11 +20763,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 3104,
+   "barils": 3104,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 3104
   },
   {
    "id": 1789332494084,
@@ -20781,24 +20776,24 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 778,
+   "barils": 778,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 778
   },
   {
    "id": 1789332746579,
    "nom": "Hitachi Hydro",
    "src": "tablette",
    "runs": [],
-   "grade": 1,
+   "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 5170,
+   "barils": 5170,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 5170
   },
   {
    "id": 1789332563799,
@@ -20807,11 +20802,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 3014,
+   "barils": 3014,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 3014
   },
   {
    "id": 1789332535230,
@@ -20820,24 +20815,24 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 956,
+   "barils": 956,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 956
   },
   {
    "id": 1789332947490,
    "nom": "Keath Chop's",
    "src": "tablette",
    "runs": [],
-   "grade": 1,
+   "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 10015,
+   "barils": 10015,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 10015
   },
   {
    "id": 1789332700896,
@@ -20846,24 +20841,24 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 4618,
+   "barils": 4618,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 4618
   },
   {
    "id": 1789332538903,
    "nom": "Bratan Leoneti",
    "src": "tablette",
    "runs": [],
-   "grade": 1,
+   "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 10237,
+   "barils": 10237,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 10237
   },
   {
    "id": 1789332639732,
@@ -20885,11 +20880,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 4798,
+   "barils": 4798,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 4798
   },
   {
    "id": 1789332672098,
@@ -20898,11 +20893,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 2522,
+   "barils": 2522,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 2522
   },
   {
    "id": 1789332921905,
@@ -20911,24 +20906,24 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 2492,
+   "barils": 2492,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 2492
   },
   {
    "id": 1789332994628,
    "nom": "Tarek Rodriguez",
    "src": "tablette",
    "runs": [],
-   "grade": 1,
+   "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 10037,
+   "barils": 10037,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 10037
   },
   {
    "id": 1789332460197,
@@ -20937,11 +20932,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 1477,
-   "barils": 0,
+   "total": 5895,
+   "barils": 4418,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 4418
   },
   {
    "id": 1789332501028,
@@ -20976,11 +20971,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 3834,
+   "barils": 3834,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 3834
   },
   {
    "id": 1789332366066,
@@ -20989,11 +20984,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 1126,
+   "barils": 1126,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 1126
   },
   {
    "id": 1789332958437,
@@ -21002,11 +20997,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 974,
+   "barils": 974,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 974
   },
   {
    "id": 1789332685531,
@@ -21028,11 +21023,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 1465,
+   "barils": 1465,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 1465
   },
   {
    "id": 1789332484570,
@@ -21041,11 +21036,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 1282,
+   "barils": 1282,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 1282
   },
   {
    "id": 1789332293268,
@@ -21054,11 +21049,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 2098,
+   "barils": 2098,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 2098
   },
   {
    "id": 1789332189353,
@@ -21067,11 +21062,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 3216,
+   "barils": 3216,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 3216
   },
   {
    "id": 1789333072866,
@@ -21080,11 +21075,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 1705,
+   "barils": 1705,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 1705
   },
   {
    "id": 1789332284731,
@@ -21093,11 +21088,11 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 1266,
-   "barils": 0,
+   "total": 3654,
+   "barils": 2388,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 2388
   },
   {
    "id": 1789332766938,
@@ -21106,11 +21101,11 @@
    "runs": [],
    "grade": 0,
    "poste": "Stagiaire",
-   "total": 0,
-   "barils": 0,
+   "total": 1322,
+   "barils": 1322,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 1322
   },
   {
    "id": 1789332361951,
@@ -21132,24 +21127,24 @@
    "runs": [],
    "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 632,
+   "barils": 632,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 632
   },
   {
    "id": 1789332891009,
    "nom": "Xavier Collins",
    "src": "tablette",
    "runs": [],
-   "grade": 1,
+   "grade": 0,
    "poste": null,
-   "total": 0,
-   "barils": 0,
+   "total": 5214,
+   "barils": 5214,
    "discord": "",
    "recrues": 0,
-   "lastSync": 0
+   "lastSync": 5214
   }
  ],
  "absences": [
@@ -21443,9 +21438,22 @@
   "primeWebmaster": 0
  },
  "_statsPub": {
-  "ca": 0,
-  "maj": "2026-09-13T22:36:14.236Z",
-  "top3": [],
+  "ca": 1198615,
+  "maj": "2026-10-09T16:02:52.404Z",
+  "top3": [
+   {
+    "nom": "Alex Turner",
+    "barils": 24017
+   },
+   {
+    "nom": "Eden Birds",
+    "barils": 18950
+   },
+   {
+    "nom": "Victor Sulivane",
+    "barils": 13938
+   }
+  ],
   "runners": [
    {
     "nom": "Stella Collins",
@@ -21478,37 +21486,37 @@
     "nom": "Thomas Boyer",
     "grade": 0,
     "poste": "RH",
-    "prime": 0,
+    "prime": 10905,
     "quota": 0,
-    "total": 717,
-    "barils": 0
+    "total": 5079,
+    "barils": 4362
    },
    {
     "nom": "Juan Sanchez",
     "grade": 0,
     "poste": "RH",
-    "prime": 0,
+    "prime": 13000,
     "quota": 0,
-    "total": 0,
-    "barils": 0
+    "total": 5200,
+    "barils": 5200
    },
    {
     "nom": "Emma Collins-rodriguez",
     "grade": 0,
     "poste": "Responsable Commercial",
-    "prime": 0,
+    "prime": 6195,
     "quota": 0,
-    "total": 0,
-    "barils": 0
+    "total": 2478,
+    "barils": 2478
    },
    {
     "nom": "William Rodriguez-collins",
     "grade": 0,
     "poste": "Commercial",
-    "prime": 0,
+    "prime": 4320,
     "quota": 0,
-    "total": 0,
-    "barils": 0
+    "total": 1728,
+    "barils": 1728
    },
    {
     "nom": "Julio Collins",
@@ -21532,46 +21540,46 @@
     "nom": "Ashley Cooper",
     "grade": 0,
     "poste": "Responsable Runner",
-    "prime": 0,
+    "prime": 12532.5,
     "quota": 0,
-    "total": 0,
-    "barils": 0
+    "total": 5013,
+    "barils": 5013
    },
    {
     "nom": "Jack Hamilton",
     "grade": 3,
     "poste": null,
-    "prime": 0,
+    "prime": 16397.5,
     "quota": 6500,
-    "total": 0,
-    "barils": 0
+    "total": 6559,
+    "barils": 6559
    },
    {
     "nom": "Darian Nguyen",
     "grade": 3,
     "poste": null,
-    "prime": 0,
+    "prime": 17627.5,
     "quota": 6500,
-    "total": 0,
-    "barils": 0
+    "total": 7051,
+    "barils": 7051
    },
    {
     "nom": "Alex Turner",
     "grade": 3,
     "poste": null,
-    "prime": 0,
+    "prime": 52500,
     "quota": 6500,
-    "total": 0,
-    "barils": 0
+    "total": 24017,
+    "barils": 24017
    },
    {
     "nom": "Eden Birds",
     "grade": 3,
     "poste": null,
-    "prime": 0,
+    "prime": 47375,
     "quota": 6500,
-    "total": 0,
-    "barils": 0
+    "total": 18950,
+    "barils": 18950
    },
    {
     "nom": "Junior Wills",
@@ -21579,8 +21587,8 @@
     "poste": null,
     "prime": 0,
     "quota": 6500,
-    "total": 0,
-    "barils": 0
+    "total": 2194,
+    "barils": 2194
    },
    {
     "nom": "Mike Brooks",
@@ -21588,89 +21596,89 @@
     "poste": null,
     "prime": 0,
     "quota": 6500,
-    "total": 0,
-    "barils": 0
+    "total": 5190,
+    "barils": 5190
    },
    {
     "nom": "Morino Collins",
     "grade": 2,
     "poste": null,
-    "prime": 0,
+    "prime": 10324,
     "quota": 5000,
-    "total": 0,
-    "barils": 0
+    "total": 5162,
+    "barils": 5162
    },
    {
     "nom": "Victor Sulivane",
-    "grade": 3,
+    "grade": 2,
     "poste": null,
-    "prime": 0,
-    "quota": 6500,
-    "total": 0,
-    "barils": 0
+    "prime": 27876,
+    "quota": 5000,
+    "total": 13938,
+    "barils": 13938
    },
    {
     "nom": "Bobby Rousseau",
     "grade": 2,
     "poste": null,
-    "prime": 0,
+    "prime": 10308,
     "quota": 5000,
-    "total": 0,
-    "barils": 0
+    "total": 5154,
+    "barils": 5154
    },
    {
     "nom": "Savannah Brooks",
     "grade": 2,
     "poste": null,
-    "prime": 0,
+    "prime": 10000,
     "quota": 5000,
-    "total": 0,
-    "barils": 0
+    "total": 5000,
+    "barils": 5000
    },
    {
     "nom": "Jojo Lappach",
     "grade": 2,
     "poste": null,
-    "prime": 0,
+    "prime": 10344,
     "quota": 5000,
-    "total": 0,
-    "barils": 0
+    "total": 5172,
+    "barils": 5172
    },
    {
     "nom": "Tommy Helfinger",
     "grade": 1,
     "poste": null,
-    "prime": 0,
+    "prime": 4545,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 3030,
+    "barils": 3030
    },
    {
     "nom": "Arthure Pilon",
     "grade": 1,
     "poste": null,
-    "prime": 0,
+    "prime": 7672.5,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 5115,
+    "barils": 5115
    },
    {
     "nom": "Marcus Johnson",
     "grade": 1,
     "poste": null,
-    "prime": 0,
+    "prime": 5353.5,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 3569,
+    "barils": 3569
    },
    {
     "nom": "Helena Rhosé",
     "grade": 1,
     "poste": null,
-    "prime": 0,
+    "prime": 4518,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 3012,
+    "barils": 3012
    },
    {
     "nom": "Amine Nasser",
@@ -21685,46 +21693,46 @@
     "nom": "Ilyes Moutaouk",
     "grade": 1,
     "poste": null,
-    "prime": 0,
+    "prime": 9507,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 6338,
+    "barils": 6338
    },
    {
     "nom": "Adel Dulax",
-    "grade": 2,
+    "grade": 1,
     "poste": null,
-    "prime": 0,
-    "quota": 5000,
-    "total": 0,
-    "barils": 0
+    "prime": 12001.5,
+    "quota": 3000,
+    "total": 8001,
+    "barils": 8001
    },
    {
     "nom": "Fred Montaigu",
     "grade": 1,
     "poste": null,
-    "prime": 0,
+    "prime": 4503,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 3002,
+    "barils": 3002
    },
    {
     "nom": "Ray Buffalo",
     "grade": 1,
     "poste": null,
-    "prime": 0,
+    "prime": 4609.5,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 3073,
+    "barils": 3073
    },
    {
     "nom": "Bjorn Frost",
     "grade": 0,
     "poste": null,
-    "prime": 0,
+    "prime": 3104,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 3104,
+    "barils": 3104
    },
    {
     "nom": "Ivar Frost",
@@ -21732,26 +21740,26 @@
     "poste": null,
     "prime": 0,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 778,
+    "barils": 778
    },
    {
     "nom": "Hitachi Hydro",
-    "grade": 1,
+    "grade": 0,
     "poste": null,
-    "prime": 0,
+    "prime": 5170,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 5170,
+    "barils": 5170
    },
    {
     "nom": "Elliot Adkins",
     "grade": 0,
     "poste": null,
-    "prime": 0,
+    "prime": 3014,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 3014,
+    "barils": 3014
    },
    {
     "nom": "Pablo Escocha",
@@ -21759,35 +21767,35 @@
     "poste": null,
     "prime": 0,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 956,
+    "barils": 956
    },
    {
     "nom": "Keath Chop's",
-    "grade": 1,
+    "grade": 0,
     "poste": null,
-    "prime": 0,
+    "prime": 10015,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 10015,
+    "barils": 10015
    },
    {
     "nom": "Nicolas Ismeurt",
     "grade": 0,
     "poste": null,
-    "prime": 0,
+    "prime": 4618,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 4618,
+    "barils": 4618
    },
    {
     "nom": "Bratan Leoneti",
-    "grade": 1,
+    "grade": 0,
     "poste": null,
-    "prime": 0,
+    "prime": 10237,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 10237,
+    "barils": 10237
    },
    {
     "nom": "Jason White",
@@ -21802,10 +21810,10 @@
     "nom": "Junior Collins",
     "grade": 0,
     "poste": null,
-    "prime": 0,
+    "prime": 4798,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 4798,
+    "barils": 4798
    },
    {
     "nom": "Drew Miller",
@@ -21813,8 +21821,8 @@
     "poste": null,
     "prime": 0,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 2522,
+    "barils": 2522
    },
    {
     "nom": "Louka Romelu",
@@ -21822,26 +21830,26 @@
     "poste": null,
     "prime": 0,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 2492,
+    "barils": 2492
    },
    {
     "nom": "Tarek Rodriguez",
-    "grade": 1,
+    "grade": 0,
     "poste": null,
-    "prime": 0,
+    "prime": 10037,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 10037,
+    "barils": 10037
    },
    {
     "nom": "Alex Bren",
     "grade": 0,
     "poste": null,
-    "prime": 0,
+    "prime": 4418,
     "quota": 3000,
-    "total": 1477,
-    "barils": 0
+    "total": 5895,
+    "barils": 4418
    },
    {
     "nom": "Carla Braz",
@@ -21865,10 +21873,10 @@
     "nom": "Kazuki Ishikawa",
     "grade": 0,
     "poste": null,
-    "prime": 0,
+    "prime": 3834,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 3834,
+    "barils": 3834
    },
    {
     "nom": "Lazario Ramirez",
@@ -21876,8 +21884,8 @@
     "poste": null,
     "prime": 0,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 1126,
+    "barils": 1126
    },
    {
     "nom": "Brandon Parker",
@@ -21885,8 +21893,8 @@
     "poste": null,
     "prime": 0,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 974,
+    "barils": 974
    },
    {
     "nom": "Abdel Bren",
@@ -21903,8 +21911,8 @@
     "poste": null,
     "prime": 0,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 1465,
+    "barils": 1465
    },
    {
     "nom": "Frank Smite",
@@ -21912,8 +21920,8 @@
     "poste": null,
     "prime": 0,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 1282,
+    "barils": 1282
    },
    {
     "nom": "Mada Dillon",
@@ -21921,17 +21929,17 @@
     "poste": null,
     "prime": 0,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 2098,
+    "barils": 2098
    },
    {
     "nom": "Cristóbal Perrera",
     "grade": 0,
     "poste": null,
-    "prime": 0,
+    "prime": 3216,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 3216,
+    "barils": 3216
    },
    {
     "nom": "Kamara Doue",
@@ -21939,8 +21947,8 @@
     "poste": null,
     "prime": 0,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 1705,
+    "barils": 1705
    },
    {
     "nom": "Tony Bellino",
@@ -21948,17 +21956,17 @@
     "poste": null,
     "prime": 0,
     "quota": 3000,
-    "total": 1266,
-    "barils": 0
+    "total": 3654,
+    "barils": 2388
    },
    {
     "nom": "Daniel Cooper",
     "grade": 0,
     "poste": "Stagiaire",
-    "prime": 0,
+    "prime": 3305,
     "quota": 0,
-    "total": 0,
-    "barils": 0
+    "total": 1322,
+    "barils": 1322
    },
    {
     "nom": "Alejandro Varrgas",
@@ -21975,23 +21983,23 @@
     "poste": null,
     "prime": 0,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 632,
+    "barils": 632
    },
    {
     "nom": "Xavier Collins",
-    "grade": 1,
+    "grade": 0,
     "poste": null,
-    "prime": 0,
+    "prime": 5214,
     "quota": 3000,
-    "total": 0,
-    "barils": 0
+    "total": 5214,
+    "barils": 5214
    }
   ],
   "semaine": 38,
   "effectif": 60,
   "objectif": 375000,
-  "totalBarils": 0,
+  "totalBarils": 239723,
   "clientsServis": 98
  },
  "closeUndo": {
@@ -22001,7 +22009,10 @@
  },
  "quotasCom": {
   "sem": 38,
-  "achats": {}
+  "achats": {},
+  "vendus": 0,
+  "ferPers": 0,
+  "parPers": 0
  },
  "bilanExtra": [
   {
@@ -22023,6 +22034,12 @@
    "salaire": 0
   }
  ],
+ "bilanForce": {
+  "idx": 9,
+  "par": "Diego Herrera",
+  "quand": "24/08 13:21",
+  "attendu": 3
+ },
  "primesExtra": [],
  "quotasComHist": [
   {
