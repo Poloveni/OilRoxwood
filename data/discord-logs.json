@@ -1,7 +1,27 @@
 {
- "maj": "2026-11-08T01:09:50.703011Z",
+ "maj": "2026-11-08T07:22:20.814319Z",
  "salon": "1245400913473179732",
  "messages": [
+  {
+   "id": "1568798279116783707",
+   "t": "2026-11-08T01:24:16.604000+00:00",
+   "auteur": "Logs - Vente run",
+   "texte": "Vente run\nVente de 322x Pétrole Raffiné pour 3220$ par Kader Benali. 1610$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": 3220,
+   "type": "vente"
+  },
+  {
+   "id": "1568796255096938758",
+   "t": "2026-11-08T01:16:14.040000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **322x Pétrole Raffiné** par Kader Benali\njobId : 76\njobName : Oil RoxWood",
+   "nom": "322x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
   {
    "id": "1568789231420178444",
    "t": "2026-11-08T00:48:19.465000+00:00",
@@ -4978,26 +4998,6 @@
    "auteur": "Logs - Crafts",
    "texte": "Craft\nFabrication de **320x Pétrole Raffiné** par Kader Benali\njobId : 76\njobName : Oil RoxWood",
    "nom": "320x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1568633892259500043",
-   "t": "2026-11-07T14:31:03.723000+00:00",
-   "auteur": "Logs- Spawn un véhicule",
-   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 7590\nplayerDiscord : 377179662172028930\nplayerName : QuietAnt0438\nplayerCharacter : Jeff Beaumont\nplayerId : 382764\nvehiclePlate : XP1606YE\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1568633889847517323",
-   "t": "2026-11-07T14:31:03.148000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 94x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood)\nposition : -1850.41, 6514.64, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 7564\nplayerDiscord : 826526979204841482\nplayerName : Orion\nplayerCharacter : Diego Herrera\nplayerId : 231487\nitemId : refinedoil\nCoffre\na retiré 94x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood)\nposition : -1850.40, 6514.59, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 7564\nplayerDiscord : 826526979204841482\nplayerName : Orion\nplayerChar",
-   "nom": null,
    "quantite": null,
    "montant": null,
    "type": "raffinage"
