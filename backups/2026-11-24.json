@@ -2101,9 +2101,9 @@
    "quantite": 125
   }
  ],
- "_cid": "nbuysy8vtf",
- "_maj": 1790434206948,
- "_rev": "1cx6ox006ih-mv15met0",
+ "_cid": "pv8oonl34y",
+ "_maj": 1794936508771,
+ "_rev": "6bhe09qq1t8-mwkyuxoy",
  "fact": {
   "tva": [
    0,
@@ -2178,7 +2178,7 @@
     "rib": "",
     "tel": "",
     "adresse": "Grapseed",
-    "lastCmd": "2026-09-06"
+    "lastCmd": "2026-11-16"
    },
    {
     "nom": "Famiglia Virelli",
@@ -3390,8 +3390,31 @@
     "prix": 120
    }
   ],
-  "compteur": 253114,
+  "compteur": 253115,
   "factures": [
+   {
+    "ht": 27000,
+    "num": 253114,
+    "ttc": 28350,
+    "date": "2026-11-16",
+    "poids": 300,
+    "client": "La Main de Minuit",
+    "lignes": [
+     {
+      "ht": 27000,
+      "pu": 180,
+      "qte": 150,
+      "ref": "CMD",
+      "ttc": 28350,
+      "tva": 0.05,
+      "desc": "bidons d'essence "
+     }
+    ],
+    "offert": 0,
+    "postop": false,
+    "statut": "payee",
+    "emetteur": "William Rodriguez-collins"
+   },
    {
     "ht": 59400,
     "num": 253113,
@@ -17093,7 +17116,14 @@
     "entreprise": "klan-ozumiya"
    }
   ],
-  "ventesSem": [],
+  "ventesSem": [
+   {
+    "qui": "William Rodriguez-collins",
+    "date": "2026-11-16",
+    "client": "La Main de Minuit",
+    "quantite": 150
+   }
+  ],
   "collection": [
    {
     "nom": "Nom",
@@ -18200,12 +18230,12 @@
    {
     "don": "",
     "nom": "Emma Collins-rodriguez",
-    "date": "",
+    "date": "2026-11-14",
     "grade": "Responsable Commercial",
-    "menus": false,
+    "menus": true,
     "bidons": false,
     "permis": "",
-    "boissons": false
+    "boissons": true
    },
    {
     "don": "",
@@ -18230,12 +18260,12 @@
    {
     "don": "",
     "nom": "William Rodriguez-collins",
-    "date": "",
+    "date": "2026-11-14",
     "grade": "Commercial",
-    "menus": false,
+    "menus": true,
     "bidons": false,
     "permis": "",
-    "boissons": false
+    "boissons": true
    },
    {
     "don": "",
@@ -18551,21 +18581,21 @@
  },
  "_majSec": {
   "fer": 1790434206948,
-  "fact": 1789318918327,
+  "fact": 1794850970198,
   "users": 1788606200637,
   "weeks": 1789338967473,
-  "sheets": 1789382971796,
+  "sheets": 1794849881387,
   "_qcFix1": 1790434206948,
   "_wkFix1": 1790434206948,
   "journal": 1789338972688,
   "pending": 1790434206948,
-  "prodDer": 1789395746431,
+  "prodDer": 1794936508771,
   "runners": 1789382971796,
   "absences": 1789244847079,
   "imported": 1790434206948,
   "settings": 1789338967473,
   "closeUndo": 1789338967473,
-  "quotasCom": 1790434206948,
+  "quotasCom": 1794936424639,
   "bilanExtra": 1789337201336,
   "bilanForce": 1790434206948,
   "primesExtra": 1790434206948,
@@ -21439,7 +21469,7 @@
  },
  "_statsPub": {
   "ca": 1198615,
-  "maj": "2026-10-09T16:02:52.404Z",
+  "maj": "2026-11-17T17:28:38.674Z",
   "top3": [
    {
     "nom": "Alex Turner",
@@ -22000,7 +22030,7 @@
   "effectif": 60,
   "objectif": 375000,
   "totalBarils": 239723,
-  "clientsServis": 98
+  "clientsServis": 99
  },
  "closeUndo": {
   "date": "2026-09-13T22:36:07.452Z",
@@ -22010,9 +22040,9 @@
  "quotasCom": {
   "sem": 38,
   "achats": {},
-  "vendus": 0,
-  "ferPers": 0,
-  "parPers": 0
+  "vendus": 150,
+  "ferPers": 76,
+  "parPers": 38
  },
  "bilanExtra": [
   {
