@@ -1,7 +1,1517 @@
 {
- "maj": "2026-11-26T05:05:20.056573Z",
+ "maj": "2026-11-26T15:18:02.598188Z",
  "salon": "1245400913473179732",
  "messages": [
+  {
+   "id": "1575531000325349449",
+   "t": "2026-11-26T15:17:42.428000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **90x Pétrole Raffiné** par Gérard Smith\njobId : 76\njobName : Oil RoxWood",
+   "nom": "90x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575529240299053238",
+   "t": "2026-11-26T15:10:42.805000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 104\nplayerDiscord : 612206513200562196\nplayerName : LoudCat8750\nplayerCharacter : Gérard Smith\nplayerId : 273365\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575528995712143508",
+   "t": "2026-11-26T15:09:44.491000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 104\nplayerDiscord : 612206513200562196\nplayerName : LoudCat8750\nplayerCharacter : Gérard Smith\nplayerId : 273365\nvehiclePlate : FE3726MZ\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575524392757239810",
+   "t": "2026-11-26T14:51:27.061000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 50x Carte de visite dans le coffre de l'entreprise (Oil RoxWood) (13842)\nposition : -1840.15, 6524.22, 16.00\ntargetPosition : -1840.85, 6523.94, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1157\nplayerDiscord : 826526979204841482\nplayerName : JumpyNewt1770\nplayerCharacter : Diego Herrera\nplayerId : 231487\nitemId : businessCard\nCoffre\na retiré 3x Bidon d'essence du coffre de l'entreprise (Oil RoxWood) (13841)\nposition : -1849.49, 6499.36, 16.00\ntargetPosition : -1849.11, 6498.65, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1157\nplayerDiscord : 826526979204841482",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575524128893571163",
+   "t": "2026-11-26T14:50:24.151000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 1511\nplayerDiscord : 715788859811561515\nplayerName : JumpyFish9521\nplayerCharacter : Seamus Irish\nplayerId : 386371\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575523641611915316",
+   "t": "2026-11-26T14:48:27.974000+00:00",
+   "auteur": "Logs - Compte entreprise",
+   "texte": "Compte entreprise\nTransfert de 50000$ depuis le compte de l'entreprise Oil RoxWood vers le compte 21125. Nouveau solde: 2175555$ (Raison: Ticket Resto Casa / Oil)\nplayerNetId : 1157\nplayerDiscord : 826526979204841482\nplayerName : JumpyNewt1770\nplayerCharacter : Diego Herrera\nplayerId : 231487\nbankAccount : 20076\njobId : 76\njobName : Oil RoxWood\ntoJobId : 1125\ntoJobName : Casa Del Gusto\ntoBankAccount : 21125",
+   "nom": null,
+   "quantite": null,
+   "montant": 50000,
+   "type": "vente"
+  },
+  {
+   "id": "1575523395859255329",
+   "t": "2026-11-26T14:47:29.382000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 17x Bidon d'essence dans le coffre de l'entreprise (Oil RoxWood) (13850)\nposition : -1255.46, -1438.63, 4.36\ntargetPosition : -1255.33, -1439.12, 3.38\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1611\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : weapon_petrolcan\nCoffre\na retiré 1x Bidon d'essence du coffre de l'entreprise (Oil RoxWood) (13850)\nposition : -1255.57, -1438.68, 4.36\ntargetPosition : -1255.33, -1439.12, 3.38\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1611\nplayerDiscord : 2",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575523123783016624",
+   "t": "2026-11-26T14:46:24.514000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 27x Bidon d'essence dans le coffre de l'entreprise (Oil RoxWood) (13850)\nposition : -1255.94, -1438.36, 4.36\ntargetPosition : -1255.33, -1439.12, 3.38\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1611\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : weapon_petrolcan\nCoffre\ndépot de 27x Bidon d'essence dans le coffre de l'entreprise (Oil RoxWood) (13850)\nposition : -1255.82, -1438.55, 4.36\ntargetPosition : -1255.33, -1439.12, 3.38\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1611\nplayerDisco",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575522612661063783",
+   "t": "2026-11-26T14:44:22.653000+00:00",
+   "auteur": "Logs - Vente run",
+   "texte": "Vente run\nVente de 326x Pétrole Raffiné pour 3260$ par Seamus Irish. 1630$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": 3260,
+   "type": "vente"
+  },
+  {
+   "id": "1575521872412549191",
+   "t": "2026-11-26T14:41:26.164000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\na retiré 5x Carte de visite du coffre de l'entreprise (Oil RoxWood) (13842)\nposition : -1840.09, 6524.25, 16.00\ntargetPosition : -1840.85, 6523.94, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1157\nplayerDiscord : 826526979204841482\nplayerName : JumpyNewt1770\nplayerCharacter : Diego Herrera\nplayerId : 231487\nitemId : businessCard",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575521610260291701",
+   "t": "2026-11-26T14:40:23.662000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\na retiré 27x Bidon d'essence du coffre de l'entreprise (Oil RoxWood) (13843)\nposition : -1815.23, 6565.17, 16.73\ntargetPosition : -1815.66, 6565.56, 15.98\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1611\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : weapon_petrolcan\nCoffre\na retiré 27x Bidon d'essence du coffre de l'entreprise (Oil RoxWood) (13843)\nposition : -1815.20, 6565.25, 16.73\ntargetPosition : -1815.66, 6565.56, 15.98\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1611\nplayerDiscord : 23584",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575521368144093285",
+   "t": "2026-11-26T14:39:25.937000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1841.92, 6521.43, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1611\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575521112673091696",
+   "t": "2026-11-26T14:38:25.028000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 1611\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nvehiclePlate : AY0298ZV\njobId : 76\njobName : Oil RoxWood\nSpawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 1606\nplayerDiscord : 612206513200562196\nplayerName : LoudCat8750\nplayerCharacter : Gérard Smith\nplayerId : 273365\nvehiclePlate : FE3726MZ\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575521110403850274",
+   "t": "2026-11-26T14:38:24.487000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 1611\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\njobId : 76\njobName : Oil RoxWood\nPrise de service\nprise de service (Oil RoxWood)\nplayerNetId : 1606\nplayerDiscord : 612206513200562196\nplayerName : LoudCat8750\nplayerCharacter : Gérard Smith\nplayerId : 273365\njobId : 76\njobName : Oil RoxWood\nPrise de service\nprise de service (Oil RoxWood)\nplayerNetId : 1157\nplayerDiscord : 826526979204841482\nplayerName : JumpyNewt1770\nplayerCharacter : Diego Herrera\nplaye",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575520875141402788",
+   "t": "2026-11-26T14:37:28.396000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **326x Pétrole Raffiné** par Seamus Irish\njobId : 76\njobName : Oil RoxWood",
+   "nom": "326x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575518836948475979",
+   "t": "2026-11-26T14:29:22.453000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575517840155615268",
+   "t": "2026-11-26T14:25:24.799000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\na retiré 152x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1846.04, 6513.76, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil\nCoffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1846.04, 6513.76, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplay",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575517591856881776",
+   "t": "2026-11-26T14:24:25.600000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1846.04, 6513.76, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575517590011256832",
+   "t": "2026-11-26T14:24:25.160000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1846.04, 6513.76, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil\nCoffre\na retiré 152x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1846.04, 6513.76, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplay",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575517348528390222",
+   "t": "2026-11-26T14:23:27.586000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1846.02, 6513.77, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil\nCoffre\na retiré 152x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1846.02, 6513.77, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplay",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575517341931016319",
+   "t": "2026-11-26T14:23:26.013000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **326x Pétrole Raffiné** par Luc Rouza\njobId : 76\njobName : Oil RoxWood",
+   "nom": "326x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575517091509969045",
+   "t": "2026-11-26T14:22:26.308000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.61, 6514.35, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil\nCoffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.42, 6513.92, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1354\nplayerDiscord : 487891709821190145",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575514303463825520",
+   "t": "2026-11-26T14:11:21.586000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 1511\nplayerDiscord : 715788859811561515\nplayerName : JumpyFish9521\nplayerCharacter : Seamus Irish\nplayerId : 386371\nvehiclePlate : AS5715VX\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575514066170937437",
+   "t": "2026-11-26T14:10:25.011000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 1511\nplayerDiscord : 715788859811561515\nplayerName : JumpyFish9521\nplayerCharacter : Seamus Irish\nplayerId : 386371\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575510802155307059",
+   "t": "2026-11-26T13:57:26.809000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 22x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1846.30, 6513.39, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575510790650339470",
+   "t": "2026-11-26T13:57:24.066000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **326x Pétrole Raffiné** par Luc Rouza\njobId : 76\njobName : Oil RoxWood",
+   "nom": "326x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575510545035952193",
+   "t": "2026-11-26T13:56:25.507000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1846.23, 6513.80, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil\nCoffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.97, 6513.86, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1354\nplayerDiscord : 487891709821190145",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575503985895280784",
+   "t": "2026-11-26T13:30:21.686000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nvehiclePlate : AY4705SJ\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575503738779476110",
+   "t": "2026-11-26T13:29:22.769000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 1354\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575500471760724049",
+   "t": "2026-11-26T13:16:23.851000+00:00",
+   "auteur": "Logs - Vente run",
+   "texte": "Vente run\nVente de 42x Pétrole Raffiné pour 420$ par Gérard Smith. 210$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": 420,
+   "type": "vente"
+  },
+  {
+   "id": "1575500215237091400",
+   "t": "2026-11-26T13:15:22.691000+00:00",
+   "auteur": "Logs - Vente run",
+   "texte": "Vente run\nVente de 140x Pétrole Raffiné pour 1400$ par Gérard Smith. 700$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": 1400,
+   "type": "vente"
+  },
+  {
+   "id": "1575499466243309672",
+   "t": "2026-11-26T13:12:24.117000+00:00",
+   "auteur": "Logs - Vente run",
+   "texte": "Vente run\nVente de 420x Pétrole Raffiné pour 4200$ par Gérard Smith. 2100$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": 4200,
+   "type": "vente"
+  },
+  {
+   "id": "1575497475744079874",
+   "t": "2026-11-26T13:04:29.545000+00:00",
+   "auteur": "Logs - Factures",
+   "texte": "Facture\npaiement d'une facture de 9360 (taxes 4%) par Flora Bloom\nplayerNetId : 1257\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\njobId : 76\njobName : Oil RoxWood\ntargetPlayerNetId : 1199\ntargetPlayerDiscord : 176624889401311232\ntargetPlayerName : CleverTurtle7722\ntargetPlayerCharacter : Flora Bloom\ntargetPlayerId : 369937",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575497194293698662",
+   "t": "2026-11-26T13:03:22.442000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **158x Pétrole Raffiné** par Gérard Smith\njobId : 76\njobName : Oil RoxWood",
+   "nom": "158x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575496953679323207",
+   "t": "2026-11-26T13:02:25.075000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\na retiré 122x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13849)\nposition : -1843.89, 6516.21, 16.73\ntargetPosition : -1844.79, 6516.31, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 975\nplayerDiscord : 612206513200562196\nplayerName : LoudCat8750\nplayerCharacter : Gérard Smith\nplayerId : 273365\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575496945063960597",
+   "t": "2026-11-26T13:02:23.021000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 1157\nplayerDiscord : 826526979204841482\nplayerName : JumpyNewt1770\nplayerCharacter : Diego Herrera\nplayerId : 231487\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575496440157966548",
+   "t": "2026-11-26T13:00:22.642000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\na retiré 13x Bidon d'essence du coffre de l'entreprise (Oil RoxWood) (13843)\nposition : -1815.94, 6565.98, 16.73\ntargetPosition : -1815.66, 6565.56, 15.98\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1257\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : weapon_petrolcan",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575496206401015901",
+   "t": "2026-11-26T12:59:26.910000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\na retiré 37x Bidon d'essence du coffre de l'entreprise (Oil RoxWood) (13843)\nposition : -1815.94, 6565.98, 16.73\ntargetPosition : -1815.66, 6565.56, 15.98\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1257\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : weapon_petrolcan",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575495936908730389",
+   "t": "2026-11-26T12:58:22.658000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbesperta\nplayerNetId : 1257\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nvehiclePlate : HR1235KA\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575495935704694855",
+   "t": "2026-11-26T12:58:22.371000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 1257\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575494427839823883",
+   "t": "2026-11-26T12:52:22.868000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 36x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.42, 6818.44, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1157\nplayerDiscord : 826526979204841482\nplayerName : JumpyNewt1770\nplayerCharacter : Diego Herrera\nplayerId : 231487\nitemId : oil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575494423989719184",
+   "t": "2026-11-26T12:52:21.950000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 1167\nplayerDiscord : 948542221429379112\nplayerName : SleepyMoth4273\nplayerCharacter : Stella Collins\nplayerId : 232050\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575494174248276079",
+   "t": "2026-11-26T12:51:22.407000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 71x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.12, 6819.19, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1167\nplayerDiscord : 948542221429379112\nplayerName : SleepyMoth4273\nplayerCharacter : Stella Collins\nplayerId : 232050\nitemId : oil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575494169172902012",
+   "t": "2026-11-26T12:51:21.197000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575493923588018237",
+   "t": "2026-11-26T12:50:22.645000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 36x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.42, 6818.44, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1157\nplayerDiscord : 826526979204841482\nplayerName : JumpyNewt1770\nplayerCharacter : Diego Herrera\nplayerId : 231487\nitemId : oil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575493682784768075",
+   "t": "2026-11-26T12:49:25.233000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 28x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.12, 6819.19, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1167\nplayerDiscord : 948542221429379112\nplayerName : SleepyMoth4273\nplayerCharacter : Stella Collins\nplayerId : 232050\nitemId : oil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575493420716134532",
+   "t": "2026-11-26T12:48:22.751000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 90x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.09, 6518.57, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil\nCoffre\ndépot de 73x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.12, 6819.19, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1167\nplayerDiscord : 9485422214293",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575493416685535333",
+   "t": "2026-11-26T12:48:21.790000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **302x Pétrole Raffiné** par Jason Palmer\njobId : 76\njobName : Oil RoxWood",
+   "nom": "302x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575493174250442825",
+   "t": "2026-11-26T12:47:23.989000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 106x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.58, 6518.37, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil\nCoffre\ndépot de 106x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1842.98, 6518.66, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 122647267",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575493167761850430",
+   "t": "2026-11-26T12:47:22.442000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 1157\nplayerDiscord : 826526979204841482\nplayerName : JumpyNewt1770\nplayerCharacter : Diego Herrera\nplayerId : 231487\njobId : 76\njobName : Oil RoxWood\nPrise de service\nprise de service (Oil RoxWood)\nplayerNetId : 1157\nplayerDiscord : 826526979204841482\nplayerName : JumpyNewt1770\nplayerCharacter : Diego Herrera\nplayerId : 231487\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575492919765246033",
+   "t": "2026-11-26T12:46:23.315000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 46x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.26, 6819.02, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1167\nplayerDiscord : 948542221429379112\nplayerName : SleepyMoth4273\nplayerCharacter : Stella Collins\nplayerId : 232050\nitemId : oil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575492423981727773",
+   "t": "2026-11-26T12:44:25.111000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 18x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.26, 6819.02, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1167\nplayerDiscord : 948542221429379112\nplayerName : SleepyMoth4273\nplayerCharacter : Stella Collins\nplayerId : 232050\nitemId : oil\nCoffre\ndépot de 20x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.26, 6819.02, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1167\nplayerDiscord : 948542221429379112\nplayer",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575492164186538076",
+   "t": "2026-11-26T12:43:23.171000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 11x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.59, 6818.90, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1167\nplayerDiscord : 948542221429379112\nplayerName : SleepyMoth4273\nplayerCharacter : Stella Collins\nplayerId : 232050\nitemId : oil\nCoffre\ndépot de 18x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.59, 6818.90, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1167\nplayerDiscord : 948542221429379112\nplayer",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575491925296021575",
+   "t": "2026-11-26T12:42:26.215000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 73x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.59, 6818.90, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1167\nplayerDiscord : 948542221429379112\nplayerName : SleepyMoth4273\nplayerCharacter : Stella Collins\nplayerId : 232050\nitemId : oil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575491167959916587",
+   "t": "2026-11-26T12:39:25.652000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 39x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.59, 6818.90, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1167\nplayerDiscord : 948542221429379112\nplayerName : SleepyMoth4273\nplayerCharacter : Stella Collins\nplayerId : 232050\nitemId : oil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575490929559867433",
+   "t": "2026-11-26T12:38:28.813000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 52x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13844)\nposition : -3090.59, 6818.90, 44.73\ntargetPosition : -3090.06, 6818.50, 43.97\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 1167\nplayerDiscord : 948542221429379112\nplayerName : SleepyMoth4273\nplayerCharacter : Stella Collins\nplayerId : 232050\nitemId : oil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "depot"
+  },
+  {
+   "id": "1575490649350996049",
+   "t": "2026-11-26T12:37:22.006000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 1167\nplayerDiscord : 948542221429379112\nplayerName : SleepyMoth4273\nplayerCharacter : Stella Collins\nplayerId : 232050\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575489138550120560",
+   "t": "2026-11-26T12:31:21.803000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 1157\nplayerDiscord : 826526979204841482\nplayerName : JumpyNewt1770\nplayerCharacter : Diego Herrera\nplayerId : 231487\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575487647197958187",
+   "t": "2026-11-26T12:25:26.237000+00:00",
+   "auteur": "Logs -  Recrutement",
+   "texte": "Recrutements\nSalvatore Urus a été renvoyé de l'entreprise Oil RoxWood\nplayerNetId : 1080\nplayerDiscord : 1479222400326308032\nplayerName : BreezyToad3544\nplayerCharacter : Marco Bellini\nplayerId : 354674\ntargetPlayerDiscord : 1547960206896398370\ntargetPlayerName : ShyBeetle7478\ntargetPlayerId : 379592\ntargetPlayerCharacter : Salvatore Urus\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575486880516931595",
+   "t": "2026-11-26T12:22:23.446000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **198x Pétrole Raffiné** par Jason Palmer\njobId : 76\njobName : Oil RoxWood",
+   "nom": "198x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575486661809152043",
+   "t": "2026-11-26T12:21:31.302000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 105x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.23, 6518.53, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil\nCoffre\ndépot de 105x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.02, 6518.90, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 122647267",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575485619260620912",
+   "t": "2026-11-26T12:17:22.739000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **254x Pétrole Raffiné** par Gérard Smith\njobId : 76\njobName : Oil RoxWood",
+   "nom": "254x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575484610677317643",
+   "t": "2026-11-26T12:13:22.274000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **104x Pétrole Raffiné** par Jason Palmer\njobId : 76\njobName : Oil RoxWood",
+   "nom": "104x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575483108822884374",
+   "t": "2026-11-26T12:07:24.204000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 811\nplayerDiscord : 1499848677986930882\nplayerName : QuietSpider4372\nplayerCharacter : Clara Soules\nplayerId : 380202\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575481850531676286",
+   "t": "2026-11-26T12:02:24.204000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 145x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1847.14, 6514.46, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 811\nplayerDiscord : 1499848677986930882\nplayerName : QuietSpider4372\nplayerCharacter : Clara Soules\nplayerId : 380202\nitemId : refinedoil\nCoffre\ndépot de 145x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1847.14, 6514.46, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 811\nplayerDiscord : 149984867798",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575481597464150058",
+   "t": "2026-11-26T12:01:23.868000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **322x Pétrole Raffiné** par Clara Soules\njobId : 76\njobName : Oil RoxWood\nCraft\nFabrication de **68x Pétrole Raffiné** par Gérard Smith\njobId : 76\njobName : Oil RoxWood",
+   "nom": "322x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575476579851706429",
+   "t": "2026-11-26T11:41:27.576000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 94x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.15, 6518.93, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575476565796462714",
+   "t": "2026-11-26T11:41:24.225000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **8x Pétrole Raffiné** par Jason Palmer\njobId : 76\njobName : Oil RoxWood",
+   "nom": "8x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575476316973834353",
+   "t": "2026-11-26T11:40:24.901000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 104x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1842.95, 6518.94, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil\nCoffre\ndépot de 104x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.23, 6518.82, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 122647267",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575475812256186480",
+   "t": "2026-11-26T11:38:24.567000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **294x Pétrole Raffiné** par Jason Palmer\njobId : 76\njobName : Oil RoxWood",
+   "nom": "294x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575475307803185173",
+   "t": "2026-11-26T11:36:24.296000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 975\nplayerDiscord : 612206513200562196\nplayerName : LoudCat8750\nplayerCharacter : Gérard Smith\nplayerId : 273365\nvehiclePlate : FE3726MZ\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575475306687504436",
+   "t": "2026-11-26T11:36:24.030000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 975\nplayerDiscord : 612206513200562196\nplayerName : LoudCat8750\nplayerCharacter : Gérard Smith\nplayerId : 273365\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575472537805000777",
+   "t": "2026-11-26T11:25:23.877000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **322x Pétrole Raffiné** par Clara Soules\njobId : 76\njobName : Oil RoxWood",
+   "nom": "322x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575472300135026785",
+   "t": "2026-11-26T11:24:27.212000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 145x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.56, 6515.72, 16.68\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 811\nplayerDiscord : 1499848677986930882\nplayerName : QuietSpider4372\nplayerCharacter : Clara Soules\nplayerId : 380202\nitemId : refinedoil\nCoffre\ndépot de 145x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.96, 6515.72, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 811\nplayerDiscord : 149984867798",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575470022388617217",
+   "t": "2026-11-26T11:15:24.155000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 595\nplayerDiscord : 899043253817585704\nplayerName : BreezyAnt6129\nplayerCharacter : Damien Mienda\nplayerId : 353381\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575469257934774414",
+   "t": "2026-11-26T11:12:21.895000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **300x Pétrole Raffiné** par Jason Palmer\njobId : 76\njobName : Oil RoxWood",
+   "nom": "300x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575469019274813466",
+   "t": "2026-11-26T11:11:24.994000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 103x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.17, 6518.43, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil\nCoffre\ndépot de 103x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.35, 6518.61, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 122647267",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575466488884760648",
+   "t": "2026-11-26T11:01:21.702000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 811\nplayerDiscord : 1499848677986930882\nplayerName : QuietSpider4372\nplayerCharacter : Clara Soules\nplayerId : 380202\nvehiclePlate : EO3801SO\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575466240246554736",
+   "t": "2026-11-26T11:00:22.422000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 811\nplayerDiscord : 1499848677986930882\nplayerName : QuietSpider4372\nplayerCharacter : Clara Soules\nplayerId : 380202\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575464729097404478",
+   "t": "2026-11-26T10:54:22.136000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 870\nplayerDiscord : 593431852291850281\nplayerName : BoldFish7448\nplayerCharacter : Tyler Collins\nplayerId : 209236\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575462211458048091",
+   "t": "2026-11-26T10:44:21.884000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **300x Pétrole Raffiné** par Jason Palmer\njobId : 76\njobName : Oil RoxWood",
+   "nom": "300x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575461966624063530",
+   "t": "2026-11-26T10:43:23.511000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 102x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.32, 6518.31, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil\nCoffre\ndépot de 96x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.57, 6518.20, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575461718132396055",
+   "t": "2026-11-26T10:42:24.266000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 102x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.66, 6518.06, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575460959722545285",
+   "t": "2026-11-26T10:39:23.447000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **326x Pétrole Raffiné** par Luc Rouza\njobId : 76\njobName : Oil RoxWood",
+   "nom": "326x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575460732168966197",
+   "t": "2026-11-26T10:38:29.194000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1844.72, 6514.60, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 602\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil\nCoffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.18, 6514.67, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 602\nplayerDiscord : 487891709821190145\np",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575459441007009853",
+   "t": "2026-11-26T10:33:21.357000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575459203894480907",
+   "t": "2026-11-26T10:32:24.825000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **302x Pétrole Raffiné** par Flavio Bellini\njobId : 76\njobName : Oil RoxWood",
+   "nom": "302x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575458695834370172",
+   "t": "2026-11-26T10:30:23.694000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 98x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1850.97, 6515.79, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575457686319792230",
+   "t": "2026-11-26T10:26:23.007000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 102x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1849.71, 6514.46, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575456680110461060",
+   "t": "2026-11-26T10:22:23.108000+00:00",
+   "auteur": "Logs - Vente run",
+   "texte": "Vente run\nVente de 322x Pétrole Raffiné pour 3220$ par Gérard Smith. 1610$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": 3220,
+   "type": "vente"
+  },
+  {
+   "id": "1575456677870829629",
+   "t": "2026-11-26T10:22:22.574000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **326x Pétrole Raffiné** par Damien Mienda\njobId : 76\njobName : Oil RoxWood",
+   "nom": "326x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575456438631792671",
+   "t": "2026-11-26T10:21:25.535000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 102x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1849.85, 6514.40, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575455176641355837",
+   "t": "2026-11-26T10:16:24.653000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **322x Pétrole Raffiné** par Gérard Smith\njobId : 76\njobName : Oil RoxWood",
+   "nom": "322x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575454166359474312",
+   "t": "2026-11-26T10:12:23.783000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.13, 6514.17, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 602\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil\nCoffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.36, 6514.21, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 602\nplayerDiscord : 487891709821190145\np",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575454160650764393",
+   "t": "2026-11-26T10:12:22.422000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **250x Pétrole Raffiné** par Luc Rouza\njobId : 76\njobName : Oil RoxWood",
+   "nom": "250x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575453909143523390",
+   "t": "2026-11-26T10:11:22.458000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 608\nplayerDiscord : 1338776295575912581\nplayerName : Darian589\nplayerCharacter : Darian Nguyen\nplayerId : 287377\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575452395851485285",
+   "t": "2026-11-26T10:05:21.661000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **30x Pétrole Raffiné** par Jason Palmer\njobId : 76\njobName : Oil RoxWood",
+   "nom": "30x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575452146068099127",
+   "t": "2026-11-26T10:04:22.108000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 101x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.17, 6518.57, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil\nCoffre\ndépot de 98x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.25, 6518.61, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575451901607288843",
+   "t": "2026-11-26T10:03:23.824000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 101x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.32, 6518.41, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575451895932133500",
+   "t": "2026-11-26T10:03:22.471000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **300x Pétrole Raffiné** par Flavio Bellini\njobId : 76\njobName : Oil RoxWood",
+   "nom": "300x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575451666004844605",
+   "t": "2026-11-26T10:02:27.652000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **76x Pétrole Raffiné** par Luc Rouza\njobId : 76\njobName : Oil RoxWood",
+   "nom": "76x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575451393903435910",
+   "t": "2026-11-26T10:01:22.778000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 98x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1850.57, 6514.56, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\nitemId : refinedoil\nCoffre\ndépot de 6x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1850.10, 6513.78, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 638\nplayerDiscord : 41015785485552844",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575451389864321146",
+   "t": "2026-11-26T10:01:21.815000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **270x Pétrole Raffiné** par Jason Palmer\njobId : 76\njobName : Oil RoxWood",
+   "nom": "270x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575450390533644394",
+   "t": "2026-11-26T09:57:23.556000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 98x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1850.55, 6514.35, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575450384825319476",
+   "t": "2026-11-26T09:57:22.195000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 595\nplayerDiscord : 899043253817585704\nplayerName : BreezyAnt6129\nplayerCharacter : Damien Mienda\nplayerId : 353381\nvehiclePlate : AS5715VX\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575450383873216544",
+   "t": "2026-11-26T09:57:21.968000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 595\nplayerDiscord : 899043253817585704\nplayerName : BreezyAnt6129\nplayerCharacter : Damien Mienda\nplayerId : 353381\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575449379572023387",
+   "t": "2026-11-26T09:53:22.524000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 98x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1849.75, 6514.52, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575447615611478178",
+   "t": "2026-11-26T09:46:21.963000+00:00",
+   "auteur": "Logs - Vente run",
+   "texte": "Vente run\nVente de 742x Pétrole Raffiné pour 7420$ par Darian Nguyen. 3710$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": 7420,
+   "type": "vente"
+  },
+  {
+   "id": "1575447614487273574",
+   "t": "2026-11-26T09:46:21.695000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 602\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nvehiclePlate : AY0298ZV\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575446862826045522",
+   "t": "2026-11-26T09:43:22.485000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 578\nplayerDiscord : 612206513200562196\nplayerName : LoudCat8750\nplayerCharacter : Gérard Smith\nplayerId : 273365\nvehiclePlate : FE3726MZ\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575446606294159483",
+   "t": "2026-11-26T09:42:21.323000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 578\nplayerDiscord : 612206513200562196\nplayerName : LoudCat8750\nplayerCharacter : Gérard Smith\nplayerId : 273365\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575445604576788501",
+   "t": "2026-11-26T09:38:22.495000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 22x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.59, 6516.00, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 602\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575445602165329974",
+   "t": "2026-11-26T09:38:21.920000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **326x Pétrole Raffiné** par Luc Rouza\njobId : 76\njobName : Oil RoxWood",
+   "nom": "326x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575445353967124603",
+   "t": "2026-11-26T09:37:22.745000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.96, 6515.60, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 602\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil\nCoffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.60, 6516.32, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 602\nplayerDiscord : 487891709821190145\np",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575445350532120649",
+   "t": "2026-11-26T09:37:21.926000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **300x Pétrole Raffiné** par Flavio Bellini\njobId : 76\njobName : Oil RoxWood",
+   "nom": "300x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575444847374897244",
+   "t": "2026-11-26T09:35:21.964000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 20x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1850.29, 6514.63, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575444604222705675",
+   "t": "2026-11-26T09:34:23.992000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 84x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1850.16, 6514.69, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575444597826396202",
+   "t": "2026-11-26T09:34:22.467000+00:00",
+   "auteur": "Logs - Vente run",
+   "texte": "Vente run\nVente de 600x Pétrole Raffiné pour 6000$ par Jason Palmer. 3000$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": 6000,
+   "type": "vente"
+  },
+  {
+   "id": "1575444596421562419",
+   "t": "2026-11-26T09:34:22.132000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **372x Pétrole Raffiné** par Darian Nguyen\njobId : 76\njobName : Oil RoxWood",
+   "nom": "372x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575444359547981898",
+   "t": "2026-11-26T09:33:25.657000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\na retiré 144x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1846.84, 6514.54, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 608\nplayerDiscord : 1338776295575912581\nplayerName : Darian589\nplayerCharacter : Darian Nguyen\nplayerId : 287377\nitemId : refinedoil\nCoffre\na retiré 144x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1846.84, 6514.54, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 608\nplayerDiscord : 1338776295575912581\nplayerN",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575443851705974865",
+   "t": "2026-11-26T09:31:24.578000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 98x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1849.98, 6514.63, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575442583172415559",
+   "t": "2026-11-26T09:26:22.136000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 98x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1849.77, 6514.30, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575442081445453915",
+   "t": "2026-11-26T09:24:22.515000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **300x Pétrole Raffiné** par Jason Palmer\njobId : 76\njobName : Oil RoxWood",
+   "nom": "300x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575441831737561121",
+   "t": "2026-11-26T09:23:22.980000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\na retiré 100x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1842.87, 6518.74, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil\nCoffre\na retiré 100x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.25, 6518.70, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575437806015217675",
+   "t": "2026-11-26T09:07:23.173000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **326x Pétrole Raffiné** par Luc Rouza\njobId : 76\njobName : Oil RoxWood",
+   "nom": "326x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575437804996132986",
+   "t": "2026-11-26T09:07:22.930000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\nvehiclePlate : BM4391ZM\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575437803528130594",
+   "t": "2026-11-26T09:07:22.580000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 638\nplayerDiscord : 410157854855528449\nplayerName : BoldDuck0946\nplayerCharacter : Flavio Bellini\nplayerId : 386426\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575437554818355336",
+   "t": "2026-11-26T09:06:23.283000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.11, 6514.30, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 602\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil\nCoffre\ndépot de 22x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1844.99, 6514.34, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 602\nplayerDiscord : 487891709821190145\npl",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575437303206125660",
+   "t": "2026-11-26T09:05:23.294000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 152x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.65, 6514.05, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 602\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575436803232501822",
+   "t": "2026-11-26T09:03:24.091000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **370x Pétrole Raffiné** par Darian Nguyen\njobId : 76\njobName : Oil RoxWood",
+   "nom": "370x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575436544796393559",
+   "t": "2026-11-26T09:02:22.475000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 141x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.34, 6513.65, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 608\nplayerDiscord : 1338776295575912581\nplayerName : Darian589\nplayerCharacter : Darian Nguyen\nplayerId : 287377\nitemId : refinedoil\nCoffre\ndépot de 141x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.45, 6513.46, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 608\nplayerDiscord : 13387762955759125",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575435554491736106",
+   "t": "2026-11-26T08:58:26.368000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **298x Pétrole Raffiné** par Jason Palmer\njobId : 76\njobName : Oil RoxWood",
+   "nom": "298x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575435290229612686",
+   "t": "2026-11-26T08:57:23.363000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 98x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.40, 6518.43, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575435037724246149",
+   "t": "2026-11-26T08:56:23.161000+00:00",
+   "auteur": "Logs - Coffre",
+   "texte": "Coffre\ndépot de 100x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.74, 6518.19, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nitemId : refinedoil\nCoffre\ndépot de 100x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1843.17, 6518.60, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 603\nplayerDiscord : 122647267",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575430251734110239",
+   "t": "2026-11-26T08:37:22.092000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 602\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\nvehiclePlate : AY0298ZV\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575430250320363583",
+   "t": "2026-11-26T08:37:21.755000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 602\nplayerDiscord : 487891709821190145\nplayerName : IcyNewt9023\nplayerCharacter : Luc Rouza\nplayerId : 382769\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575429749327532134",
+   "t": "2026-11-26T08:35:22.309000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 608\nplayerDiscord : 1338776295575912581\nplayerName : Darian589\nplayerCharacter : Darian Nguyen\nplayerId : 287377\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575428236769370293",
+   "t": "2026-11-26T08:29:21.687000+00:00",
+   "auteur": "Logs- Spawn un véhicule",
+   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\nvehiclePlate : AY4705SJ\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575427987447357471",
+   "t": "2026-11-26T08:28:22.244000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 603\nplayerDiscord : 1226472675971436614\nplayerName : Jason Palmer┃Visum\nplayerCharacter : Jason Palmer\nplayerId : 362532\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575420703170109461",
+   "t": "2026-11-26T07:59:25.537000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 533\nplayerDiscord : 1124832118556606494\nplayerName : MoodyTurtle2216\nplayerCharacter : Irisélia Vayne\nplayerId : 348634\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575420183663611995",
+   "t": "2026-11-26T07:57:21.677000+00:00",
+   "auteur": "Logs - Vente run",
+   "texte": "Vente run\nVente de 316x Pétrole Raffiné pour 3160$ par Irisélia Vayne. 1580$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": 3160,
+   "type": "vente"
+  },
+  {
+   "id": "1575418422261452853",
+   "t": "2026-11-26T07:50:21.726000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **316x Pétrole Raffiné** par Irisélia Vayne\njobId : 76\njobName : Oil RoxWood",
+   "nom": "316x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575408859437338626",
+   "t": "2026-11-26T07:12:21.771000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 533\nplayerDiscord : 1124832118556606494\nplayerName : MoodyTurtle2216\nplayerCharacter : Irisélia Vayne\nplayerId : 348634\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575407853806821409",
+   "t": "2026-11-26T07:08:22.010000+00:00",
+   "auteur": "Logs - Vente run",
+   "texte": "Vente run\nVente de 314x Pétrole Raffiné pour 3140$ par Irisélia Vayne. 1570$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": 3140,
+   "type": "vente"
+  },
+  {
+   "id": "1575405086610292808",
+   "t": "2026-11-26T06:57:22.259000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **314x Pétrole Raffiné** par Irisélia Vayne\njobId : 76\njobName : Oil RoxWood",
+   "nom": "314x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575396530632790017",
+   "t": "2026-11-26T06:23:22.355000+00:00",
+   "auteur": "Logs - Vente run",
+   "texte": "Vente run\nVente de 544x Pétrole Raffiné pour 5440$ par Irisélia Vayne. 2720$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": 5440,
+   "type": "vente"
+  },
+  {
+   "id": "1575391245038256249",
+   "t": "2026-11-26T06:02:22.171000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **78x Pétrole Raffiné** par Irisélia Vayne\njobId : 76\njobName : Oil RoxWood",
+   "nom": "78x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575388977643651173",
+   "t": "2026-11-26T05:53:21.582000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **156x Pétrole Raffiné** par Irisélia Vayne\njobId : 76\njobName : Oil RoxWood",
+   "nom": "156x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575383944130724036",
+   "t": "2026-11-26T05:33:21.499000+00:00",
+   "auteur": "Logs - Crafts",
+   "texte": "Craft\nFabrication de **310x Pétrole Raffiné** par Irisélia Vayne\njobId : 76\njobName : Oil RoxWood",
+   "nom": "310x Pétrole Raffiné",
+   "quantite": null,
+   "montant": null,
+   "type": "raffinage"
+  },
+  {
+   "id": "1575377155292921937",
+   "t": "2026-11-26T05:06:22.914000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 222\nplayerDiscord : 899043253817585704\nplayerName : BreezyAnt6129\nplayerCharacter : Damien Mienda\nplayerId : 353381\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
+  {
+   "id": "1575376899562020866",
+   "t": "2026-11-26T05:05:21.943000+00:00",
+   "auteur": "Logs - Prise de service",
+   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 436\nplayerDiscord : 1124832118556606494\nplayerName : MoodyTurtle2216\nplayerCharacter : Irisélia Vayne\nplayerId : 348634\njobId : 76\njobName : Oil RoxWood",
+   "nom": null,
+   "quantite": null,
+   "montant": null,
+   "type": "autre"
+  },
   {
    "id": "1575376655520899234",
    "t": "2026-11-26T05:04:23.759000+00:00",
@@ -3488,1516 +4998,6 @@
    "auteur": "Logs - Coffre",
    "texte": "Coffre\na retiré 136x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.72, 6514.81, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 496\nplayerDiscord : 317280511292735499\nplayerName : SharpDuck3006\nplayerCharacter : Fred Berthier\nplayerId : 364651\nitemId : refinedoil\nCoffre\na retiré 8x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.83, 6520.93, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName",
    "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575201908203724972",
-   "t": "2026-11-25T17:30:00.752000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 32x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 136x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.59, 6514.50, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 496\nplayerDiscord : 317280511292735499\nplayerName : Sh",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575201411988459665",
-   "t": "2026-11-25T17:28:02.445000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 2x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : refinedoil\nCoffre\na retiré 2x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\npla",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575201152570495152",
-   "t": "2026-11-25T17:27:00.595000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 6x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 4x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpide",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575200949381627915",
-   "t": "2026-11-25T17:26:12.151000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **288x Pétrole Raffiné** par Victor White\njobId : 76\njobName : Oil RoxWood",
-   "nom": "288x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575200921267212290",
-   "t": "2026-11-25T17:26:05.448000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 9x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 6x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpide",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575200689435447430",
-   "t": "2026-11-25T17:25:10.175000+00:00",
-   "auteur": "Logs - Vente run",
-   "texte": "Vente run\nVente de 640x Pétrole Raffiné pour 6400$ par Fred Berthier. 3200$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": 6400,
-   "type": "vente"
-  },
-  {
-   "id": "1575200652395815104",
-   "t": "2026-11-25T17:25:01.344000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 17x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 3x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpid",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575200403057016833",
-   "t": "2026-11-25T17:24:01.897000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 19x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575200159543988377",
-   "t": "2026-11-25T17:23:03.839000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **98x Pétrole Raffiné** par Jack Berthier\njobId : 76\njobName : Oil RoxWood",
-   "nom": "98x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575200147749605380",
-   "t": "2026-11-25T17:23:01.027000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 2x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 1x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpide",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575199890689106055",
-   "t": "2026-11-25T17:21:59.739000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 17x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 7x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpid",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575199639634710651",
-   "t": "2026-11-25T17:20:59.883000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 20x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575199165166657719",
-   "t": "2026-11-25T17:19:06.761000+00:00",
-   "auteur": "Logs- Spawn un véhicule",
-   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 1125\nplayerDiscord : 1213482703349882880\nplayerName : SlowFish0877\nplayerCharacter : Otto Jimminez\nplayerId : 337319\nvehiclePlate : AS5715VX\njobId : 76\njobName : Oil RoxWood\nSpawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 1125\nplayerDiscord : 1213482703349882880\nplayerName : SlowFish0877\nplayerCharacter : Otto Jimminez\nplayerId : 337319\nvehiclePlate : IL4818AV\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575199148649615586",
-   "t": "2026-11-25T17:19:02.823000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 5x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 3x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpide",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575198890385215647",
-   "t": "2026-11-25T17:18:01.248000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 5x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 1x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpide",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575198884076982415",
-   "t": "2026-11-25T17:17:59.744000+00:00",
-   "auteur": "Logs - Prise de service",
-   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 1125\nplayerDiscord : 1213482703349882880\nplayerName : SlowFish0877\nplayerCharacter : Otto Jimminez\nplayerId : 337319\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575198635602223106",
-   "t": "2026-11-25T17:17:00.503000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 18x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 9x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpid",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575198389522534583",
-   "t": "2026-11-25T17:16:01.833000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 22x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575197885782433843",
-   "t": "2026-11-25T17:14:01.732000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 11x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575197627056783398",
-   "t": "2026-11-25T17:13:00.047000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 140x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.51, 6514.52, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 496\nplayerDiscord : 317280511292735499\nplayerName : SharpDuck3006\nplayerCharacter : Fred Berthier\nplayerId : 364651\nitemId : refinedoil\nCoffre\na retiré 7x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575197381664833550",
-   "t": "2026-11-25T17:12:01.541000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.60, 6814.64, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\na retiré 9x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayer",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575197138592469107",
-   "t": "2026-11-25T17:11:03.588000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 12x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575196931880255754",
-   "t": "2026-11-25T17:10:14.304000+00:00",
-   "auteur": "Logs - Vente run",
-   "texte": "Vente run\nVente de 640x Pétrole Raffiné pour 6400$ par Fred Berthier. 3200$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": 6400,
-   "type": "vente"
-  },
-  {
-   "id": "1575196886686769155",
-   "t": "2026-11-25T17:10:03.529000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 24x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 4x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpid",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575196623007383655",
-   "t": "2026-11-25T17:09:00.663000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 124x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : refinedoil\nCoffre\na retiré 63x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\npla",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575196370850021410",
-   "t": "2026-11-25T17:08:00.544000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 9x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 13x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpid",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575196119162425385",
-   "t": "2026-11-25T17:07:00.537000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 13x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575195882780106846",
-   "t": "2026-11-25T17:06:04.179000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 24x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575195630291128333",
-   "t": "2026-11-25T17:05:03.981000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.49, 6813.72, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575195408706044065",
-   "t": "2026-11-25T17:04:11.151000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **320x Pétrole Raffiné** par Jack Berthier\njobId : 76\njobName : Oil RoxWood",
-   "nom": "320x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575195378498797609",
-   "t": "2026-11-25T17:04:03.949000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 10x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\ndépot de 140x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13840)\nposition : -1845.05, 6518.69, 16.73\ntargetPosition : -1843.83, 6518.10, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 876\nplayerDiscord : 198789252329373706\nplayerName",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575195116875022429",
-   "t": "2026-11-25T17:03:01.573000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 9x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575194872493637704",
-   "t": "2026-11-25T17:02:03.308000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 15x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 13x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpi",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575194627085041729",
-   "t": "2026-11-25T17:01:04.798000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 9x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\ndépot de 134x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1851.31, 6514.22, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 580\nplayerDiscord : 251022649801703434\nplayerName ",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575194396570165369",
-   "t": "2026-11-25T17:00:09.839000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **316x Pétrole Raffiné** par Victor White\njobId : 76\njobName : Oil RoxWood",
-   "nom": "316x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575194362239779038",
-   "t": "2026-11-25T17:00:01.654000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 6x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\ndépot de 138x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName ",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575194355570966650",
-   "t": "2026-11-25T17:00:00.064000+00:00",
-   "auteur": "Logs - Prise de service",
-   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 524\nplayerDiscord : 1124832118556606494\nplayerName : MoodyTurtle2216\nplayerCharacter : Irisélia Vayne\nplayerId : 348634\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575194156026826813",
-   "t": "2026-11-25T16:59:12.489000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **320x Pétrole Raffiné** par Fred Berthier\njobId : 76\njobName : Oil RoxWood",
-   "nom": "320x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575194123969757290",
-   "t": "2026-11-25T16:59:04.846000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 140x Pétrole Raffiné du coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.57, 6514.46, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 496\nplayerDiscord : 317280511292735499\nplayerName : SharpDuck3006\nplayerCharacter : Fred Berthier\nplayerId : 364651\nitemId : refinedoil\nCoffre\na retiré 10x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerNam",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575193896382898187",
-   "t": "2026-11-25T16:58:10.585000+00:00",
-   "auteur": "Logs - Vente run",
-   "texte": "Vente run\nVente de 524x Pétrole Raffiné pour 5240$ par Irisélia Vayne. 2620$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": 5240,
-   "type": "vente"
-  },
-  {
-   "id": "1575193860571664399",
-   "t": "2026-11-25T16:58:02.047000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.60, 6814.64, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\na retiré 16x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplaye",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575193611912478852",
-   "t": "2026-11-25T16:57:02.762000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 28x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.49, 6813.72, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : Q",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575193104946958524",
-   "t": "2026-11-25T16:55:01.892000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 6x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 1x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpide",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575192857268986021",
-   "t": "2026-11-25T16:54:02.841000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 10x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.49, 6813.72, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : Q",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575192598342144053",
-   "t": "2026-11-25T16:53:01.108000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 38x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.60, 6814.64, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\na retiré 11x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplaye",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575192352715313345",
-   "t": "2026-11-25T16:52:02.546000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 8x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 8x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpide",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575192101392621724",
-   "t": "2026-11-25T16:51:02.626000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 10x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.60, 6814.64, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : ",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575191861818040446",
-   "t": "2026-11-25T16:50:05.507000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 7x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 6x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpide",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575191589356314638",
-   "t": "2026-11-25T16:49:00.547000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.60, 6814.64, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\na retiré 9x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayer",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575191353074393091",
-   "t": "2026-11-25T16:48:04.213000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 6x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 3x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpide",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575191090741649623",
-   "t": "2026-11-25T16:47:01.668000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 66x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.60, 6814.64, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.49, 6813.72, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\n",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575190830849990781",
-   "t": "2026-11-25T16:45:59.705000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 6x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 5x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpide",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575190608778236108",
-   "t": "2026-11-25T16:45:06.759000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **76x Pétrole Raffiné** par Irisélia Vayne\njobId : 76\njobName : Oil RoxWood",
-   "nom": "76x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575190584258203682",
-   "t": "2026-11-25T16:45:00.913000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 56x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.60, 6814.64, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\na retiré 10x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplaye",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575190336995598489",
-   "t": "2026-11-25T16:44:01.961000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 12x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 8x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpid",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575190086323278038",
-   "t": "2026-11-25T16:43:02.196000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 40x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.49, 6813.72, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil\nCoffre\na retiré 20x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.96, 6521.22, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\npl",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575189838804680735",
-   "t": "2026-11-25T16:42:03.183000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.60, 6814.64, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575189589314895889",
-   "t": "2026-11-25T16:41:03.700000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 76x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.66, 6520.76, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\ndépot de 76x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.66, 6520.76, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerNam",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575189325447037100",
-   "t": "2026-11-25T16:40:00.789000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 45x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.49, 6813.72, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575189074757685350",
-   "t": "2026-11-25T16:39:01.020000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 42x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.49, 6813.72, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil\nCoffre\ndépot de 56x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.60, 6814.64, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575188823707488344",
-   "t": "2026-11-25T16:38:01.165000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 34x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.60, 6814.64, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\na retiré 76x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3090.86, 6814.02, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplaye",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575188567221862611",
-   "t": "2026-11-25T16:37:00.014000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.49, 6813.72, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575188355543597058",
-   "t": "2026-11-25T16:36:09.546000+00:00",
-   "auteur": "Logs -  Recrutement",
-   "texte": "Recrutements\nRuby Saavedra a quitté l'entreprise Oil RoxWood\nplayerNetId : 863\nplayerDiscord : 709363912071446598\nplayerName : FuzzyOtter7510\nplayerCharacter : Ruby Saavedra\nplayerId : 160625\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575188341157011529",
-   "t": "2026-11-25T16:36:06.116000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **1496x Pétrole Raffiné** par Emma Collins-rodriguez\njobId : 76\njobName : Oil RoxWood",
-   "nom": "1496x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575188331786928159",
-   "t": "2026-11-25T16:36:03.882000+00:00",
-   "auteur": "Spidey Bot",
-   "texte": "Annonce custom\n~r~⛽ Panne sèche en pleine route ? ~w~Pas de panique !~n~~n~~y~Oil RoxWood ~w~vous livre vos ~r~bidons d'essence ~w~pour seulement ~g~180 $ ~w~l'unité !~n~~n~~b~📞 Un appel au ~r~986 ~w~et on arrive !\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": 180,
-   "type": "autre"
-  },
-  {
-   "id": "1575188325583687813",
-   "t": "2026-11-25T16:36:02.403000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 45x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.49, 6813.72, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575187818777677830",
-   "t": "2026-11-25T16:34:01.571000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.49, 6813.72, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil\nCoffre\ndépot de 68x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575187308028624960",
-   "t": "2026-11-25T16:31:59.799000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 60x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 52x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575187083385901152",
-   "t": "2026-11-25T16:31:06.240000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 77x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.13, 6520.17, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\ndépot de 77x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.13, 6520.17, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerNam",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575187079430930466",
-   "t": "2026-11-25T16:31:05.297000+00:00",
-   "auteur": "Logs - Prise de service",
-   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 869\nplayerDiscord : 1479222400326308032\nplayerName : SoggyCat3613\nplayerCharacter : Marco Bellini\nplayerId : 354674\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575186800257794235",
-   "t": "2026-11-25T16:29:58.737000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 36x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 38x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575186579452858409",
-   "t": "2026-11-25T16:29:06.093000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **320x Pétrole Raffiné** par Fred Berthier\njobId : 76\njobName : Oil RoxWood",
-   "nom": "320x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575186549857984613",
-   "t": "2026-11-25T16:28:59.037000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 141x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.42, 6513.97, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 496\nplayerDiscord : 317280511292735499\nplayerName : SharpDuck3006\nplayerCharacter : Fred Berthier\nplayerId : 364651\nitemId : refinedoil\nCoffre\na retiré 77x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.67, 6814.50, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplay",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575186337592770723",
-   "t": "2026-11-25T16:28:08.429000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **150x Pétrole Raffiné** par Irisélia Vayne\njobId : 76\njobName : Oil RoxWood",
-   "nom": "150x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575186325873754153",
-   "t": "2026-11-25T16:28:05.635000+00:00",
-   "auteur": "Logs- Spawn un véhicule",
-   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 876\nplayerDiscord : 198789252329373706\nplayerName : Jack Berthier\nplayerCharacter : Jack Berthier\nplayerId : 276642\nvehiclePlate : GB1899JF\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575186307368620045",
-   "t": "2026-11-25T16:28:01.223000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 76x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 74x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575186300301090897",
-   "t": "2026-11-25T16:27:59.538000+00:00",
-   "auteur": "Logs - Prise de service",
-   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 876\nplayerDiscord : 198789252329373706\nplayerName : Jack Berthier\nplayerCharacter : Jack Berthier\nplayerId : 276642\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575186052409204771",
-   "t": "2026-11-25T16:27:00.436000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.43, 6813.48, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575185811157286964",
-   "t": "2026-11-25T16:26:02.917000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 62x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 62x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575185548828614679",
-   "t": "2026-11-25T16:25:00.373000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.43, 6813.48, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575185317307224155",
-   "t": "2026-11-25T16:24:05.174000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **316x Pétrole Raffiné** par Victor White\njobId : 76\njobName : Oil RoxWood",
-   "nom": "316x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575185301461012604",
-   "t": "2026-11-25T16:24:01.396000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 42x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\ndépot de 134x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13848)\nposition : -1851.43, 6514.94, 16.73\ntargetPosition : -1850.63, 6515.15, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 580\nplayerDiscord : 251022649801703434\np",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575185296776237097",
-   "t": "2026-11-25T16:24:00.279000+00:00",
-   "auteur": "Logs - Prise de service",
-   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 896\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575185046040617071",
-   "t": "2026-11-25T16:23:00.499000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 42x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575184822643593268",
-   "t": "2026-11-25T16:22:07.237000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 58x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 60x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575184548960936022",
-   "t": "2026-11-25T16:21:01.986000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 45x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.43, 6813.48, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575184297139109982",
-   "t": "2026-11-25T16:20:01.947000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.43, 6813.48, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil\nCoffre\ndépot de 74x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575183552977436805",
-   "t": "2026-11-25T16:17:04.525000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 76x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 74x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575183284059639960",
-   "t": "2026-11-25T16:16:00.410000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.43, 6813.48, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575183028584718513",
-   "t": "2026-11-25T16:14:59.500000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 70x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 70x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575182783712731344",
-   "t": "2026-11-25T16:14:01.118000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.43, 6813.48, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil\nCoffre\na retiré 54x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.43, 6813.48, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\npl",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575182523795767388",
-   "t": "2026-11-25T16:12:59.149000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 53x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.43, 6813.48, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575182274511507468",
-   "t": "2026-11-25T16:11:59.715000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 52x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 52x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575182022534504632",
-   "t": "2026-11-25T16:10:59.639000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 56x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 56x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575181775305576459",
-   "t": "2026-11-25T16:10:00.695000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 44x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.43, 6813.48, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575181522691031163",
-   "t": "2026-11-25T16:09:00.467000+00:00",
-   "auteur": "Spidey Bot",
-   "texte": "Annonce custom\n~r~⛽ Panne sèche en pleine route ? ~w~Pas de panique !~n~~n~~y~Oil RoxWood ~w~vous livre vos ~r~bidons d'essence ~w~pour seulement ~g~180 $ ~w~l'unité !~n~~n~~b~📞 Un appel au ~r~986 ~w~et on arrive !\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": 180,
-   "type": "autre"
-  },
-  {
-   "id": "1575181521420025869",
-   "t": "2026-11-25T16:09:00.164000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 58x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 58x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575181042632101929",
-   "t": "2026-11-25T16:07:06.012000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **298x Pétrole Raffiné** par Irisélia Vayne\njobId : 76\njobName : Oil RoxWood",
-   "nom": "298x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575181023468196064",
-   "t": "2026-11-25T16:07:01.443000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 52x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 52x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575180510815330337",
-   "t": "2026-11-25T16:04:59.217000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 58x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 58x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575180270984896594",
-   "t": "2026-11-25T16:04:02.037000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.41, 6813.14, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575180053611024445",
-   "t": "2026-11-25T16:03:10.211000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **320x Pétrole Raffiné** par Fred Berthier\njobId : 76\njobName : Oil RoxWood",
-   "nom": "320x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575180017963503700",
-   "t": "2026-11-25T16:03:01.712000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 52x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 52x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575179767399981247",
-   "t": "2026-11-25T16:02:01.973000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 38x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.28, 6513.63, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 496\nplayerDiscord : 317280511292735499\nplayerName : SharpDuck3006\nplayerCharacter : Fred Berthier\nplayerId : 364651\nitemId : refinedoil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575179508984586294",
-   "t": "2026-11-25T16:01:00.362000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 141x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13837)\nposition : -1845.85, 6514.48, 16.73\ntargetPosition : -1845.91, 6514.70, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 496\nplayerDiscord : 317280511292735499\nplayerName : SharpDuck3006\nplayerCharacter : Fred Berthier\nplayerId : 364651\nitemId : refinedoil\nCoffre\ndépot de 62x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 105336647157468",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575179010076315701",
-   "t": "2026-11-25T15:59:01.413000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 66x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 66x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575178505963044896",
-   "t": "2026-11-25T15:57:01.223000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 62x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 62x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575177999857483780",
-   "t": "2026-11-25T15:55:00.558000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 54x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 54x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575177754255692019",
-   "t": "2026-11-25T15:54:02.002000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 54x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.54, 6814.29, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575177518455988225",
-   "t": "2026-11-25T15:53:05.783000+00:00",
-   "auteur": "Logs- Spawn un véhicule",
-   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 580\nplayerDiscord : 251022649801703434\nplayerName : QuietToad3890\nplayerCharacter : Victor White\nplayerId : 386329\nvehiclePlate : KM3946BG\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575177507412508755",
-   "t": "2026-11-25T15:53:03.150000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 52x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 52x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575177504237424772",
-   "t": "2026-11-25T15:53:02.393000+00:00",
-   "auteur": "Logs - Prise de service",
-   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 580\nplayerDiscord : 251022649801703434\nplayerName : QuietToad3890\nplayerCharacter : Victor White\nplayerId : 386329\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575177005031358698",
-   "t": "2026-11-25T15:51:03.373000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 38x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 38x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575176736545575064",
-   "t": "2026-11-25T15:49:59.361000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 50x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 50x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575176236202725581",
-   "t": "2026-11-25T15:48:00.070000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 64x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 64x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575175738267799654",
-   "t": "2026-11-25T15:46:01.353000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 62x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 64x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575175489012764797",
-   "t": "2026-11-25T15:45:01.926000+00:00",
-   "auteur": "Spidey Bot",
-   "texte": "Annonce custom\n~r~⛽ Panne sèche en pleine route ? ~w~Pas de panique !~n~~n~~y~Oil RoxWood ~w~vous livre vos ~r~bidons d'essence ~w~pour seulement ~g~180 $ ~w~l'unité !~n~~n~~b~📞 Un appel au ~r~986 ~w~et on arrive !\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": 180,
-   "type": "autre"
-  },
-  {
-   "id": "1575175224607899831",
-   "t": "2026-11-25T15:43:58.887000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 36x Pétrole Raffiné dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : refinedoil\nCoffre\na retiré 74x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.41, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 10533664715746",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575174728975646886",
-   "t": "2026-11-25T15:42:00.719000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.55, 6520.42, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\ndépot de 4x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.55, 6520.42, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\n",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575174475639423014",
-   "t": "2026-11-25T15:41:00.319000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 36x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.75, 6520.42, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\ndépot de 38x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.75, 6520.42, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575174246722965657",
-   "t": "2026-11-25T15:40:05.741000+00:00",
-   "auteur": "Logs- Spawn un véhicule",
-   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 524\nplayerDiscord : 1124832118556606494\nplayerName : MoodyTurtle2216\nplayerCharacter : Irisélia Vayne\nplayerId : 348634\nvehiclePlate : BM4391ZM\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575173971190616151",
-   "t": "2026-11-25T15:39:00.049000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 74x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.66, 6814.62, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\na retiré 74x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.66, 6814.62, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerNam",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575173969005252740",
-   "t": "2026-11-25T15:38:59.528000+00:00",
-   "auteur": "Logs - Prise de service",
-   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 524\nplayerDiscord : 1124832118556606494\nplayerName : MoodyTurtle2216\nplayerCharacter : Irisélia Vayne\nplayerId : 348634\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575173468473917517",
-   "t": "2026-11-25T15:37:00.192000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.47, 6520.63, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.34, 6520.71, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575173231759990898",
-   "t": "2026-11-25T15:36:03.755000+00:00",
-   "auteur": "Logs- Spawn un véhicule",
-   "texte": "Spawn véhicule\nSpawn d'un véhicule appartenant à l'entreprise: gbvoyagerb\nplayerNetId : 496\nplayerDiscord : 317280511292735499\nplayerName : SharpDuck3006\nplayerCharacter : Fred Berthier\nplayerId : 364651\nvehiclePlate : AY4705SJ\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575172986598727787",
-   "t": "2026-11-25T15:35:05.304000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 74x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.08, 6814.29, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\na retiré 74x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.09, 6814.29, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerNam",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575172982576521279",
-   "t": "2026-11-25T15:35:04.345000+00:00",
-   "auteur": "Logs - Prise de service",
-   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 496\nplayerDiscord : 317280511292735499\nplayerName : SharpDuck3006\nplayerCharacter : Fred Berthier\nplayerId : 364651\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575171962731368476",
-   "t": "2026-11-25T15:31:01.195000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1841.93, 6521.05, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1841.92, 6521.06, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575171469866963053",
-   "t": "2026-11-25T15:29:03.687000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 74x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.58, 6814.59, 44.71\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\na retiré 74x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.58, 6814.59, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerNam",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575170966240100462",
-   "t": "2026-11-25T15:27:03.613000+00:00",
-   "auteur": "Spidey Bot",
-   "texte": "Annonce custom\n~b~🐉 LES 6 DRAGONS SONT ENFIN RÉUNIS !~n~~n~~y~⚡ RAIJIN ➜ UMAMI~n~~r~🛢️ KOKUEN ➜ OIL ROXWOOD~n~~n~~y~💰 25 000$ L'UNITÉ~n~~n~~b~💎 FAITS MAIN • ÉDITION LIMITÉE~n~🔥 Les 2 derniers sont arrivés ! Complétez votre collection avant qu'il ne soit trop t...\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": 25000,
-   "type": "recolte"
-  },
-  {
-   "id": "1575170956253470822",
-   "t": "2026-11-25T15:27:01.232000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.15, 6520.71, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\ndépot de 4x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.15, 6520.71, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\n",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575170708294598700",
-   "t": "2026-11-25T15:26:02.114000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.28, 6520.65, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\nitemId : oil\nCoffre\ndépot de 74x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.15, 6520.71, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 1053366471574687844",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575170216269451331",
-   "t": "2026-11-25T15:24:04.806000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 4x Carte de visite du coffre de l'entreprise (Oil RoxWood) (13842)\nposition : -1840.19, 6523.08, 16.73\ntargetPosition : -1840.85, 6523.94, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : businessCard\nCoffre\na retiré 74x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.49, 6813.49, 44.71\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 322\nplayerDiscord : 105336647157468",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575170210175123608",
-   "t": "2026-11-25T15:24:03.353000+00:00",
-   "auteur": "Logs - Prise de service",
-   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 322\nplayerDiscord : 1053366471574687844\nplayerName : SlowMouse3303\nplayerCharacter : Emma Collins-rodriguez\nplayerId : 227799\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575169704107184341",
-   "t": "2026-11-25T15:22:02.697000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 15x Bidon d'essence du coffre de l'entreprise (Oil RoxWood) (13842)\nposition : -1841.30, 6523.41, 16.73\ntargetPosition : -1840.85, 6523.94, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : weapon_petrolcan\nCoffre\ndépot de 10x Bidon d'essence dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1841.83, 6521.45, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 23",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575169456613621875",
-   "t": "2026-11-25T15:21:03.690000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 4x Carte de visite du coffre de l'entreprise (Oil RoxWood) (13842)\nposition : -1841.30, 6523.41, 16.73\ntargetPosition : -1840.85, 6523.94, 15.74\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\nitemId : businessCard",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575167955522556086",
-   "t": "2026-11-25T15:15:05.802000+00:00",
-   "auteur": "Logs - Prise de service",
-   "texte": "Prise de service\nprise de service (Oil RoxWood)\nplayerNetId : 250\nplayerDiscord : 235844738656239616\nplayerName : QuickBeetle4997\nplayerCharacter : William Rodriguez-collins\nplayerId : 46658\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575163178193780927",
-   "t": "2026-11-25T14:56:06.798000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 77x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.55, 6521.37, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 5120\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\ndépot de 77x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1842.55, 6521.37, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 5120\nplayerDiscord : 707695913187016785\nplayerN",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575162661102948437",
-   "t": "2026-11-25T14:54:03.514000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 77x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.59, 6814.50, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 5120\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\na retiré 77x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.59, 6814.50, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 5120\nplayerDiscord : 707695913187016785\nplayerName : ShyS",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575162164858060895",
-   "t": "2026-11-25T14:52:05.200000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 77x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1843.08, 6520.42, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 5120\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil\nCoffre\ndépot de 77x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1843.08, 6520.42, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 5120\nplayerDiscord : 707695913187016785\nplayerN",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575161915762679819",
-   "t": "2026-11-25T14:51:05.811000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\ndépot de 77x Pétrole Brut dans le coffre de l'entreprise (Oil RoxWood) (13838)\nposition : -1843.03, 6520.43, 16.73\ntargetPosition : -1842.58, 6521.16, 15.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 5120\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "depot"
-  },
-  {
-   "id": "1575161655925415947",
-   "t": "2026-11-25T14:50:03.861000+00:00",
-   "auteur": "Logs - Coffre",
-   "texte": "Coffre\na retiré 69x Pétrole Brut du coffre de l'entreprise (Oil RoxWood) (13847)\nposition : -3089.06, 6814.22, 44.73\ntargetPosition : -3089.68, 6814.50, 43.75\njobId : 76\njobName : Oil RoxWood\nplayerNetId : 5120\nplayerDiscord : 707695913187016785\nplayerName : ShySpider2463\nplayerCharacter : Laurent Roquel\nplayerId : 282695\nitemId : oil",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575159631947505846",
-   "t": "2026-11-25T14:42:01.307000+00:00",
-   "auteur": "Logs - Prise de service",
-   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 4976\nplayerDiscord : 715788859811561515\nplayerName : JumpyFish9521\nplayerCharacter : Seamus Irish\nplayerId : 386371\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575158895150637066",
-   "t": "2026-11-25T14:39:05.641000+00:00",
-   "auteur": "Logs - Vente run",
-   "texte": "Vente run\nVente de 612x Pétrole Raffiné pour 6120$ par Seamus Irish. 3060$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": 6120,
-   "type": "vente"
-  },
-  {
-   "id": "1575157633332027485",
-   "t": "2026-11-25T14:34:04.800000+00:00",
-   "auteur": "Logs - Vente run",
-   "texte": "Vente run\nVente de 347x Pétrole Raffiné pour 3470$ par Lorenzo Rojas. 1735$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": 3470,
-   "type": "vente"
-  },
-  {
-   "id": "1575156373929590866",
-   "t": "2026-11-25T14:29:04.535000+00:00",
-   "auteur": "Logs - Vente run",
-   "texte": "Vente run\nVente de 284x Pétrole Raffiné pour 2840$ par Lorenzo Rojas. 1420$ pour la société\nitemId : refinedoil\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": 2840,
-   "type": "vente"
-  },
-  {
-   "id": "1575156368011169935",
-   "t": "2026-11-25T14:29:03.124000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **40x Pétrole Raffiné** par Seamus Irish\njobId : 76\njobName : Oil RoxWood",
-   "nom": "40x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575156153111937048",
-   "t": "2026-11-25T14:28:11.888000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **1758x Pétrole Raffiné** par Laurent Roquel\njobId : 76\njobName : Oil RoxWood",
-   "nom": "1758x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575156110598348811",
-   "t": "2026-11-25T14:28:01.752000+00:00",
-   "auteur": "Logs - Prise de service",
-   "texte": "Prise de service\nfin de service (Oil RoxWood)\nplayerNetId : 5063\nplayerDiscord : 988932341441372221\nplayerName : MoodyCrab8085\nplayerCharacter : Billy Badav\nplayerId : 215302\njobId : 76\njobName : Oil RoxWood",
-   "nom": null,
-   "quantite": null,
-   "montant": null,
-   "type": "autre"
-  },
-  {
-   "id": "1575154612217057323",
-   "t": "2026-11-25T14:22:04.510000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **326x Pétrole Raffiné** par Lorenzo Rojas\njobId : 76\njobName : Oil RoxWood\nCraft\nFabrication de **82x Pétrole Raffiné** par Seamus Irish\njobId : 76\njobName : Oil RoxWood",
-   "nom": "326x Pétrole Raffiné",
-   "quantite": null,
-   "montant": null,
-   "type": "raffinage"
-  },
-  {
-   "id": "1575154357677203559",
-   "t": "2026-11-25T14:21:03.823000+00:00",
-   "auteur": "Logs - Crafts",
-   "texte": "Craft\nFabrication de **204x Pétrole Raffiné** par Billy Badav\njobId : 76\njobName : Oil RoxWood",
-   "nom": "204x Pétrole Raffiné",
    "quantite": null,
    "montant": null,
    "type": "raffinage"
